@@ -1,0 +1,12 @@
+# Continuous replication of the app database to R2 (S3-compatible). Values come from container env vars,
+# which the Worker passes from its secrets (see deploy/cloudflare/worker.ts).
+dbs:
+  - path: /data/app.db
+    replica:
+      type: s3
+      bucket: ${R2_BUCKET}
+      path: overt/app.db
+      endpoint: https://${R2_ACCOUNT_ID}.r2.cloudflarestorage.com
+      region: auto
+      access-key-id: ${R2_ACCESS_KEY_ID}
+      secret-access-key: ${R2_SECRET_ACCESS_KEY}

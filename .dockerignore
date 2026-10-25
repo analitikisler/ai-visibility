@@ -1,0 +1,10 @@
+**/node_modules
+**/dist
+server/data
+.env
+.env.*
+.git
+.wrangler
+docs
+*.log
+.DS_Store

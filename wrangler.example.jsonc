@@ -1,0 +1,56 @@
+// ai visibility on Cloudflare. Copy to wrangler.jsonc (git-ignored) and replace each <placeholder>. Deploy steps: deploy/cloudflare/README.md
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "ai-visibility",
+  "account_id": "<cloudflare-account-id>",
+  "main": "deploy/cloudflare/worker.ts",
+  "compatibility_date": "2026-10-01",
+  "compatibility_flags": ["nodejs_compat"],
+
+  // Only the custom domain serves the app (Cloudflare Access protects it); no *.workers.dev or preview URLs.
+  "routes": [{ "pattern": "<app.example.com>", "custom_domain": true }],
+  "workers_dev": false,
+  "preview_urls": false,
+
+  // The built SPA; API calls and the referral pixel run the Worker first.
+  "assets": {
+    "directory": "./web/dist",
+    "not_found_handling": "single-page-application",
+    "run_worker_first": ["/api/*", "/px.js"]
+  },
+
+  "containers": [
+    {
+      "class_name": "OvertContainer",
+      "image": "./Dockerfile",
+      "image_build_context": ".",
+      "instance_type": "basic",
+      "max_instances": 1
+    }
+  ],
+  "durable_objects": {
+    "bindings": [{ "name": "OVERT", "class_name": "OvertContainer" }]
+  },
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["OvertContainer"] }],
+
+  // Edge rate limits for the public ingestion endpoints, per caller IP (checked before requests reach the container).
+  "ratelimits": [
+    { "name": "INGEST_LIMITER", "namespace_id": "1001", "simple": { "limit": 600, "period": 60 } },
+    { "name": "BEACON_LIMITER", "namespace_id": "1002", "simple": { "limit": 60, "period": 60 } }
+  ],
+
+  // Keeps the container (and its scheduler + batch poller) awake.
+  "triggers": { "crons": ["*/5 * * * *"] },
+
+  "vars": {
+    "PUBLIC_HOSTNAME": "<app.example.com>",
+    "R2_BUCKET": "ai-visibility-db",
+    "R2_ACCOUNT_ID": "<cloudflare-account-id>"
+    // Cloudflare Access application "ai visibility" (Zero Trust). Not secrets: the Worker uses them to verify Access logins.
+    // Add both once the Access application exists (see "Cloudflare Access" in deploy/cloudflare/README.md); until then every API call is refused.
+    // "ACCESS_TEAM_DOMAIN": "https://<team>.cloudflareaccess.com",
+    // "ACCESS_AUD": "<application-audience-tag>"
+  },
+
+  "observability": { "enabled": true }
+}

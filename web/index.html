@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ai visibility</title>
+    <meta name="description" content="ai visibility shows how ChatGPT, Claude, Gemini and Perplexity describe your brand, why competitors get picked, and what to change." />
+    <meta name="theme-color" content="#F4F6FA" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#071529" media="(prefers-color-scheme: dark)" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta property="og:title" content="ai visibility · Be the answer." />
+    <meta property="og:description" content="See how AI assistants talk about your brand, why competitors get picked, and what to fix." />
+    <meta property="og:image" content="/og.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <!-- Google Sans family, self-hosted (web/public/fonts, OFL-1.1). Preload only the display face (page titles, big figures). -->
+    <link rel="preload" href="/fonts/google-sans-flex-display.woff2" as="font" type="font/woff2" crossorigin />
+    <script>
+      // Apply the saved theme before first paint (no flash). Keep the key in sync with src/lib/theme.ts.
+      (function () {
+        try {
+          var pref = localStorage.getItem('ai-visibility-theme') || 'system';
+          var dark = pref === 'dark' || (pref === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+          if (dark) document.documentElement.classList.add('dark');
+        } catch (e) {}
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

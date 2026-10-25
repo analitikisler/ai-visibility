@@ -1,0 +1,198 @@
+@import "tailwindcss";
+@import "../../brand/tokens.css";
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Google Sans family (Tally type). One merged Latin + Latin-1 + Latin Extended-A WOFF2 per face, so Turkish
+   renders from the font; OFL-1.1 texts next to the files in web/public/fonts. index.html preloads the display face. */
+@font-face {
+  font-family: "Google Sans Flex";
+  src: url("/fonts/google-sans-flex-display.woff2") format("woff2");
+  font-weight: 540 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Google Sans";
+  src: url("/fonts/google-sans-text.woff2") format("woff2");
+  font-weight: 400 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Google Sans Code";
+  src: url("/fonts/google-sans-code.woff2") format("woff2");
+  font-weight: 400 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Tailwind scans web/src by default; the shared brand files carry no classes. */
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+  html {
+    background: var(--color-bg);
+    color: var(--color-text);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    /* The faces ship 400–600; never fake a heavier weight. */
+    font-synthesis: none;
+    /* Dark theme thins the text face (GRAD axis) so light text on navy doesn't look bolder. */
+    font-variation-settings: "GRAD" var(--font-grade, 0);
+  }
+  .dark {
+    --font-grade: -25;
+  }
+  body {
+    min-height: 100dvh;
+    background: var(--color-bg);
+    color: var(--color-text);
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+  }
+  ::selection {
+    background: var(--color-selection);
+    color: var(--color-text);
+  }
+  /* "You're named": the brand inside an AI answer sits on the tinted ground (Tally accent-soft) with a 2px
+     underline in the brand blue, the way competitors are underlined in their series color. */
+  mark {
+    background: var(--color-accent-soft);
+    color: var(--color-text-strong);
+    border-radius: var(--radius-sm);
+    padding: 0 0.125em;
+    text-decoration: underline 2px var(--color-chart-1);
+    text-underline-offset: 3px;
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+  }
+  /* Page titles in the display face; smaller headings stay in the text face (classes can opt in). */
+  h1 {
+    font-family: var(--font-display);
+    font-weight: var(--font-weight-heading);
+  }
+  h1, h2, h3, h4 {
+    text-wrap: balance;
+  }
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]) {
+    cursor: pointer;
+  }
+  /* One focus treatment everywhere (Tally): 2px ring in accent, 2px off the element, never removed. */
+  :focus-visible {
+    outline: 2px solid var(--color-ring);
+    outline-offset: 2px;
+  }
+  :focus:not(:focus-visible) {
+    outline: none;
+  }
+  code, kbd, samp, pre {
+    font-family: var(--font-mono);
+    font-variation-settings: normal;
+    /* Show code exactly as written (no "<!--" or "=>" ligatures). */
+    font-variant-ligatures: none;
+  }
+  /* Recharts draws its own focus box on the surface; our hover layer is enough. */
+  .recharts-wrapper:focus,
+  .recharts-surface:focus,
+  .recharts-wrapper *:focus {
+    outline: none;
+  }
+
+  /* Thin, token-colored scrollbars. */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-border-strong) transparent;
+  }
+  *::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  *::-webkit-scrollbar-thumb {
+    background: var(--color-border-strong);
+    border-radius: 2px;
+    border: 3px solid transparent;
+    background-clip: content-box;
+  }
+  *::-webkit-scrollbar-track {
+    background: transparent;
+  }
+}
+
+/** Tabular, slashed-zero digits for numbers that must line up. */
+@utility tnum {
+  font-variant-numeric: tabular-nums slashed-zero;
+}
+/** Small label over a group or a figure (BRAND §8): 12px, 500, muted ink, sentence case. No caps, no tracking. */
+@utility eyebrow {
+  font-size: var(--text-2xs);
+  line-height: 1rem;
+  font-weight: 500;
+  color: var(--color-text-subtle);
+}
+@utility scrollbar-none {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Motion (Tally): 160ms or 220ms on cubic-bezier(.2, 0, 0, 1), color and opacity; nothing scales or bounces.
+   Nothing moves when the user asks for less. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes pop-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes slide-in-right {
+  from { transform: translateX(100%); }
+  to { transform: none; }
+}
+@keyframes slide-in-left {
+  from { transform: translateX(-100%); }
+  to { transform: none; }
+}
+@keyframes shimmer {
+  0% { opacity: 1; }
+  50% { opacity: 0.55; }
+  100% { opacity: 1; }
+}
+@keyframes indeterminate {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(250%); }
+}
+
+/* Print: reports and dashboards print on white, without app chrome. */
+@media print {
+  :root, .dark {
+    color-scheme: light;
+  }
+  html, body {
+    background: #fff !important;
+  }
+  [data-print="hide"] {
+    display: none !important;
+  }
+  [data-print="avoid-break"] {
+    break-inside: avoid;
+  }
+  a[href]::after {
+    content: none !important;
+  }
+}

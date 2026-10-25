@@ -1,0 +1,25 @@
+{
+  "name": "server",
+  "private": true,
+  "license": "AGPL-3.0-only",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch --clear-screen=false src/index.ts",
+    "start": "NODE_ENV=production tsx src/index.ts",
+    "seed": "tsx src/scripts/seed-demo.ts",
+    "typecheck": "tsc --noEmit",
+    "check:live": "tsx src/scripts/live-check.ts"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.137.0",
+    "@hono/node-server": "^2.1.5",
+    "cheerio": "^1.2.0",
+    "hono": "^4.13.13",
+    "tsx": "^4.23.15",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.5",
+    "typescript": "^7.0.2"
+  }
+}

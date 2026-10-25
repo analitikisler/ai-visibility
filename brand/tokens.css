@@ -1,0 +1,285 @@
+/* Fonts: the Google Sans family (Tally type), self-hosted. The WOFF2 files and their OFL-1.1 texts live in
+   web/public/fonts; web/src/index.css declares them with @font-face and web/index.html preloads the display
+   face only. No third-party font requests. */
+
+/* =====================================================================
+   ai visibility — design tokens. Source of truth for color,
+   type, radii and elevation. Consumed by the Tailwind v4 app via:
+     @import "tailwindcss";
+     @import "../../brand/tokens.css";
+   Theme: light on :root, dark on .dark (class on <html>).
+
+   ai visibility follows Tally, the Analitik İşler design system: navy grounds,
+   one action blue, the Google Sans family, sharp corners, 1px rules, no
+   decoration. Its name, logo and the red point come from the ai tool family
+   (brand/ai/BRAND.md); `--brand` (= chart-1, the tracked brand) is Tally's blue.
+   Each token below names the Tally token it follows;
+   the token names are ai visibility's own, so components did not have to change.
+   Contrast: the old pairs are in brand/retired/overt/BRAND.md §6.3; the 25 Oct 2026 blue and red pass AA (see brand/README.md).
+   ===================================================================== */
+
+/* raw values that switch with theme */
+:root {
+  color-scheme: light;
+
+  /* surfaces (depth is hue-true: well < bg < surface < surface-2) */
+  --well: #e9eef5; /* Tally well: code, tracks, sunken bands */
+  --bg: #f4f6fa; /* Tally bg */
+  --surface: #ffffff; /* Tally surface */
+  --surface-2: #ecf1f8; /* Tally surface-2: hover, selected, inset, disabled */
+
+  /* lines */
+  --border: #d5dde8; /* Tally border: hairlines */
+  --border-strong: #78869a; /* Tally border-strong: control edges (3:1) */
+
+  /* ink */
+  --text-strong: #071529; /* Tally text-strong: headings, key figures */
+  --text: #142338; /* Tally text */
+  --text-muted: #566479; /* Tally muted */
+  --text-subtle: #566479; /* Tally muted (Tally has one meta ink) */
+
+  /* The tracked brand in charts (chart-1): Tally's blue, since the ai tool family has no product colour (brand/ai/BRAND.md §4,
+     25 Oct 2026; the old Overt blue #2F5CF6 is retired). Never a button fill. */
+  --brand: #1161bb;
+  /* The ai point: the red point of the logo, the family's one red (brand/ai/BRAND.md §4). Only inside the logo. */
+  --point: #c12d30;
+
+  /* interactive: Tally action fills the primary button; accent marks links, focus, selected, info */
+  --primary: #1259b1; /* Tally action */
+  --primary-hover: #0e4896; /* Tally action-hover */
+  --primary-fg: #ffffff; /* Tally on-action */
+  --primary-soft: #deedff; /* Tally accent-soft: selected row / nav */
+  --accent: #1161bb; /* Tally accent: links, text buttons, selected tab */
+  --accent-ink: #0f56a8; /* Tally accent-ink: blue text on tints */
+  --accent-soft: #deedff; /* Tally accent-soft: tinted ground (brand named in an answer, "you") */
+  --ring: #1161bb; /* Tally focus (= accent) */
+  --selection: #c6defc; /* Tally selection */
+
+  /* the one highlighted figure per section: a 3px bar under it. Never a status, never a button. */
+  --mark: #d46700; /* Tally mark */
+  --mark-ink: #b14c00; /* Tally mark-ink */
+
+  /* status: Tally ok / warn / bad, info = accent. Tints are the status mixed into surface (oklab). */
+  --success: #197746; /* Tally ok */
+  --warning: #8b6200; /* Tally warn */
+  --danger: #c12d30; /* Tally bad */
+  --info: #1161bb; /* Tally accent (info) */
+  --success-soft: #e9f1eb; /* ok 10% into surface */
+  --warning-soft: #f3efe7; /* warn 10% into surface */
+  --danger-soft: #fcebe9; /* bad 10% into surface */
+  --info-soft: #deedff; /* Tally accent-soft */
+
+  /* categorical data-viz (chart-1 = the brand, always; competitors and engines keep their hues) */
+  --chart-1: #1161bb;
+  --chart-2: #e5560f;
+  --chart-3: #cf4fb9;
+  --chart-4: #009068;
+  --chart-5: #8658e1;
+  --chart-6: #9f7100;
+  --chart-7: #0794b0;
+  --chart-8: #818c01;
+  --chart-other: #566479; /* navy slate */
+
+  /* sentiment */
+  --sent-pos: #039679;
+  --sent-neu: #566479;
+  --sent-neg: #e5484d;
+
+  /* sequential heatmap ramp, Tally blue (0 = no data/zero = surface-2) */
+  --heat-0: #ecf1f8;
+  --heat-1: #d3e3f6;
+  --heat-2: #b4cfef;
+  --heat-3: #92b8e6;
+  --heat-4: #6e9fdc;
+  --heat-5: #4a85d0;
+  --heat-6: #1161bb;
+  --heat-7: #0d4f9a;
+
+  /* overlays: the only shadow, on menus, popovers, tooltips, dialogs, drawers and toasts */
+  --overlay: rgb(7 21 41 / 0.48); /* Tally overlay: dialog scrim */
+  --shadow-overlay: 0 16px 48px rgb(7 21 41 / 0.14);
+  --shadow-sm: 0 0 #0000; /* nothing at rest */
+  --shadow-md: var(--shadow-overlay);
+  --shadow-lg: var(--shadow-overlay);
+}
+
+.dark {
+  color-scheme: dark;
+
+  /* surfaces */
+  --well: #040e1f;
+  --bg: #071529;
+  --surface: #0e1e34;
+  --surface-2: #15263f;
+
+  /* lines */
+  --border: #22354e;
+  --border-strong: #607695;
+
+  /* ink */
+  --text-strong: #f9fbff;
+  --text: #e1e8f3;
+  --text-muted: #a2b1c6;
+  --text-subtle: #a2b1c6;
+
+  /* the tracked brand in charts (Tally's dark blue) and the ai point */
+  --brand: #69b1ff;
+  --point: #fa6b6d;
+
+  /* interactive (dark action is a lit key with a navy label) */
+  --primary: #69b1ff;
+  --primary-hover: #8bc8ff;
+  --primary-fg: #071529;
+  --primary-soft: #0c325b;
+  --accent: #69b1ff;
+  --accent-ink: #8bc8ff;
+  --accent-soft: #0c325b;
+  --ring: #69b1ff;
+  --selection: #123f6f;
+
+  /* mark */
+  --mark: #fa8c31;
+  --mark-ink: #fa8c31;
+
+  /* status */
+  --success: #5ad093;
+  --warning: #f4cf5a;
+  --danger: #fa6b6d;
+  --info: #69b1ff;
+  --success-soft: #183744; /* ok 16% into surface */
+  --warning-soft: #2e3840; /* warn 16% into surface */
+  --danger-soft: #332c3f; /* bad 16% into surface */
+  --info-soft: #0c325b;
+
+  /* categorical data-viz: own dark steps, lifted where a hue sat too low on navy */
+  --chart-1: #69b1ff;
+  --chart-2: #e5560f;
+  --chart-3: #cf4fb9;
+  --chart-4: #16a478;
+  --chart-5: #976ef1;
+  --chart-6: #b3821a;
+  --chart-7: #0794b0;
+  --chart-8: #818c01;
+  --chart-other: #657386;
+
+  /* sentiment */
+  --sent-pos: #1fb190;
+  --sent-neu: #657386;
+  --sent-neg: #e5484d;
+
+  /* sequential heatmap ramp ("more" is brighter) */
+  --heat-0: #15263f;
+  --heat-1: #1b3456;
+  --heat-2: #1f4370;
+  --heat-3: #23548c;
+  --heat-4: #2a68ab;
+  --heat-5: #69b1ff;
+  --heat-6: #8fc4ff;
+  --heat-7: #c4e0ff;
+
+  /* overlays */
+  --overlay: rgb(2 8 18 / 0.72);
+  --shadow-overlay: 0 16px 48px rgb(2 8 18 / 0.55);
+  --shadow-sm: 0 0 #0000;
+  --shadow-md: var(--shadow-overlay);
+  --shadow-lg: var(--shadow-overlay);
+}
+
+@theme inline {
+  --color-well: var(--well);
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-text-strong: var(--text-strong);
+  --color-text: var(--text);
+  --color-text-muted: var(--text-muted);
+  --color-text-subtle: var(--text-subtle);
+  --color-brand: var(--brand);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-fg: var(--primary-fg);
+  --color-primary-soft: var(--primary-soft);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-accent-soft: var(--accent-soft);
+  --color-selection: var(--selection);
+  --color-mark: var(--mark);
+  --color-mark-ink: var(--mark-ink);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-danger: var(--danger);
+  --color-info: var(--info);
+  --color-success-soft: var(--success-soft);
+  --color-warning-soft: var(--warning-soft);
+  --color-danger-soft: var(--danger-soft);
+  --color-info-soft: var(--info-soft);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-chart-6: var(--chart-6);
+  --color-chart-7: var(--chart-7);
+  --color-chart-8: var(--chart-8);
+  --color-chart-other: var(--chart-other);
+  --color-sent-pos: var(--sent-pos);
+  --color-sent-neu: var(--sent-neu);
+  --color-sent-neg: var(--sent-neg);
+  --color-heat-0: var(--heat-0);
+  --color-heat-1: var(--heat-1);
+  --color-heat-2: var(--heat-2);
+  --color-heat-3: var(--heat-3);
+  --color-heat-4: var(--heat-4);
+  --color-heat-5: var(--heat-5);
+  --color-heat-6: var(--heat-6);
+  --color-heat-7: var(--heat-7);
+  --color-ring: var(--ring);
+  --color-overlay: var(--overlay);
+
+  /* Tally type: Google Sans (text), Google Sans Flex (display: page titles, big figures), Google Sans Code (mono). */
+  --font-sans: "Google Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "Google Sans Code", ui-monospace, "SF Mono", "Cascadia Mono", Menlo, Consolas, monospace;
+  --font-display: "Google Sans Flex", "Google Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+
+  /* Tally radii: 1px cells, 2px chips/tags/code, 4px buttons/inputs, 6px cards/panels/dialogs. No pills:
+     rounded-full is for status dots only. xl/2xl resolve to 6px so older classes can't grow past a card. */
+  --radius-xs: 1px;
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --radius-lg: 6px;
+  --radius-xl: 6px;
+  --radius-2xl: 6px;
+
+  --shadow-sm: var(--shadow-sm);
+  --shadow-md: var(--shadow-md);
+  --shadow-lg: var(--shadow-lg);
+}
+
+/* static brand ramp (does not switch with theme): bg-brand-600, text-brand-50 … for Art and marketing */
+@theme {
+  --color-brand-50: #eef5fd;
+  --color-brand-100: #deedff;
+  --color-brand-200: #c2dcf8;
+  --color-brand-300: #9fc8f4;
+  --color-brand-400: #7fb7f6;
+  --color-brand-500: #69b1ff;
+  --color-brand-600: #1161bb;
+  --color-brand-700: #0f56a8;
+  --color-brand-800: #0c4486;
+  --color-brand-900: #093365;
+  --color-brand-950: #062244;
+
+  /* Smallest text step: 12px (Tally keeps meta at 12–13px; nothing smaller). Badges, axis ticks, table heads. */
+  --text-2xs: 0.75rem;
+  --text-2xs--line-height: 1rem;
+
+  /* Weights 400 / 500 / 600 (font-normal, font-medium, font-semibold); the display face sets at 570: font-heading. */
+  --font-weight-heading: 570;
+
+  /* Tally motion: 160ms (fast) or 220ms (base) on cubic-bezier(.2, 0, 0, 1); nothing under reduced motion. */
+  --ease-out: cubic-bezier(0.2, 0, 0, 1);
+  --default-transition-duration: 160ms;
+  --default-transition-timing-function: cubic-bezier(0.2, 0, 0, 1);
+}
