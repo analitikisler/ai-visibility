@@ -37,11 +37,11 @@ the data).
 |---|---|---|
 | **ai tag debugger** | An AI model walks the site like a visitor; rules check every GA4, Google Ads, Meta and TikTok hit against the plan and Consent Mode. | Open source · MIT |
 | **ai tagging server** | A small server-side tagging server in Rust. It already carries analitikisler.com's own tracking. | Early development |
-| **ai cloud** | ai tag debugger, run on every release, with run history and alerts. | Early access |
-| **ai visibility** | Shows how ChatGPT, Claude, Gemini and Perplexity describe a brand, why competitors get picked instead, and what to change. | Early access |
+| **ai cloud** | ai tag debugger, run on every release, with run history and alerts. | Waitlist |
+| **ai visibility** | Shows how ChatGPT, Claude, Gemini and Perplexity describe a brand, why competitors get picked instead, and what to change. | Open source · AGPL-3.0 · Alpha |
 | **ai analyst** | Analytics agents on a brand's own data and metric definitions. Every answer shows its query, its definition and its check. | Alpha |
 
-Turkish status words: Açık kaynak · MIT, Erken aşamada, Erken erişim, Alfa.
+Turkish status words: Açık kaynak · MIT, Erken aşamada, Bekleme listesi, Alfa.
 
 **Family line** (for an index, a README or a footer):
 EN "“ai” stands for two things: AI, and the initials of analitik işler."
@@ -74,7 +74,7 @@ service builds any multi-agent system a client needs). Never write that a servic
   ai visibility’yi, ai visibility’ye, ai visibility’nin, ai analyst’te. Use the typographic apostrophe (’).
 - Code identifiers keep their own form: npm `@analitikisler/ai-tag-debugger`, repo slugs `ai-tag-debugger`,
   `tagging-server`. In prose, use the product name, not the slug.
-- A status ("early access", "alpha") is a word beside the name, never part of it or of the logo.
+- A status ("waitlist", "alpha") is a word beside the name, never part of it or of the logo.
 
 ---
 
@@ -190,7 +190,7 @@ site repo.
   "revolutionary", "supercharge"), no exclamation marks.
 - The maker is **Analitik İşler**, not "we" and not a person's name (Bahadır appears as founder only where a person is
   meant: About, author bylines, legal).
-- Statuses are plain words (Early access, Alpha), no ✓ or ! in front.
+- Statuses are plain words (Waitlist, Alpha), no ✓ or ! in front.
 - No durations or promises of time for any service. Tool release dates and versions are facts and may be stated.
 - Turkish copy is written natively, not translated: no second-person possessives, short noun-phrase headings,
   "Server-side tracking" in headings (never "taraflı").

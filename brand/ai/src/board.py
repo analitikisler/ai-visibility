@@ -3,7 +3,7 @@
 from pathlib import Path
 D = Path(__file__).resolve().parent.parent
 P = [('tag-debugger', 'ai tag debugger', 'Open source · MIT'), ('tagging-server', 'ai tagging server', 'Early development'),
-     ('cloud', 'ai cloud', 'Early access'), ('visibility', 'ai visibility', 'Early access · Be the answer.'), ('analyst', 'ai analyst', 'Alpha')]
+     ('cloud', 'ai cloud', 'Waitlist'), ('visibility', 'ai visibility', 'Open source · AGPL-3.0 · Alpha · Be the answer.'), ('analyst', 'ai analyst', 'Alpha')]
 COL = [('Ink', '#17140F', '#F1ECE2'), ('Paper', '#F3F0E8', '#151310'), ('Point · red pen', '#C12D30', '#FA6B6D'), ('Pencil', '#6A645A', '#A39C8F')]
 
 def img(path, alt, h=None, cls=''):
@@ -113,7 +113,7 @@ always lowercase. The rules are in <code>BRAND.md</code>; every file below is in
   <li><b>One red point per logo.</b> No product colours; the old orange, teal and blue are retired.</li>
   <li><b>“by analitik işler” is the master logo</b>, with its red point and three bars, never the name in type.</li>
   <li><b>Clear space 2 S</b> (S = the i's stem) on every side; mark x-height at least 9 px.</li>
-  <li><b>Status is a word beside the logo</b>, in pencil: Early access, Alpha. Never inside the file.</li>
+  <li><b>Status is a word beside the logo</b>, in pencil: Waitlist, Alpha. Never inside the file.</li>
   <li><b>Same height in a row.</b> Lockups that sit together share one height.</li>
   <li><b>The red pen marks real findings only</b>: a tick, a circle, an underline. Two per screen at most.</li>
   <li><b>No second font.</b> Schibsted lives inside the logo files; UIs use the Analitik İşler system fonts.</li>
