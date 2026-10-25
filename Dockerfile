@@ -1,6 +1,7 @@
 # syntax=docker/dockerfile:1
-# ai visibility on Cloudflare Containers: the Node server (API + SPA) with Litestream replicating its SQLite database to R2.
-# Built by `wrangler deploy` (see wrangler.jsonc and deploy/cloudflare/README.md).
+# ai visibility container: the Node server (API + SPA) with its SQLite database in /data, for amd64 and arm64.
+# With R2 credentials, Litestream replicates the database to R2; that is the Cloudflare setup, built by `wrangler deploy`
+# (see deploy/cloudflare/README.md). Anywhere else, run it with BACKUPS=off and a volume on /data (see README.md).
 
 # ---- web: build the SPA ------------------------------------------------------------------------------------------
 FROM node:25-slim AS web
@@ -17,8 +18,14 @@ RUN npm run build -w web
 # ---- runtime -----------------------------------------------------------------------------------------------------
 FROM node:25-slim
 ARG LITESTREAM_VERSION=0.5.17
-RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates curl \
-  && curl -fsSL "https://github.com/benbjohnson/litestream/releases/download/v${LITESTREAM_VERSION}/litestream-${LITESTREAM_VERSION}-linux-x86_64.tar.gz" \
+ARG TARGETARCH
+RUN case "${TARGETARCH:-$(dpkg --print-architecture)}" in \
+      amd64) LITESTREAM_ARCH=x86_64 ;; \
+      arm64) LITESTREAM_ARCH=arm64 ;; \
+      *) echo "unsupported architecture: ${TARGETARCH:-$(dpkg --print-architecture)}" >&2; exit 1 ;; \
+    esac \
+  && apt-get update && apt-get install -y --no-install-recommends ca-certificates curl \
+  && curl -fsSL "https://github.com/benbjohnson/litestream/releases/download/v${LITESTREAM_VERSION}/litestream-${LITESTREAM_VERSION}-linux-${LITESTREAM_ARCH}.tar.gz" \
      | tar -xz -C /usr/local/bin litestream \
   && apt-get purge -y curl && apt-get autoremove -y && rm -rf /var/lib/apt/lists/*
 

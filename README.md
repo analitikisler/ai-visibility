@@ -73,7 +73,18 @@ Each project has a public **site key** and a secret **ingest token** (Integratio
 
 Set `APP_USER` and `APP_PASSWORD` to protect the workspace with basic auth (health, ingestion and the pixel stay public). Without them the workspace only answers on loopback host names (localhost, 127.0.0.1) — to expose it on another host name without auth, list it in `ALLOWED_HOSTS=ai-visibility.internal.example.com` (comma-separated). Cross-site write requests are always refused (CSRF), and server-side fetches (audits, sitemap, onboarding suggestions) only reach public addresses. Data lives in `server/data/app.db` (`DATA_DIR` / `DB_PATH` to move it). `PORT` defaults to 4400.
 
-To run it on Cloudflare (Worker + Container, SQLite backed up to R2, Cloudflare Access sign-in), follow [deploy/cloudflare/README.md](deploy/cloudflare/README.md). Anywhere else (a VPS, a container platform, your own machine), run `npm run build && npm start` on Node 22.13+ with `DATA_DIR` on persistent storage, and back that folder up yourself. The `Dockerfile` is built for the Cloudflare setup: it backs the database up to R2 and won't start without R2 credentials.
+To run it on Cloudflare (Worker + Container, SQLite backed up to R2, Cloudflare Access sign-in), follow [deploy/cloudflare/README.md](deploy/cloudflare/README.md). Anywhere else (a VPS, a container platform, your own machine), run `npm run build && npm start` on Node 22.13+ with `DATA_DIR` on persistent storage, or use Docker.
+
+### Docker
+
+The image builds for amd64 and arm64. From the repo root:
+
+```bash
+docker build -t ai-visibility .
+docker run -d --name ai-visibility -p 8080:8080 -v ai-visibility-data:/data -e BACKUPS=off ai-visibility
+```
+
+Then open http://localhost:8080. The database lives in the `ai-visibility-data` volume; back it up yourself. `BACKUPS=off` turns off the R2 backups the Cloudflare setup uses: without it, the container only starts with `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_ACCOUNT_ID` and `R2_BUCKET` set. To serve it on a domain, add `-e APP_USER=… -e APP_PASSWORD=…` (see above). Engine keys go in **Workspace settings** or as `-e OPENAI_API_KEY=…` and the other variables listed under [Live vs simulated engines](#live-vs-simulated-engines).
 
 ## Project layout
 
