@@ -16,7 +16,7 @@ A tool that shows a company **how AI assistants talk about its brand** (prompt-b
 | AI Readiness | Audit of robots.txt AI rules, llms.txt, schema.org, meta, SSR content |
 
 ## Stack
-- **Runtime**: Node 22.13+ (developed on Node 25), TypeScript run via `tsx` (no build step for server). ESM, imports use explicit `.ts` extensions.
+- **Runtime**: Node 22.13+ (checked on Node 22 and 24 in CI; the Docker image uses Node 24), TypeScript run via `tsx` (no build step for server). ESM, imports use explicit `.ts` extensions.
 - **Server**: Hono + `@hono/node-server`, port **4400**. DB: built-in **`node:sqlite`** (no native deps) at `server/data/app.db`. Validation: `zod` (v4). HTML parsing: `cheerio`.
 - **Web**: Vite + React 19 + TypeScript + Tailwind CSS v4 + React Router + TanStack Query + Recharts + lucide-react. Dev port **5180**, proxies `/api` and `/px.js` to 4400. Prod: server serves `web/dist`.
 - **Shared contract**: `shared/types.ts` (import with `import type`). Server imports it as `../../shared/types.ts` (relative, with extension); web uses alias `@shared/types`.

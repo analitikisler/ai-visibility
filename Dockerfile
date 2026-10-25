@@ -3,8 +3,8 @@
 # With R2 credentials, Litestream replicates the database to R2; that is the Cloudflare setup, built by `wrangler deploy`
 # (see deploy/cloudflare/README.md). Anywhere else, run it with BACKUPS=off and a volume on /data (see README.md).
 
-# ---- web: build the SPA ------------------------------------------------------------------------------------------
-FROM node:25-slim AS web
+# ---- web: build the SPA (plain static files, so it runs once on the build machine for every target CPU) ------------
+FROM --platform=$BUILDPLATFORM node:24-slim AS web
 WORKDIR /app
 COPY package.json package-lock.json ./
 COPY server/package.json server/
@@ -16,7 +16,7 @@ COPY web web
 RUN npm run build -w web
 
 # ---- runtime -----------------------------------------------------------------------------------------------------
-FROM node:25-slim
+FROM node:24-slim
 ARG LITESTREAM_VERSION=0.5.17
 ARG TARGETARCH
 RUN case "${TARGETARCH:-$(dpkg --print-architecture)}" in \

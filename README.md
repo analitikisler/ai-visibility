@@ -23,7 +23,7 @@ ai visibility shows how AI assistants talk about your brand, why they pick compe
 
 ## Quick start
 
-Requires **Node 22.13+** (uses the built-in `node:sqlite`; developed on Node 25).
+Requires **Node 22.13+** (uses the built-in `node:sqlite`). Every change is checked on Node 22 and 24.
 
 ```bash
 npm install
@@ -77,14 +77,13 @@ To run it on Cloudflare (Worker + Container, SQLite backed up to R2, Cloudflare 
 
 ### Docker
 
-The image builds for amd64 and arm64. From the repo root:
+A ready-made image for amd64 and arm64 is published from every change on `main`:
 
 ```bash
-docker build -t ai-visibility .
-docker run -d --name ai-visibility -p 8080:8080 -v ai-visibility-data:/data -e BACKUPS=off ai-visibility
+docker run -d --name ai-visibility -p 8080:8080 -v ai-visibility-data:/data -e BACKUPS=off ghcr.io/analitikisler/ai-visibility:latest
 ```
 
-Then open http://localhost:8080. The database lives in the `ai-visibility-data` volume; back it up yourself. `BACKUPS=off` turns off the R2 backups the Cloudflare setup uses: without it, the container only starts with `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_ACCOUNT_ID` and `R2_BUCKET` set. To serve it on a domain, add `-e APP_USER=… -e APP_PASSWORD=…` (see above). Engine keys go in **Workspace settings** or as `-e OPENAI_API_KEY=…` and the other variables listed under [Live vs simulated engines](#live-vs-simulated-engines).
+Then open http://localhost:8080. To build the image yourself instead, run `docker build -t ai-visibility .` in the repo root and use `ai-visibility` as the image name. The database lives in the `ai-visibility-data` volume; back it up yourself. `BACKUPS=off` turns off the R2 backups the Cloudflare setup uses: without it, the container only starts with `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_ACCOUNT_ID` and `R2_BUCKET` set. To serve it on a domain, add `-e APP_USER=… -e APP_PASSWORD=…` (see above). Engine keys go in **Workspace settings** or as `-e OPENAI_API_KEY=…` and the other variables listed under [Live vs simulated engines](#live-vs-simulated-engines).
 
 ## Project layout
 
