@@ -30,10 +30,10 @@ Without API keys every engine runs in simulated mode, which is enough for almost
 
 ## Contribution terms
 
-ai visibility is licensed under AGPL-3.0-only, and Analitik İşler also offers it as a hosted service. By opening a pull request you agree that:
+ai visibility is licensed under AGPL-3.0-only, and Analitik İşler plans to offer it as a hosted service. By opening a pull request you agree that:
 
 1. Your contribution is your own work, or you have the right to submit it.
 2. It is licensed under AGPL-3.0-only, like the rest of the project.
-3. You also grant Analitik İşler a perpetual, worldwide, non-exclusive, royalty-free, irrevocable license to use, modify, sublicense and distribute your contribution under other terms, including in the hosted service and in commercial licenses.
+3. You also grant Analitik İşler a perpetual, worldwide, non-exclusive, royalty-free, irrevocable license to use, modify, sublicense and distribute your contribution under other terms, including in a hosted service and in commercial licenses.
 
 You keep the copyright to your contribution.

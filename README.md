@@ -73,7 +73,7 @@ Each project has a public **site key** and a secret **ingest token** (Integratio
 
 Set `APP_USER` and `APP_PASSWORD` to protect the workspace with basic auth (health, ingestion and the pixel stay public). Without them the workspace only answers on loopback host names (localhost, 127.0.0.1) — to expose it on another host name without auth, list it in `ALLOWED_HOSTS=ai-visibility.internal.example.com` (comma-separated). Cross-site write requests are always refused (CSRF), and server-side fetches (audits, sitemap, onboarding suggestions) only reach public addresses. Data lives in `server/data/app.db` (`DATA_DIR` / `DB_PATH` to move it). `PORT` defaults to 4400.
 
-To run it on Cloudflare (Worker + Container, SQLite backed up to R2, Cloudflare Access sign-in), follow [deploy/cloudflare/README.md](deploy/cloudflare/README.md). The `Dockerfile` runs anywhere else that runs containers.
+To run it on Cloudflare (Worker + Container, SQLite backed up to R2, Cloudflare Access sign-in), follow [deploy/cloudflare/README.md](deploy/cloudflare/README.md). Anywhere else (a VPS, a container platform, your own machine), run `npm run build && npm start` on Node 22.13+ with `DATA_DIR` on persistent storage, and back that folder up yourself. The `Dockerfile` is built for the Cloudflare setup: it backs the database up to R2 and won't start without R2 credentials.
 
 ## Project layout
 
@@ -95,7 +95,7 @@ Metric definitions (visibility, share of voice, position, sentiment, deltas) are
 
 ## Hosted version
 
-ai visibility is free and open source. Analitik İşler also runs it as a hosted service for teams that would rather not run it themselves: no engine API keys, server or backups of your own. It is in early access: email hello@analitikisler.com with the subject "ai visibility".
+ai visibility is free and open source, and you can run it anywhere Node runs. Analitik İşler plans to run it as a hosted service for teams that would rather not run it themselves: no engine API keys, server or backups of your own. It isn't open yet. To join the waitlist, email hello@analitikisler.com with the subject "ai visibility waitlist".
 
 ## Contributing
 
