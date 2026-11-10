@@ -13,8 +13,9 @@ VERSION=0.5.17
 WORK=$(mktemp -d)
 trap 'rm -rf "$WORK"' EXIT
 
-ARCH=$(uname -m); [ "$ARCH" = "arm64" ] || ARCH=x86_64
-curl -fsSL "https://github.com/benbjohnson/litestream/releases/download/v${VERSION}/litestream-${VERSION}-darwin-${ARCH}.tar.gz" | tar -xz -C "$WORK" litestream
+case "$(uname -s)" in Darwin) OS=darwin ;; Linux) OS=linux ;; *) echo "Unsupported OS: $(uname -s) (run this on macOS or Linux)." >&2; exit 1 ;; esac
+case "$(uname -m)" in arm64|aarch64) ARCH=arm64 ;; *) ARCH=x86_64 ;; esac
+curl -fsSL "https://github.com/benbjohnson/litestream/releases/download/v${VERSION}/litestream-${VERSION}-${OS}-${ARCH}.tar.gz" | tar -xz -C "$WORK" litestream
 
 # Consistent snapshot even while the local server is running.
 sqlite3 server/data/app.db "VACUUM INTO '$WORK/app.db'"

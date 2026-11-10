@@ -6,7 +6,7 @@
 // whole string, so version bumps (GPTBot/1.3 -> /1.4, Chrome/W.X.Y.Z) keep matching.
 // Operators without an officially documented UA (xAI/Grok, DeepSeek, Gemini Deep Research)
 // are intentionally absent: their circulating UA strings are unverified.
-import type { AgentCategory, AiAgent } from '../../../shared/types.ts';
+import type { AiAgent } from '../../../shared/types.ts';
 
 const OPENAI_DOCS = 'https://developers.openai.com/api/docs/bots';
 const ANTHROPIC_DOCS =
@@ -847,15 +847,6 @@ export const AI_AGENTS: AiAgent[] = [
     respectsRobots: false,
     description: 'Desktop SEO auditing crawler run by individual marketers; whether it obeys robots.txt is up to the person running it.',
   },
-];
-
-export const AGENT_CATEGORIES: { id: AgentCategory; name: string; description: string }[] = [
-  { id: 'training', name: 'Trainers', description: 'Collect web content to train AI models.' },
-  { id: 'search', name: 'AI Search', description: 'Build the indexes AI assistants search and cite when they answer.' },
-  { id: 'user_fetch', name: 'User fetchers', description: 'Open a page live because a person asked an AI assistant about it.' },
-  { id: 'agent', name: 'Agents', description: 'Autonomous AI agents that browse and act on websites for a user.' },
-  { id: 'search_engine', name: 'Search engines', description: 'Classic search crawlers whose indexes also feed AI answers.' },
-  { id: 'seo_tool', name: 'SEO tools', description: 'SEO and data tools crawling for backlinks, rankings and audits.' },
 ];
 
 const BY_ID = new Map(AI_AGENTS.map((a) => [a.id, a]));

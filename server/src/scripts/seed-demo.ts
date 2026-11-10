@@ -1,4 +1,4 @@
-// `npm run seed` (from server/): (re)creates the demo project with 30 days of simulated history.
+// `npm run seed` (from server/): (re)creates the demo project with 60 days of simulated history.
 import { get } from '../db/index.ts';
 import { seedDemo } from '../services/seed.ts';
 

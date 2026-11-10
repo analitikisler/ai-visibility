@@ -66,11 +66,6 @@ function stableId(prefix: string, parts: (string | number | null)[]): string {
 }
 
 /**
- * Classifies and stores hits in one transaction. Bot UAs win over referrers; hits that are neither
- * a known agent nor an AI referral are ignored. `dedupe` uses content-derived ids (for log uploads).
- * Bot hits are IP-verified from the in-memory range cache (verify.ts), so ingestion never waits on the network.
- */
-/**
  * Per project and UTC day, at most this many AI-crawler events and referral visits are stored, so a flood from someone
  * holding a site key can't grow the database without bound. Far above any real site's AI traffic.
  */
@@ -93,8 +88,11 @@ const countStored = (kind: keyof typeof DAILY_CAPS, projectId: string, day: stri
   dayCounts.set(`${kind}|${projectId}|${day}`, storedToday(kind, projectId, day) + 1);
 
 /**
- * Classifies and stores hits. `referralsOnly` (the public pixel beacon) never records crawler events: anyone can
- * read a site key from a page, so only token-authenticated sources may report bots.
+ * Classifies and stores hits in one transaction. Bot UAs win over referrers; hits that are neither a known agent nor
+ * an AI referral are ignored. `dedupe` uses content-derived ids (for log uploads). Bot hits are IP-verified from the
+ * in-memory range cache (verify.ts), so ingestion never waits on the network. `referralsOnly` (the public pixel
+ * beacon) never records crawler events: anyone can read a site key from a page, so only token-authenticated sources
+ * may report bots.
  */
 export function recordHits(projectId: string, hits: Hit[], source: EventSource, opts: { dedupe?: boolean; referralsOnly?: boolean } = {}): RecordResult {
   const out: RecordResult = { bots: 0, referrals: 0, ignored: 0, duplicates: 0, capped: 0 };

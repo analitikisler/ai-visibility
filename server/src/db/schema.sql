@@ -86,6 +86,8 @@ CREATE TABLE IF NOT EXISTS responses (
 );
 CREATE INDEX IF NOT EXISTS idx_responses_project_day ON responses(project_id, day);
 CREATE INDEX IF NOT EXISTS idx_responses_prompt ON responses(prompt_id, created_at);
+-- Per-run cost and counts (every run in a list, polled while a check runs) and the run_id foreign key on delete.
+CREATE INDEX IF NOT EXISTS idx_responses_run ON responses(run_id);
 
 -- Every tracked entity (brand or competitor) found in a response.
 CREATE TABLE IF NOT EXISTS mentions (

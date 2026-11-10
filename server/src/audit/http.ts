@@ -1,7 +1,7 @@
 // Outbound fetch for audits/sitemaps: SSRF-safe (lib/safe-fetch.ts), timeout, redirect following, body size cap, never throws.
 import { BlockedUrlError, safeFetch } from '../lib/safe-fetch.ts';
 
-export const AUDIT_UA = 'AIVisibilityAudit/0.1 (+https://localhost)';
+const AUDIT_UA = 'AIVisibilityAudit/0.1 (+https://analitikisler.com)';
 
 export interface FetchResult {
   ok: boolean;               // 2xx

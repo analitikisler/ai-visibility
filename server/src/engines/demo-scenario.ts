@@ -14,7 +14,7 @@ export interface DemoCompetitor {
   aliases: string[];
   /** Base inclusion probability per engine (0..1). */
   strength: EngineStrength;
-  /** Change in strength over the first ~30 days. */
+  /** Change in strength over the first eight weeks (see ramp() in sim-profile.ts). */
   drift: number;
   /** Review tone, -1..1. */
   tone: number;

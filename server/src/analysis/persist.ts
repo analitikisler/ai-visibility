@@ -73,7 +73,6 @@ export function reanalyzeProject(project: Project): void {
   const entities = trackedEntities(project);
   const rows = all<{ id: string; prompt_id: string; engine: string; text: string; day: string }>(
     'SELECT id, prompt_id, engine, text, day FROM responses WHERE project_id = ? AND error IS NULL', [project.id]);
-  const domains = all<{ domain: string }>('SELECT DISTINCT domain FROM citations WHERE project_id = ?', [project.id]);
   tx(() => {
     stmt('DELETE FROM mentions WHERE project_id = ?').run(project.id);
     for (const r of rows) {

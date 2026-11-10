@@ -25,7 +25,7 @@ Without API keys every engine runs in simulated mode, which is enough for almost
 - `npm run typecheck` and `npm run build` pass.
 - Every feature still works in simulated mode.
 - Match the style of the code around your change: small modules, named exports, short comments only where the logic isn't obvious.
-- User-facing text goes in `web/src/content/copy.ts`; [brand/COPY.md](brand/COPY.md) describes the voice.
+- User-facing text goes in `web/src/content/copy.ts`; [brand/COPY.md](brand/COPY.md) mirrors it for review, and [brand/ai/BRAND.md](brand/ai/BRAND.md) §11 describes the voice.
 - One change per pull request, with a short description of what it does and why.
 
 ## Contribution terms

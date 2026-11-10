@@ -59,7 +59,7 @@ export async function buildReport(project: Project, days: number): Promise<Repor
   // ---- headline
   let headline: string;
   if (!overview.totals.responses) {
-    headline = `No AI answers were collected for ${B} ${period} — run monitoring to start tracking visibility.`;
+    headline = `No AI answers were collected for ${B} ${period} — run a check to start tracking visibility.`;
   } else {
     const v = k.visibilityScore;
     const trend = v.delta === null ? `stands at ${round(v.value)}` : isFlat(v.delta) ? `held steady at ${round(v.value)}` : `${v.delta > 0 ? 'rose' : 'fell'} ${pts(v.delta)} to ${round(v.value)}`;

@@ -4,6 +4,7 @@ import { all, daysAgo, get } from '../db/index.ts';
 import { sourceDomainsFor } from '../data/sources.ts';
 import { ensureAudit } from '../audit/index.ts';
 import { AI_CATEGORIES } from '../crawlers/catalog.ts';
+import { ENGINES } from '../engines/catalog.ts';
 import type { AuditResult, Diagnosis, DriverId, DriverScore, EngineId, Project, PromptIntent, PromptTier } from '../../../shared/types.ts';
 
 export interface PromptRow { id: string; text: string; topic: string; tier: PromptTier; intent: PromptIntent }
@@ -24,7 +25,7 @@ export interface InsightData {
   domainWeight: (domain: string) => number; // 0..1 authority of a third-party domain
 }
 
-export const ENGINE_NAMES: Record<EngineId, string> = { chatgpt: 'ChatGPT', claude: 'Claude', gemini: 'Gemini', perplexity: 'Perplexity', grok: 'Grok', deepseek: 'DeepSeek' };
+export const ENGINE_NAMES = Object.fromEntries(ENGINES.map((e) => [e.id, e.name])) as Record<EngineId, string>;
 
 export const DRIVER_NAMES: Record<DriverId, string> = {
   content_coverage: 'Content coverage',
@@ -324,7 +325,7 @@ export function computeDiagnosis(project: Project, days = 30): DiagnosisContext 
       };
     }
     if (noData) {
-      return { ...base, explanation: `No AI answers were collected in the last ${days} days, so this driver can't be measured yet.`, evidence: ['Run monitoring on your prompts to collect answers'] };
+      return { ...base, explanation: `No AI answers were collected in the last ${days} days, so this driver can't be measured yet.`, evidence: ['Run a check on your prompts to collect answers'] };
     }
     const L = lead?.d;
     const Ln = lead?.name ?? '';

@@ -50,9 +50,9 @@ Without API keys every engine runs in **simulated** mode: deterministic, realist
 | ChatGPT | `OPENAI_API_KEY` | `gpt-5-mini` (Responses API + web search) |
 | Claude | `ANTHROPIC_API_KEY` | `claude-sonnet-5-5` (Messages API + web search) |
 | Gemini | `GEMINI_API_KEY` | `gemini-2.5-flash` (Google Search grounding) |
-| Perplexity | `PERPLEXITY_API_KEY` | `sonar` |
-| Grok | `XAI_API_KEY` | `grok-4` |
-| DeepSeek | `DEEPSEEK_API_KEY` | `deepseek-chat` |
+| Perplexity | `PERPLEXITY_API_KEY` | `perplexity/sonar` (Agent API + web search) |
+| Grok | `XAI_API_KEY` | `grok-4.3` (Responses API + web search) |
+| DeepSeek | `DEEPSEEK_API_KEY` | `deepseek-flash` (no web search) |
 
 Models are overridable per engine (`OPENAI_MODEL`, …) in settings or `.env`. After adding keys, run `npm run check:live` — one real prompt per keyed engine, showing model, latency, citations and detected mentions (keys are never printed; exits non-zero if an engine fails). With any live engine, onboarding suggestions and agent drafts also use an LLM; otherwise they use templates.
 

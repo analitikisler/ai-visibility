@@ -50,11 +50,6 @@ export function getProject(id: string): Project | null {
   return row ? toProject(row) : null;
 }
 
-export function getProjectBySiteKey(siteKey: string): Project | null {
-  const row = get<ProjectRow>('SELECT * FROM projects WHERE site_key = ?', [siteKey]);
-  return row ? toProject(row) : null;
-}
-
 export function listProjects(): Project[] {
   return all<ProjectRow>('SELECT * FROM projects ORDER BY is_demo, created_at DESC').map((r) => ({
     ...toProject(r),

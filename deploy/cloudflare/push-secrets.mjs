@@ -1,11 +1,10 @@
 // Copies engine API keys and R2 credentials from the repo-root .env into the Worker's secrets (`wrangler secret bulk`),
 // without printing them. Run from the repo root: node deploy/cloudflare/push-secrets.mjs
 import { execFileSync } from 'node:child_process';
-import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { parseEnv } from 'node:util';
-import { readFileSync } from 'node:fs';
 
 const KEYS = [
   'OPENAI_API_KEY', 'ANTHROPIC_API_KEY', 'GEMINI_API_KEY', 'PERPLEXITY_API_KEY', 'XAI_API_KEY', 'DEEPSEEK_API_KEY',

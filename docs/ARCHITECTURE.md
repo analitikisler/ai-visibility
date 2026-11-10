@@ -52,7 +52,7 @@ Every feature works end-to-end in **simulated mode** and switches to **live mode
 - `server/src/crawlers/seed.ts` → `seedCrawlerData(projectId, opts?: { days?: number; siteDomain?: string })` — called by the demo seed.
 - `server/src/data/ai-agents.ts` → `AI_AGENTS: AiAgent[]`, `matchAgent(userAgent) → AiAgent | null`. `server/src/data/ai-referrers.ts` → `AI_REFERRERS: AiReferrer[]`, `matchReferrer(referrer, url?) → AiReferrer | null`.
 - `server/src/data/sources.ts` → `sourceDomainsFor(industry) → { domain, title, weight }[]` (plausible 3rd-party domains cited by AI for an industry: review sites, publications, forums), used by the simulator.
-- `server/src/services/projects.ts` → `getProject(id)`, `getProjectBySiteKey(key)`, `listProjects()`, `listCompetitors(projectId)`.
+- `server/src/services/projects.ts` → `getProject(id)`, `listProjects()`, `listCompetitors(projectId)`.
 - `server/src/services/monitor.ts` → `getOverview(projectId, {days, engine?, tier?})`, `getPromptStats(...)`, `getSources(...)` — also used by diagnose and the report.
 - `server/src/data/prompt-templates.ts` → `promptTemplatesFor({ brand, industry, description?, competitors, market? }) → PromptInput[]` (20–30 realistic buyer prompts with topic/tier/intent), used for heuristic suggestions and the demo seed.
 - `server/src/data/sentiment.ts` → `scoreSentiment(text) → number` (−1..1, lexicon-based with negation handling, tuned for product-review language).
@@ -70,15 +70,15 @@ Common aggregate query params: `days` (default 30), `engine` (optional EngineId)
 - `GET /projects/:id/prompts` → Prompt[] · `POST /projects/:id/prompts` (PromptInput | PromptInput[]) → Prompt[] · `PUT|DELETE /prompts/:pid`
 - `POST /projects/:id/runs` ({engines?, promptIds?, mode?: 'realtime'|'batch', force?: boolean}) → Run (async; poll). `mode: 'batch'` submits provider batch APIs (~50% cheaper, results within hours); `force` skips same-day reuse · `GET /projects/:id/runs` → Run[] · `GET /runs/:rid` → Run
 - `GET /projects/:id/overview` → Overview · `GET /projects/:id/prompt-stats` → PromptStat[] · `GET /projects/:id/sources` → SourcesView
-- `GET /projects/:id/responses?promptId&engine&runId&limit&offset&mentioned=0|1` → Paged<AiResponse> · `GET /responses/:rid` → AiResponse
-- `POST /demo/seed` → Project (creates a demo project with ~30 days history, competitors, ~24 prompts, and calls seedCrawlerData)
+- `GET /projects/:id/responses?promptId&engine&runId&mentioned=0|1&failed=0|1&days&tier&q&citedDomain&limit&offset` → Paged<AiResponse> · `GET /responses/:rid` → AiResponse
+- `POST /demo/seed` → Project (creates a demo project with 60 days of history, five competitors, ~24 prompts, and calls seedCrawlerData)
 
 **Insights, crawlers and reports**
 - `GET /projects/:id/diagnose` → Diagnosis
 - `GET /projects/:id/recommendations` → Recommendation[] · `PUT /projects/:id/recommendations/:key` ({status}) → Recommendation
 - `GET /projects/:id/drafts` → Draft[] · `POST /projects/:id/drafts` (DraftRequest) → Draft · `PUT|DELETE /drafts/:did`
 - `POST /projects/:id/audit` ({url?}) → AuditResult · `GET /projects/:id/audits/latest` → AuditResult | null · `GET /projects/:id/audits` → AuditResult[]
-- `GET /projects/:id/crawlers/overview` → CrawlerOverview · `GET /projects/:id/crawlers/events?limit&offset&agent&category&operator` → Paged<BotEvent>
+- `GET /projects/:id/crawlers/overview` → CrawlerOverview · `GET /projects/:id/crawlers/events?limit&offset&agent&category&operator&path&days&verification` → Paged<BotEvent>
 - `GET /projects/:id/referrals/overview` → ReferralOverview
 - `POST /projects/:id/logs` (text/plain body or {log}) → { parsed, botEvents, referralEvents, skipped }
 - `GET /projects/:id/integration` → IntegrationInfo · `POST /projects/:id/integration/token` (rotate the ingest token) · `GET /agents` → AiAgent[] (catalog)

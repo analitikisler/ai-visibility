@@ -145,12 +145,6 @@ export const AI_REFERRERS: AiReferrer[] = [
   },
 ];
 
-const BY_ID = new Map(AI_REFERRERS.map((r) => [r.id, r]));
-
-export function referrerById(id: string): AiReferrer | undefined {
-  return BY_ID.get(id);
-}
-
 interface HostRule {
   host: string;
   path: string; // '' or a prefix like '/chat'
