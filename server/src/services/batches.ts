@@ -1,11 +1,11 @@
 // Provider batches for 'batch' runs: one batch per (run, engine) on providers with a batch API that supports web
 // search. Submissions and their prompt mapping are persisted (batch_jobs), so a restart never loses paid work;
 // a poller collects results when the provider finishes (usually within an hour, at most 24 h).
-import { all, get, id, insert, nowIso, parseJson, run } from '../db/index.ts';
+import { all, dayOf, get, id, insert, nowIso, parseJson, run, tx } from '../db/index.ts';
 import type { EngineId, Project, Prompt } from '../../../shared/types.ts';
-import { saveResponse } from '../analysis/persist.ts';
+import { persistResponse, saveResponse } from '../analysis/persist.ts';
 import { engineKey, engineModel } from '../engines/catalog.ts';
-import { ask, liveAnswer, redactSecrets } from '../engines/index.ts';
+import { ask, liveAnswer, redactSecrets, type EngineAnswer } from '../engines/index.ts';
 import { typicalCostUsd } from '../engines/pricing.ts';
 import { PROVIDERS } from '../engines/providers.ts';
 import { assertBudget, BudgetError, reserve } from './cost.ts';
@@ -75,47 +75,67 @@ export async function submitBatch(
 
 const inFlight = new Set<string>();
 
-/** Checks one submitted batch; when the provider is done, stores every answer and updates the run. */
+/**
+ * Checks one submitted batch; when the provider is done, stores every answer and updates the run.
+ * Answers are stored, counted on the run and the batch closed in one transaction, so a failure part-way leaves the
+ * batch submitted with nothing stored and the next poll starts clean (no duplicate answers).
+ */
 async function collect(b: BatchRow): Promise<void> {
   if (inFlight.has(b.id)) return;
   inFlight.add(b.id);
   const apiKey = engineKey(b.engine);
   const items = parseJson<Record<string, string>>(b.items_json, {});
   const estimate = Object.keys(items).length * typicalCostUsd(b.engine, b.model, { batch: true });
-  const close = (status: 'ended' | 'failed', error: string | null) => {
-    run('UPDATE batch_jobs SET status = ?, error = ?, ended_at = ? WHERE id = ?', [status, error, nowIso(), b.id]);
-    reserve(-estimate);
-  };
+  const failed = (error: string): EngineAnswer => ({ text: '', citations: [], model: b.model, mode: 'live', latencyMs: null, error });
   try {
     const project = getProject(b.project_id);
+    // Deleting a project deletes its runs and batches, so there is nothing left to update.
+    if (!project) return reserve(-estimate);
+    const day = get<{ day: string }>('SELECT day FROM runs WHERE id = ?', [b.run_id])?.day ?? dayOf();
+    const settle = (status: 'ended' | 'failed', error: string | null, answers: Map<string, EngineAnswer>) => {
+      const prompts = new Set(all<{ id: string }>('SELECT id FROM prompts WHERE project_id = ?', [project.id]).map((p) => p.id));
+      tx(() => {
+        for (const [promptId, answer] of answers) {
+          // A prompt deleted while the batch was out has nothing to attach its answer to; its job still counts.
+          const known = prompts.has(promptId);
+          if (known) persistResponse({ runId: b.run_id, project, promptId, engine: b.engine, answer, day, createdAt: nowIso() });
+          const jobError = known ? answer.error : 'Prompt was deleted before its answer arrived';
+          bumpRun(b.run_id, !jobError);
+          if (jobError) noteRunError(b.run_id, `${b.engine}: ${jobError}`);
+        }
+        run('UPDATE batch_jobs SET status = ?, error = ?, ended_at = ? WHERE id = ?', [status, error, nowIso(), b.id]);
+      });
+      reserve(-estimate);
+      maybeFinishRun(b.run_id);
+    };
+
     const adapter = PROVIDERS[b.engine].batch;
-    if (!project || !adapter || !apiKey) return close('failed', 'Project, engine key or batch API no longer available');
+    if (!adapter || !apiKey) {
+      // The key was removed while the batch was out: fail its jobs so the run finishes instead of waiting forever.
+      const reason = 'Engine key or batch API no longer available';
+      return settle('failed', reason, new Map(Object.values(items).map((promptId) => [promptId, failed(reason)])));
+    }
     const ctx = { apiKey, model: b.model, market: project.market };
     run('UPDATE batch_jobs SET checked_at = ? WHERE id = ?', [nowIso(), b.id]);
     const state = await adapter.check(b.provider_batch_id, ctx);
     const tooOld = Date.now() - Date.parse(b.submitted_at) > GIVE_UP_MS;
     if (state.state === 'pending' && !tooOld) return;
-    const day = all<{ day: string }>('SELECT day FROM runs WHERE id = ?', [b.run_id])[0]?.day ?? nowIso().slice(0, 10);
     const results = state.state === 'ended' ? await adapter.results(b.provider_batch_id, ctx) : new Map();
     const reason = state.state === 'failed' ? state.error : tooOld ? 'Batch did not finish within 24 hours' : 'No result returned for this prompt';
+    const answers = new Map<string, EngineAnswer>();
     for (const [customId, promptId] of Object.entries(items)) {
       const r = results.get(customId);
-      let answer = r && !('error' in r)
-        ? liveAnswer(b.engine, r, null, true)
-        : { text: '', citations: [], model: b.model, mode: 'live' as const, latencyMs: null, error: redactSecrets(r?.error ?? reason, [apiKey]) };
+      let answer = r && !('error' in r) ? liveAnswer(b.engine, r, null, true) : failed(redactSecrets(r?.error ?? reason, [apiKey]));
       // Providers occasionally finish a grounded answer with no text (seen on Gemini): ask once more in real time.
       if (answer.error === 'Empty answer') {
         const prompt = get<{ id: string; text: string; topic: string; tier: Prompt['tier']; intent: Prompt['intent'] }>(
           'SELECT id, text, topic, tier, intent FROM prompts WHERE id = ?', [promptId]);
         if (prompt) answer = await ask(b.engine, prompt.text, { project, prompt, day, economy: true });
       }
-      saveResponse({ runId: b.run_id, project, promptId, engine: b.engine, answer, day, createdAt: nowIso() });
-      bumpRun(b.run_id, !answer.error);
-      if (answer.error) noteRunError(b.run_id, `${b.engine}: ${answer.error}`);
+      answers.set(promptId, answer);
     }
-    close(state.state === 'failed' ? 'failed' : 'ended', state.state === 'failed' ? state.error : null);
+    settle(state.state === 'failed' ? 'failed' : 'ended', state.state === 'failed' ? state.error : null, answers);
     console.log(`[batches] ${b.engine}: collected ${results.size} of ${Object.keys(items).length} answers from ${b.provider_batch_id}`);
-    maybeFinishRun(b.run_id);
   } catch (err) {
     // Transient (network, 5xx): leave it submitted and try again on the next poll.
     console.warn(`[batches] ${b.engine}: check failed for ${b.provider_batch_id} — ${redactSecrets(String((err as Error)?.message ?? err), [apiKey])}`);
