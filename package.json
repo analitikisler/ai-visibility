@@ -17,12 +17,14 @@
     "start": "npm run start -w server",
     "seed": "npm run seed -w server",
     "typecheck": "npm run typecheck -w server && npm run typecheck -w web",
+    "test": "npm test -w server",
     "check:live": "npm run check:live -w server --"
   },
   "devDependencies": {
     "@cloudflare/containers": "^0.3.7",
     "concurrently": "^9.2.5",
     "jose": "^6.2.13",
+    "typescript": "^7.0.2",
     "wrangler": "^4.152.0"
   }
 }

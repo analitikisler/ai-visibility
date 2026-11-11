@@ -100,7 +100,7 @@ Common aggregate query params: `days` (default 30), `engine` (optional EngineId)
 - Trends are daily; days with no data → `null` (charts show gaps), never fabricated.
 
 ## Quality bar
-- `npm run typecheck` passes (server: `cd server && npx tsc --noEmit`).
+- `npm run typecheck` passes (server: `cd server && npx tsc --noEmit`), and so does `npm test` (`server/test/`).
 - No unhandled promise rejections; external fetches have timeouts (8–20s) and never crash the server.
 - Endpoints validate input with zod and return `{error}` with 400 on bad input.
 - Keep code readable: small modules, named exports, short doc comments on non-obvious logic. No dead code or TODO stubs.

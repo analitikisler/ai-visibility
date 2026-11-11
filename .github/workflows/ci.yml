@@ -1,4 +1,4 @@
-# Checks every push and pull request (typecheck, build, a smoke test on simulated engines), then publishes the
+# Checks every push and pull request (typecheck, tests, build, a smoke test on simulated engines), then publishes the
 # container image for amd64 and arm64 to ghcr.io/analitikisler/ai-visibility from main and from version tags (v*).
 name: CI
 
@@ -32,6 +32,7 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run typecheck
+      - run: npm test
       - run: npx tsc -p deploy/cloudflare/tsconfig.json
       - run: npm run build
       - name: Smoke test (no API keys, so every engine is simulated)
