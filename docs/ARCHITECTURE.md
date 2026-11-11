@@ -31,6 +31,7 @@ Every feature works end-to-end in **simulated mode** and switches to **live mode
 - Read keys only via `secret(key)` from `server/src/db/index.ts` (DB setting wins over env). The product's own calls read no other ambient env, such as `ANTHROPIC_BASE_URL`.
 - Simulated engine = deterministic (seeded by prompt+engine+day) realistic answers that mention the brand/competitors with engine-specific bias and plausible citations, so the demo dashboards look believable: trends, variance between engines, some prompts lost to competitors.
 - Every response row stores `mode` ('live'|'simulated'); UI shows a "Simulated" badge.
+- Market and language: `project.market` is free text; `countryOf()` (`engines/shared.ts`) resolves a code or country name to an ISO code. Every live engine gets one neutral sentence naming the market (`marketInstruction()`), and OpenAI and Anthropic also get it as the web search's `user_location`. A United States market adds nothing, so default projects are unchanged. Engines answer in the language of the prompt; `project.language` sets the language of LLM-written setup suggestions and drafts. The simulator ignores both.
 
 ## Code map
 | Path | What lives there |

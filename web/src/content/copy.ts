@@ -433,11 +433,11 @@ export const copy = {
         market: {
           label: 'Market',
           placeholder: 'United States',
-          help: 'Where your buyers are. Prompts and answers are scoped to this market.',
+          help: 'Where your buyers are: a country name or code, like Germany or DE. Every engine is told the question comes from there.',
         },
         language: {
           label: 'Language',
-          help: 'The language prompts are asked and answers are read in.',
+          help: 'The language your prompts are written in. Suggested prompts and drafts are written in it too.',
         },
         competitorName: { label: 'Competitor name', placeholder: 'Globex' },
         competitorDomain: { label: 'Website', placeholder: 'globex.com' },
@@ -518,7 +518,7 @@ export const copy = {
         duplicate: 'You’ve already added this.',
       },
       stepper: { label: 'Setup steps', done: 'Done', current: 'Current step' },
-      languages: { en: 'English', de: 'German', fr: 'French', es: 'Spanish', pt: 'Portuguese', it: 'Italian', nl: 'Dutch', ja: 'Japanese' },
+      languages: { en: 'English', tr: 'Turkish', de: 'German', fr: 'French', es: 'Spanish', pt: 'Portuguese', it: 'Italian', nl: 'Dutch', ja: 'Japanese' },
       editor: {
         competitorNameRequired: 'Add a name, or remove this row.',
         removePrompt: 'Remove prompt',

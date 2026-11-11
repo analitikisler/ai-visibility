@@ -551,9 +551,9 @@ Each page: title, the question it answers, its empty state, then every other str
 | `fields.industry.help` | Points to the review sites and publications AI is likely to cite for you. |
 | `fields.market.label` | Market |
 | `fields.market.placeholder` | United States |
-| `fields.market.help` | Where your buyers are. Prompts and answers are scoped to this market. |
+| `fields.market.help` | Where your buyers are: a country name or code, like Germany or DE. Every engine is told the question comes from there. |
 | `fields.language.label` | Language |
-| `fields.language.help` | The language prompts are asked and answers are read in. |
+| `fields.language.help` | The language your prompts are written in. Suggested prompts and drafts are written in it too. |
 | `fields.competitorName.label` | Competitor name |
 | `fields.competitorName.placeholder` | Globex |
 | `fields.competitorDomain.label` | Website |

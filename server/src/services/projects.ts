@@ -9,6 +9,7 @@ import type {
 import { normalizeDomain } from '../analysis/citations.ts';
 import { reanalyzeProject } from '../analysis/persist.ts';
 import { promptTemplatesFor } from '../data/prompt-templates.ts';
+import { countryOf, languageName } from '../engines/shared.ts';
 import { hasLlm, llmComplete } from '../lib/llm.ts';
 import { safeFetch } from '../lib/safe-fetch.ts';
 
@@ -291,7 +292,10 @@ const LlmSuggestion = z.object({
   })).default([]),
 });
 
-async function suggestWithLlm(name: string, domain: string, description?: string): Promise<ProjectSuggestion | null> {
+async function suggestWithLlm(name: string, domain: string, description?: string, locale: { market?: string; language?: string } = {}): Promise<ProjectSuggestion | null> {
+  const lang = languageName(locale.language);
+  const code = countryOf(locale.market);
+  const place = code && code !== 'US' ? new Intl.DisplayNames(['en'], { type: 'region' }).of(code) : undefined;
   const res = await llmComplete({
     purpose: 'suggest',
     system: 'You are a B2B market analyst setting up AI-search visibility tracking for a company. Reply with a single JSON object and nothing else.',
@@ -303,6 +307,8 @@ async function suggestWithLlm(name: string, domain: string, description?: string
       '"prompts" (20 realistic questions buyers ask AI assistants when researching this category, as {"text","topic","tier","intent"};',
       'tier is "must_win" | "core" | "foundational"; intent is "discovery" | "comparison" | "alternatives" | "how_to" | "branded";',
       'mostly unbranded, include 3 comparisons naming competitors and 2 branded questions).',
+      lang && lang !== 'English' ? `Write "description", "topic" and every prompt "text" in ${lang}, the way buyers would type them.` : '',
+      place ? `The buyers are in ${place}: suggest competitors that sell there and questions they would ask.` : '',
     ].filter(Boolean).join('\n'),
     json: true,
     maxTokens: 3000,
@@ -319,10 +325,10 @@ async function suggestWithLlm(name: string, domain: string, description?: string
 }
 
 /** Setup suggestions for a new project: LLM when an engine is live, else homepage metadata + prompt templates. */
-export async function suggestProject(input: { name: string; domain: string; description?: string }): Promise<ProjectSuggestion> {
+export async function suggestProject(input: { name: string; domain: string; description?: string; market?: string; language?: string }): Promise<ProjectSuggestion> {
   const domain = normalizeDomain(input.domain);
   if (hasLlm()) {
-    const s = await suggestWithLlm(input.name, domain, input.description);
+    const s = await suggestWithLlm(input.name, domain, input.description, { market: input.market, language: input.language });
     if (s) return s;
   }
   const page = await fetchHomepage(domain);

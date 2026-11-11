@@ -4,7 +4,7 @@
 import type { EngineId } from '../../../shared/types.ts';
 import { anthropicProvider } from './anthropic.ts';
 import { EngineHttpError, getJson, postJson } from './http.ts';
-import { SEARCH_INSTRUCTION, countryOf, n } from './shared.ts';
+import { SEARCH_INSTRUCTION, countryOf, instructions, marketInstruction, n } from './shared.ts';
 import { NO_USAGE, type BatchAdapter, type EngineCitation, type EngineUsage, type LiveProvider, type SearchResult } from './types.ts';
 
 // ---------------------------------------------------------------- Responses-style output (OpenAI, xAI, Perplexity)
@@ -59,7 +59,7 @@ const openai: LiveProvider = {
     const country = countryOf(market);
     const body = {
       model,
-      instructions: SEARCH_INSTRUCTION,
+      instructions: instructions(SEARCH_INSTRUCTION, marketInstruction(market)),
       input: promptText,
       tools: [{ type: 'web_search', ...(country ? { user_location: { type: 'approximate', country } } : {}) }],
       // Each search is $10/1k plus its content tokens; two are plenty for a recommendation answer.
@@ -109,9 +109,9 @@ interface XaiUsage extends ResponsesUsage {
 const ticksToUsd = (ticks: number | undefined) => (typeof ticks === 'number' && ticks >= 0 ? ticks / 1e10 : undefined);
 
 const xai: LiveProvider = {
-  async search(promptText, { apiKey, model }) {
+  async search(promptText, { apiKey, model, market }) {
     const res = await postJson<ResponsesBody & { usage?: XaiUsage }>('https://api.x.ai/v1/responses', {
-      model, instructions: SEARCH_INSTRUCTION, input: promptText, tools: [{ type: 'web_search' }], reasoning: { effort: 'low' },
+      model, instructions: instructions(SEARCH_INSTRUCTION, marketInstruction(market)), input: promptText, tools: [{ type: 'web_search' }], reasoning: { effort: 'low' },
     }, { authorization: `Bearer ${apiKey}` }, 1, 120_000);
     const parsed = parseResponses(res);
     const searches = res.usage?.server_side_tool_usage_details?.web_search_calls ?? parsed.searchCalls;
@@ -139,9 +139,10 @@ interface PplxUsage extends ResponsesUsage {
 }
 
 const perplexity: LiveProvider = {
-  async search(promptText, { apiKey, model }) {
+  async search(promptText, { apiKey, model, market }) {
+    const where = marketInstruction(market);
     const res = await postJson<ResponsesBody & { usage?: PplxUsage }>('https://api.perplexity.ai/v1/agent', {
-      model, input: promptText,
+      model, ...(where ? { instructions: where } : {}), input: promptText,
       // 'fast' search is $1/1k instead of $2.50/1k; five results are enough to rank vendors.
       tools: [{ type: 'web_search', search_type: 'fast', max_results: 5 }],
     }, { authorization: `Bearer ${apiKey}` });
@@ -205,10 +206,14 @@ async function resolveGrounding(uri: string, title: string): Promise<EngineCitat
   }
 }
 
-const geminiRequest = (promptText: string) => ({
-  contents: [{ role: 'user', parts: [{ text: promptText }] }],
-  tools: [{ google_search: {} }],
-});
+const geminiRequest = (promptText: string, market?: string) => {
+  const where = marketInstruction(market);
+  return {
+    ...(where ? { systemInstruction: { parts: [{ text: where }] } } : {}),
+    contents: [{ role: 'user', parts: [{ text: promptText }] }],
+    tools: [{ google_search: {} }],
+  };
+};
 
 async function geminiResult(res: GeminiResponse, model: string): Promise<SearchResult> {
   const cand = res.candidates?.[0];
@@ -236,11 +241,11 @@ const inlined = (b: GeminiBatch): GeminiInline[] => {
 
 /** Gemini batch mode: 50% off tokens; Google Search grounding works inside batch requests. */
 const geminiBatch: BatchAdapter = {
-  async submit(items, { apiKey, model }) {
+  async submit(items, { apiKey, model, market }) {
     const res = await postJson<GeminiBatch>(`${GEMINI}/models/${encodeURIComponent(model)}:batchGenerateContent`, {
       batch: {
         display_name: `ai-visibility-${Date.now()}`,
-        input_config: { requests: { requests: items.map((i) => ({ request: geminiRequest(i.promptText), metadata: { key: i.customId } })) } },
+        input_config: { requests: { requests: items.map((i) => ({ request: geminiRequest(i.promptText, market), metadata: { key: i.customId } })) } },
       },
     }, { 'x-goog-api-key': apiKey });
     if (!res.name) throw new Error('Gemini did not return a batch name');
@@ -271,8 +276,8 @@ const geminiBatch: BatchAdapter = {
 };
 
 const gemini: LiveProvider = {
-  async search(promptText, { apiKey, model }) {
-    const res = await postJson<GeminiResponse>(`${GEMINI}/models/${encodeURIComponent(model)}:generateContent`, geminiRequest(promptText), { 'x-goog-api-key': apiKey });
+  async search(promptText, { apiKey, model, market }) {
+    const res = await postJson<GeminiResponse>(`${GEMINI}/models/${encodeURIComponent(model)}:generateContent`, geminiRequest(promptText, market), { 'x-goog-api-key': apiKey });
     return geminiResult(res, model);
   },
   async complete(req, { apiKey, model }) {
@@ -300,10 +305,11 @@ const deepseekUsage = (u: DeepSeekResponse['usage']): EngineUsage =>
   u ? { inputTokens: n(u.prompt_tokens), outputTokens: n(u.completion_tokens), cachedTokens: n(u.prompt_cache_hit_tokens), searchCalls: 0 } : NO_USAGE;
 
 const deepseek: LiveProvider = {
-  async search(promptText, { apiKey, model }) {
+  async search(promptText, { apiKey, model, market }) {
     // The API has no web-search tool, so answers come from the model's own knowledge. Thinking off keeps it cheap.
+    const where = marketInstruction(market);
     const res = await postJson<DeepSeekResponse>('https://api.deepseek.com/chat/completions', {
-      model, messages: [{ role: 'user', content: promptText }], thinking: { type: 'disabled' },
+      model, messages: [...(where ? [{ role: 'system', content: where }] : []), { role: 'user', content: promptText }], thinking: { type: 'disabled' },
     }, { authorization: `Bearer ${apiKey}` });
     return { text: res.choices?.[0]?.message?.content ?? '', citations: [], model: res.model ?? model, usage: deepseekUsage(res.usage) };
   },

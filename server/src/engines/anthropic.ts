@@ -3,7 +3,7 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { EngineHttpError, describeHttpError } from './http.ts';
 import { NO_USAGE, addUsage, type BatchAdapter, type EngineCitation, type EngineUsage, type LiveProvider, type ProviderCtx, type SearchResult } from './types.ts';
-import { SEARCH_INSTRUCTION, countryOf } from './shared.ts';
+import { SEARCH_INSTRUCTION, countryOf, instructions, marketInstruction } from './shared.ts';
 
 /** Answers to buying questions are a few hundred words; adaptive thinking at low effort needs a little headroom. */
 const ANSWER_MAX_TOKENS = 3000;
@@ -56,7 +56,7 @@ function searchParams(promptText: string, model: string, market: string | undefi
   return {
     model,
     max_tokens: ANSWER_MAX_TOKENS,
-    system: SEARCH_INSTRUCTION,
+    system: instructions(SEARCH_INSTRUCTION, marketInstruction(market)),
     messages,
     tools: [searchTool(model, market)],
     ...effort(model),

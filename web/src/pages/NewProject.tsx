@@ -240,7 +240,7 @@ export default function NewProjectPage() {
     setSuggestedFor(key);
     setSuggestError(null);
     suggest.mutate(
-      { name: name.trim(), domain: normalizeDomain(domain), description: description.trim() || undefined },
+      { name: name.trim(), domain: normalizeDomain(domain), description: description.trim() || undefined, market: market.trim() || undefined, language },
       {
         onSuccess: (s) => applySuggestion(s),
         onError: (e) => {

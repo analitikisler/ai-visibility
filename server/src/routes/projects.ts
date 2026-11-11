@@ -82,7 +82,10 @@ const ProjectSchema = z.object({
   prompts: z.array(PromptSchema).max(200).optional(),
 });
 const ProjectPatchSchema = z.object(ProjectFields).partial();
-const SuggestSchema = z.object({ name, domain, description: z.string().max(2000).optional() });
+const SuggestSchema = z.object({
+  name, domain, description: z.string().max(2000).optional(),
+  market: z.string().trim().max(40).optional(), language: z.string().trim().max(10).optional(),
+});
 
 function projectOr404(id: string) {
   const p = getProject(id);

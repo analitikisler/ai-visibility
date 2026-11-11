@@ -210,7 +210,7 @@ export const api = {
   createProject: (body: ProjectInput) => http.post<Project>('/projects', body),
   updateProject: (id: string, body: Partial<ProjectInput>) => http.put<Project>(`/projects/${id}`, body),
   deleteProject: (id: string) => http.del(`/projects/${id}`),
-  suggestProject: (body: { name: string; domain: string; description?: string }) => http.post<ProjectSuggestion>('/projects/suggest', body, undefined, SLOW_TIMEOUT_MS),
+  suggestProject: (body: { name: string; domain: string; description?: string; market?: string; language?: string }) => http.post<ProjectSuggestion>('/projects/suggest', body, undefined, SLOW_TIMEOUT_MS),
   seedDemo: () => http.post<Project>('/demo/seed'),
 
   // competitors

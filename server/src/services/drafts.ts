@@ -7,6 +7,7 @@ import { importantPages, isPagePath } from '../crawlers/overview.ts';
 import { ensureAudit } from '../audit/index.ts';
 import { parseRobots } from '../audit/robots.ts';
 import { sourceDomainsFor } from '../data/sources.ts';
+import { languageName } from '../engines/shared.ts';
 import type { AuditResult, Competitor, Draft, DraftKind, DraftRequest, Project } from '../../../shared/types.ts';
 import { computeDiagnosis, ENGINE_NAMES, entityStats, negativeThemes, pct, type DiagnosisContext, type MentionRow, type PromptRow } from './diagnose.ts';
 import { markRecommendationInProgress } from './recommendations.ts';
@@ -630,10 +631,14 @@ async function withLlm(kind: DraftKind, ctx: Ctx, built: Built): Promise<{ body:
     topSources: topSources(ctx, undefined, 8),
     pages: ctx.pagesKnown ? ctx.pages.slice(0, 40) : [],
   };
+  // The starting draft is an English template; the asset is written in the project's language (file formats such as
+  // robots.txt and JSON-LD keys stay as they are).
+  const lang = languageName(ctx.project.language);
+  const writeIn = lang && lang !== 'English' ? ` Write the asset's prose in ${lang}; keep file syntax, keys, URLs and brand names unchanged.` : '';
   // Stable per-project context goes in the system prompt so repeat drafts can hit the provider's prompt cache;
   // the draft-specific task, details and starting draft follow in the user message.
   const res = await llmComplete({
-    system: `You are a Generative Engine Optimization (GEO) specialist producing publish-ready assets for ${ctx.B}. Never invent facts (prices, customers, numbers, URLs); where a fact is unknown keep a clearly marked [placeholder]. Output only the asset.\n\nProject facts (JSON):\n${JSON.stringify(facts, null, 2)}`,
+    system: `You are a Generative Engine Optimization (GEO) specialist producing publish-ready assets for ${ctx.B}. Never invent facts (prices, customers, numbers, URLs); where a fact is unknown keep a clearly marked [placeholder]. Output only the asset.${writeIn}\n\nProject facts (JSON):\n${JSON.stringify(facts, null, 2)}`,
     prompt: `Task: ${TASKS[kind]}\n\nDraft details (JSON):\n${JSON.stringify(built.meta, null, 2)}\n\nStarting draft — improve it and keep its structure:\n${built.body}`,
     maxTokens: 3000,
     json: kind === 'schema_jsonld',
