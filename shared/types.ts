@@ -316,6 +316,8 @@ export interface Overview {
   sentimentBreakdown: { positive: number; neutral: number; negative: number }; // brand mention counts
   tiers: { tier: PromptTier; prompts: number; visibility: number }[];
   lastRun: Run | null;
+  /** What changed in the project during the period, oldest first (markers on the trend chart). */
+  events: ProjectEvent[];
   totals: { responses: number; prompts: number; runs: number };
 }
 
@@ -382,6 +384,21 @@ export type RecCategory = 'content' | 'technical' | 'sources' | 'reputation' | '
 export type RecStatus = 'open' | 'in_progress' | 'done' | 'dismissed';
 export type DraftKind = 'llms_txt' | 'comparison_page' | 'faq_page' | 'content_brief' | 'robots_txt' | 'schema_jsonld' | 'outreach_email';
 
+/** What a recommendation marked done was followed by: brand visibility before and since, on its prompts. */
+export interface RecommendationOutcome {
+  /** When it was marked done (ISO). */
+  doneAt: string;
+  /** 'prompts' = measured on the recommendation's related prompts; 'all' = every prompt (it has none of its own). */
+  scope: 'prompts' | 'all';
+  /** Brand visibility (0..1) over the 14 days before `doneAt`'s day, and from that day on; null without answers. */
+  before: number | null;
+  after: number | null;
+  answersBefore: number;
+  answersAfter: number;
+  /** True when there are too few answers since, or the change is inside the margin of error. */
+  inconclusive: boolean;
+}
+
 export interface Recommendation {
   key: string;                   // stable key (used for status)
   title: string;
@@ -395,6 +412,20 @@ export interface Recommendation {
   evidence: string[];
   relatedPromptIds: string[];
   draft?: { kind: DraftKind; params: Record<string, string> }; // "Generate with agent" button
+  /** Only on recommendations marked done. */
+  outcome?: RecommendationOutcome;
+}
+
+export type ProjectEventKind =
+  | 'draft_published' | 'recommendation_done' | 'audit' | 'competitor_added' | 'competitor_removed' | 'prompts_changed' | 'tracking_changed';
+
+/** Something that changed in a project, shown as a marker on trend charts. */
+export interface ProjectEvent {
+  id: string;
+  ts: string;
+  day: string;        // 'YYYY-MM-DD' (UTC)
+  kind: ProjectEventKind;
+  title: string;
 }
 
 export interface Draft {

@@ -2,6 +2,7 @@
 import { all, id, insert, nowIso, parseJson } from '../db/index.ts';
 import { agentCatalog } from '../crawlers/catalog.ts';
 import { assertPublicUrl, BlockedUrlError } from '../lib/safe-fetch.ts';
+import { recordEvent } from '../services/events.ts';
 import type { AuditResult, Project } from '../../../shared/types.ts';
 import { buildChecks, scoreCap, scoreChecks, type AuditFacts } from './checks.ts';
 import { fetchText, looksLikeHtml } from './http.ts';
@@ -196,13 +197,21 @@ function save(result: AuditResult): AuditResult {
  */
 export async function runAudit(project: Project, rawUrl?: string): Promise<AuditResult> {
   const target = normalizeAuditUrl(rawUrl || project.domain);
-  if (project.isDemo && (!rawUrl || (target && isOwnSite(project, target)))) return save(demoAudit(project));
+  const previous = latestOwnAudit(project);
+  /** A first audit of the project's own site, or a changed score, is something to read the trend against. */
+  const noted = (a: AuditResult): AuditResult => {
+    if (isOwnSite(project, a.url) && previous?.score !== a.score) {
+      recordEvent(project.id, 'audit', previous ? `AI readiness ${previous.score} → ${a.score}` : `First AI readiness audit: ${a.score}/100`);
+    }
+    return a;
+  };
+  if (project.isDemo && (!rawUrl || (target && isOwnSite(project, target)))) return noted(save(demoAudit(project)));
   if (!target) throw Object.assign(new Error(`Invalid URL: ${rawUrl || project.domain}`), { status: 400 });
   // Refuse private/internal targets up front (redirects and DNS changes are re-checked on every fetch).
   await assertPublicUrl(target).catch((err: unknown) => {
     throw err instanceof BlockedUrlError ? Object.assign(new Error(`Can't audit this URL: ${err.message}`), { status: 400 }) : err;
   });
-  return save(await auditUrl(project.id, target, !!rawUrl && /^https?:\/\//i.test(rawUrl.trim())));
+  return noted(save(await auditUrl(project.id, target, !!rawUrl && /^https?:\/\//i.test(rawUrl.trim()))));
 }
 
 export function listAudits(projectId: string, limit = 20): AuditResult[] {

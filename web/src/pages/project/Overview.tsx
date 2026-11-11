@@ -5,7 +5,7 @@ import { Link } from 'react-router';
 import { ArrowRight, Minus, Play, ThumbsDown, ThumbsUp } from 'lucide-react';
 import type { EngineStat, EntityStat, Overview, SentimentLabel, SourceType } from '@shared/types';
 import { EmptyNoData } from '@/components/art';
-import { BarList, DonutChart, TrendChart, type DonutDatum, type SeriesDef } from '@/components/charts';
+import { BarList, DonutChart, TrendChart, type DonutDatum, type SeriesDef, type TrendMarker } from '@/components/charts';
 import { RunProgress, useProject } from '@/components/layout';
 import {
   Badge,
@@ -41,11 +41,12 @@ import { cn } from '@/lib/cn';
 import { BRAND_COLOR, OTHER_COLOR, SENTIMENT_COLORS } from '@/lib/colors';
 import { ENGINES } from '@/lib/engines';
 import { useFilterSearch, useFilters } from '@/lib/filters';
-import { compact, num, pct, plural as pluralCount, points, position, relativeTime, score, sentimentScore, usd } from '@/lib/format';
+import { compact, dayLabel, num, pct, plural as pluralCount, points, position, relativeTime, score, sentimentScore, usd } from '@/lib/format';
 
 const O = copy.pages.overview;
 const G = copy.glossary.metrics;
 const MAX_COMPETITOR_SERIES = 7;
+const MAX_LISTED_EVENTS = 5;
 
 /** Entity color: project map first (stable slots), server value as fallback. */
 function useEntityColor() {
@@ -231,6 +232,9 @@ function TrendCard({ ov }: { ov: Overview }) {
     const comps = project.competitors.slice(0, MAX_COMPETITOR_SERIES).map((c) => ({ key: c.id, name: c.name, color: colorOf({ key: c.id, isBrand: false }) }));
     return [brand, ...comps];
   }, [project, colorOf]);
+  const markers = useMemo<TrendMarker[]>(() => ov.events.map((e) => ({ day: e.day, label: e.title })), [ov.events]);
+  // Newest first, a handful: the chart marks every one.
+  const recentEvents = useMemo(() => [...ov.events].reverse().slice(0, MAX_LISTED_EVENTS), [ov.events]);
   return (
     <Card className="xl:col-span-2">
       <CardHeader
@@ -270,8 +274,28 @@ function TrendCard({ ov }: { ov: Overview }) {
           legend="toggle"
           height={280}
           rollingAvg={mode === 'visibility' && smoothing === 'rolling' ? ROLLING_DAYS : undefined}
+          markers={markers}
           ariaLabel={`${mode === 'visibility' ? O.sections.visibilityTrend : O.sections.sovTrend}: ${project.name} and competitors`}
         />
+        {ov.events.length > 0 && (
+          <div className="mt-4 border-t border-border pt-3">
+            <div className="flex items-center gap-1">
+              <h3 className="eyebrow">{O.changes.title}</h3>
+              <InfoTip content={O.changes.help} />
+            </div>
+            <ul className="mt-2 space-y-1 text-[13px]">
+              {recentEvents.map((e) => (
+                <li key={e.id} className="flex gap-3">
+                  <span className="w-14 shrink-0 font-mono text-text-subtle tnum">{dayLabel(e.day)}</span>
+                  <span className="min-w-0 text-text-muted">{e.title}</span>
+                </li>
+              ))}
+            </ul>
+            {ov.events.length > recentEvents.length && (
+              <p className="mt-1.5 text-xs text-text-subtle">{plural(ov.events.length - recentEvents.length, O.changes.more)}</p>
+            )}
+          </div>
+        )}
       </div>
     </Card>
   );

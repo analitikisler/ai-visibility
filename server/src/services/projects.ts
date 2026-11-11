@@ -12,6 +12,7 @@ import { promptTemplatesFor } from '../data/prompt-templates.ts';
 import { countryOf, languageName } from '../engines/shared.ts';
 import { hasLlm, llmComplete } from '../lib/llm.ts';
 import { safeFetch } from '../lib/safe-fetch.ts';
+import { recordEvent } from './events.ts';
 
 interface ProjectRow {
   id: string; name: string; domain: string; aliases_json: string; description: string; industry: string;
@@ -120,6 +121,9 @@ export function updateProject(pid: string, patch: ProjectPatch): Project | null 
     run(`UPDATE projects SET ${keys.map((k) => `${k} = ?`).join(', ')}, updated_at = ? WHERE id = ?`, [...keys.map((k) => sets[k]!), nowIso(), pid]);
   }
   const after = getProject(pid)!;
+  // Engines and market change what is asked, so scores before and after aren't like for like.
+  if (after.engines.join('|') !== before.engines.join('|')) recordEvent(pid, 'tracking_changed', `Engines changed: ${after.engines.join(', ')}`);
+  if (after.market !== before.market) recordEvent(pid, 'tracking_changed', `Market changed to ${after.market}`);
   const entitiesChanged = after.name !== before.name || after.domain !== before.domain || after.aliases.join('|') !== before.aliases.join('|');
   if (entitiesChanged) reanalyzeProject(after);
   return after;
@@ -151,6 +155,7 @@ function insertCompetitors(pid: string, list: CompetitorInput[], createdAt: stri
 
 export function addCompetitors(pid: string, list: CompetitorInput[]): Competitor[] {
   const ids = tx(() => insertCompetitors(pid, list, nowIso()));
+  if (ids.length) recordEvent(pid, 'competitor_added', ids.length === 1 ? `Competitor added: ${list[0]!.name.trim()}` : `${ids.length} competitors added`);
   reanalyzeProject(getProject(pid)!);
   return listCompetitors(pid).filter((c) => ids.includes(c.id));
 }
@@ -181,6 +186,7 @@ export function deleteCompetitor(cid: string): boolean {
   const c = getCompetitor(cid);
   if (!c) return false;
   run('DELETE FROM competitors WHERE id = ?', [cid]);
+  recordEvent(c.projectId, 'competitor_removed', `Competitor removed: ${c.name}`);
   reanalyzeProject(getProject(c.projectId)!);
   return true;
 }
@@ -223,6 +229,8 @@ function insertPrompts(pid: string, inputs: PromptInput[], createdAt: string): s
 
 export function createPrompts(pid: string, inputs: PromptInput[]): Prompt[] {
   const ids = tx(() => insertPrompts(pid, inputs, nowIso()));
+  // The prompt set is the denominator of every score: adding or removing prompts moves it on its own.
+  if (ids.length) recordEvent(pid, 'prompts_changed', ids.length === 1 ? '1 prompt added' : `${ids.length} prompts added`);
   return listPrompts(pid).filter((p) => ids.includes(p.id));
 }
 
@@ -233,11 +241,16 @@ export function updatePrompt(promptId: string, patch: Partial<PromptInput>): Pro
     patch.text?.trim() || p.text, patch.topic ?? p.topic, patch.tier ?? p.tier, patch.intent ?? p.intent,
     (patch.active ?? p.active) ? 1 : 0, promptId,
   ]);
+  if (patch.active !== undefined && patch.active !== p.active) recordEvent(p.projectId, 'prompts_changed', patch.active ? 'Prompt resumed' : 'Prompt paused');
   return getPrompt(promptId);
 }
 
 export function deletePrompt(promptId: string): boolean {
-  return Number(run('DELETE FROM prompts WHERE id = ?', [promptId]).changes) > 0;
+  const p = getPrompt(promptId);
+  if (!p) return false;
+  run('DELETE FROM prompts WHERE id = ?', [promptId]);
+  recordEvent(p.projectId, 'prompts_changed', 'Prompt removed');
+  return true;
 }
 
 // ---------------------------------------------------------------- suggestions

@@ -25,7 +25,7 @@ import {
   X,
   type LucideIcon,
 } from 'lucide-react';
-import type { Draft, DriverId, RecCategory, RecImpact, Recommendation, RecStatus } from '@shared/types';
+import type { Draft, DriverId, RecCategory, RecImpact, Recommendation, RecommendationOutcome, RecStatus } from '@shared/types';
 import { EmptyActions } from '@/components/art';
 import { DRAFT_KINDS, DRAFT_KIND_ICONS, DraftDrawer, DraftKindIcon, DraftModeBadge, DraftStatusBadge, useDraftAgent } from '@/components/drafts';
 import { useProject } from '@/components/layout';
@@ -59,7 +59,7 @@ import { copy, fmt, plural } from '@/content/copy';
 import { errorMessage, isWaitingOnBatch, useActiveRun, useDrafts, useRecommendations, useStartRun, useUpdateRecommendation } from '@/lib/api';
 import { cn } from '@/lib/cn';
 import { isEngineId } from '@/lib/engines';
-import { relativeTime } from '@/lib/format';
+import { dayLabel, num, pct, relativeTime } from '@/lib/format';
 
 const P = copy.pages.actions;
 const R = copy.recommendations;
@@ -205,6 +205,22 @@ interface RecCardProps {
   onOpenDraft: (id: string) => void;
 }
 
+/** What followed a recommendation marked done: visibility before and since, with a plain caveat. */
+function Outcome({ outcome: o }: { outcome: RecommendationOutcome }) {
+  const when = dayLabel(o.doneAt.slice(0, 10));
+  const measured = o.before !== null && o.after !== null;
+  return (
+    <div className="mt-3 max-w-3xl rounded-md border border-border bg-surface-2 px-3 py-2 text-[13px] leading-5 text-text">
+      <p>
+        {measured
+          ? fmt(o.scope === 'prompts' ? P.outcome.prompts : P.outcome.all, { date: when, before: pct(o.before), after: pct(o.after), answers: num(o.answersAfter) })
+          : fmt(P.outcome.noBaseline, { date: when })}
+      </p>
+      <p className="mt-0.5 text-xs text-text-subtle">{measured && o.inconclusive ? P.outcome.inconclusive : P.outcome.caveat}</p>
+    </div>
+  );
+}
+
 function RecCard({ rec, draft, pending, disabled, onDraft, onOpenDraft }: RecCardProps) {
   const { projectId } = useProject();
   const CatIcon = CATEGORY_ICONS[rec.category];
@@ -237,6 +253,7 @@ function RecCard({ rec, draft, pending, disabled, onDraft, onOpenDraft }: RecCar
           <h3 className={cn('text-base font-semibold leading-6', closed ? 'text-text-muted' : 'text-text-strong')}>{rec.title}</h3>
           <p className="mt-1 max-w-3xl text-[13px] leading-5 text-text-muted">{rec.description}</p>
           <Evidence items={rec.evidence} />
+          {rec.outcome && <Outcome outcome={rec.outcome} />}
           {(rec.driver || rec.relatedPromptIds.length > 0) && (
             <p className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-text-subtle">
               {rec.driver && (

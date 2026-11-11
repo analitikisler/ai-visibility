@@ -83,7 +83,7 @@ All take token colors (`var(--color-chart-n)`), show gaps for `null` days, and u
 
 | Chart | Use |
 |---|---|
-| `TrendChart` | `<TrendChart data={ov.visibilityTrend} series={[{ key: 'brand', name, color: BRAND_COLOR, emphasis: true }, …]} format="percent" legend="toggle" />` |
+| `TrendChart` | `<TrendChart data={ov.visibilityTrend} series={[{ key: 'brand', name, color: BRAND_COLOR, emphasis: true }, …]} format="percent" legend="toggle" markers={[{ day, label }]} />` (`markers` = dashed lines on days something changed, named in the tooltip) |
 | `StackedAreaChart` | `<StackedAreaChart data={crawlers.trend} series={…} variant="area\|bar" normalize? />` (crawler categories, referral sources). |
 | `BarList` | `<BarList items={[{ key, label, value, color, meta, highlight, to }]} format="number\|percent" max={1} limit={8} />` (sources, agents, pages). |
 | `DonutChart` | `<DonutChart data={[{ key, name, value, color, emphasis }]} center={…} />` (share; fold >7 competitors into "Other"). |

@@ -8,6 +8,7 @@ import type {
 } from '../../../shared/types.ts';
 import { engineDef, engineMode } from '../engines/catalog.ts';
 import { nameMatcher } from './diagnose.ts';
+import { listEvents } from './events.ts';
 import { BRAND_COLOR, getProject, listPrompts } from './projects.ts';
 import { latestRun } from './runs.ts';
 
@@ -256,6 +257,7 @@ export function getOverview(projectId: string, f: AggFilter): Overview {
     sentimentBreakdown: sentimentBreakdown(projectId, cur, f),
     tiers: tierStats(projectId, cur, f),
     lastRun: latestRun(projectId),
+    events: listEvents(projectId, f.days),
     totals: { responses: curStats.responses, prompts: promptCount?.n ?? 0, runs: runCount?.n ?? 0 },
   };
 }

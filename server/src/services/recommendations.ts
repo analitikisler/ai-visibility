@@ -1,7 +1,9 @@
 // Plan: rule-based, prioritized recommendations with stable keys. User status lives in recommendation_state.
-import { all, nowIso, run } from '../db/index.ts';
+import { all, get, nowIso, parseJson, run } from '../db/index.ts';
 import { missedPages, rangeFor } from '../crawlers/overview.ts';
-import type { EngineId, Project, Recommendation, RecStatus } from '../../../shared/types.ts';
+import type { EngineId, Project, Recommendation, RecommendationOutcome, RecStatus } from '../../../shared/types.ts';
+import { recordEvent } from './events.ts';
+import { marginPoints } from './monitor.ts';
 import { computeDiagnosis, ENGINE_NAMES, entityStats, negativeThemes, num, pct, plural, type DiagnosisContext } from './diagnose.ts';
 
 type Rec = Omit<Recommendation, 'status'>;
@@ -351,6 +353,36 @@ async function crawlerRules(ctx: DiagnosisContext, project: Project, out: Rec[])
 
 const STATUS_ORDER: Record<RecStatus, number> = { in_progress: 0, open: 1, done: 2, dismissed: 3 };
 
+const OUTCOME_BEFORE_DAYS = 14;
+/** Fewer answers than this since it was marked done is too early to judge. */
+const OUTCOME_MIN_ANSWERS = 8;
+
+/**
+ * What followed a recommendation marked done: brand visibility on its related prompts (every prompt when it has
+ * none) over the 14 days before, and from that day on. Not proof of cause: other changes land in the same weeks.
+ */
+function outcomeOf(project: Project, rec: Rec, doneAt: string): RecommendationOutcome {
+  const doneDay = doneAt.slice(0, 10);
+  const beforeFrom = new Date(Date.parse(`${doneDay}T00:00:00Z`) - OUTCOME_BEFORE_DAYS * 86_400_000).toISOString().slice(0, 10);
+  const scoped = rec.relatedPromptIds.length > 0;
+  const inPrompts = scoped ? ` AND prompt_id IN (${rec.relatedPromptIds.map(() => '?').join(',')})` : '';
+  const window = (where: string, days: string[]) =>
+    get<{ n: number; b: number | null }>(
+      `SELECT COUNT(*) n, SUM(brand_mentioned) b FROM responses WHERE project_id = ? AND error IS NULL AND ${where}${inPrompts}`,
+      [project.id, ...days, ...(scoped ? rec.relatedPromptIds : [])],
+    ) ?? { n: 0, b: 0 };
+  const before = window('day >= ? AND day < ?', [beforeFrom, doneDay]);
+  const after = window('day >= ?', [doneDay]);
+  const rate = (w: { n: number; b: number | null }) => (w.n ? Math.round(((w.b ?? 0) / w.n) * 10000) / 10000 : null);
+  const b = rate(before);
+  const a = rate(after);
+  const marginB = marginPoints(before.b ?? 0, before.n);
+  const marginA = marginPoints(after.b ?? 0, after.n);
+  const inconclusive = a === null || b === null || after.n < OUTCOME_MIN_ANSWERS || marginA === null || marginB === null
+    || Math.abs(a - b) * 100 < Math.hypot(marginA, marginB);
+  return { doneAt, scope: scoped ? 'prompts' : 'all', before: b, after: a, answersBefore: before.n, answersAfter: after.n, inconclusive };
+}
+
 /** All recommendations for a project, with stored statuses, sorted (active first, then by priority). */
 export async function listRecommendations(project: Project, ctx: DiagnosisContext = computeDiagnosis(project)): Promise<Recommendation[]> {
   const recs: Rec[] = [];
@@ -367,10 +399,21 @@ export async function listRecommendations(project: Project, ctx: DiagnosisContex
   await crawlerRules(ctx, project, recs);
 
   const states = new Map(
-    all<{ rec_key: string; status: RecStatus }>('SELECT rec_key, status FROM recommendation_state WHERE project_id = ?', [project.id]).map((s) => [s.rec_key, s.status]),
+    all<{ rec_key: string; status: RecStatus; updated_at: string; snapshot_json: string | null }>(
+      'SELECT rec_key, status, updated_at, snapshot_json FROM recommendation_state WHERE project_id = ?', [project.id]).map((s) => [s.rec_key, s]),
   );
+  // A recommendation that worked stops being suggested (its rule no longer fires). Keep it listed as done, as it read
+  // when it was marked done, so its outcome can be seen.
+  const current = new Set(recs.map((r) => r.key));
+  for (const [key, s] of states) {
+    const snapshot = s.status === 'done' && !current.has(key) ? parseJson<Rec | null>(s.snapshot_json, null) : null;
+    if (snapshot?.key === key) recs.push(snapshot);
+  }
   return recs
-    .map((r) => ({ ...r, status: states.get(r.key) ?? 'open' }))
+    .map((r): Recommendation => {
+      const s = states.get(r.key);
+      return s?.status === 'done' ? { ...r, status: 'done', outcome: outcomeOf(project, r, s.updated_at) } : { ...r, status: s?.status ?? 'open' };
+    })
     .sort((a, b) => STATUS_ORDER[a.status] - STATUS_ORDER[b.status] || b.priority - a.priority || a.key.localeCompare(b.key));
 }
 
@@ -378,12 +421,16 @@ export async function listRecommendations(project: Project, ctx: DiagnosisContex
 export async function setRecommendationStatus(project: Project, key: string, status: RecStatus, days = 30): Promise<Recommendation | null> {
   const rec = (await listRecommendations(project, computeDiagnosis(project, days))).find((r) => r.key === key);
   if (!rec) return null;
+  const { status: was, outcome: _outcome, ...snapshot } = rec;
+  if (was === status) return rec;
+  const now = nowIso();
   run(
-    `INSERT INTO recommendation_state (project_id, rec_key, status, updated_at) VALUES (?, ?, ?, ?)
-     ON CONFLICT(project_id, rec_key) DO UPDATE SET status = excluded.status, updated_at = excluded.updated_at`,
-    [project.id, key, status, nowIso()],
+    `INSERT INTO recommendation_state (project_id, rec_key, status, updated_at, snapshot_json) VALUES (?, ?, ?, ?, ?)
+     ON CONFLICT(project_id, rec_key) DO UPDATE SET status = excluded.status, updated_at = excluded.updated_at, snapshot_json = excluded.snapshot_json`,
+    [project.id, key, status, now, status === 'done' ? JSON.stringify(snapshot) : null],
   );
-  return { ...rec, status };
+  if (status === 'done') recordEvent(project.id, 'recommendation_done', `Done: ${rec.title}`);
+  return status === 'done' ? { ...snapshot, status, outcome: outcomeOf(project, snapshot, now) } : { ...snapshot, status };
 }
 
 /** Moves an open (or never-touched) recommendation to in_progress — called when its draft is generated. */

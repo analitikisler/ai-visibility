@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis, type TooltipContentProps } from 'recharts';
+import { CartesianGrid, Line, LineChart, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis, type TooltipContentProps } from 'recharts';
 import { cn } from '@/lib/cn';
 import { dayLabel } from '@/lib/format';
 import {
@@ -42,7 +42,15 @@ export interface TrendChartProps {
    * points in each window. Gap days stay gaps. Legend and tooltip are labelled "N-day avg".
    */
   rollingAvg?: number;
+  /** Things that changed on a day (a draft published, a competitor added): a dashed line on that day, named in the tooltip. */
+  markers?: TrendMarker[];
   className?: string;
+}
+
+export interface TrendMarker {
+  /** 'YYYY-MM-DD', matching a row's x value. */
+  day: string;
+  label: string;
 }
 
 /** Trailing mean per series over the last `window` rows, skipping nulls; a null day stays null. */
@@ -85,8 +93,16 @@ export function TrendChart({
   onHiddenChange,
   ariaLabel,
   rollingAvg,
+  markers,
   className,
 }: TrendChartProps) {
+  /** Marker labels per day, for days that are on the chart. */
+  const markersByDay = useMemo(() => {
+    const days = new Set(data.map((row) => String(row[xKey])));
+    const map = new Map<string, string[]>();
+    for (const m of markers ?? []) if (days.has(m.day)) map.set(m.day, [...(map.get(m.day) ?? []), m.label]);
+    return map;
+  }, [markers, data, xKey]);
   const [hiddenState, setHiddenState] = useState<string[]>([]);
   const hiddenList = hiddenProp ?? hiddenState;
   const hidden = useMemo(() => new Set(hiddenList), [hiddenList]);
@@ -127,7 +143,15 @@ export function TrendChart({
       .sort((a, b) => (typeof b.v === 'number' ? b.v : -1) - (typeof a.v === 'number' ? a.v : -1))
       .map(({ s, v }) => ({ key: s.key, name: s.name, color: s.color, emphasis: s.emphasis, value: formatValue(typeof v === 'number' ? v : null, format) }));
     const day = dayLabel(String(label ?? row[xKey]));
-    return <ChartTooltipBox title={smoothLabel ? `${day} · ${smoothLabel}` : day} rows={rows} />;
+    const changes = markersByDay.get(String(label ?? row[xKey]));
+    const footer = changes && (
+      <ul className="max-w-56 space-y-0.5">
+        {changes.map((c, i) => (
+          <li key={i}>{c}</li>
+        ))}
+      </ul>
+    );
+    return <ChartTooltipBox title={smoothLabel ? `${day} · ${smoothLabel}` : day} rows={rows} footer={footer} />;
   };
 
   if (!hasData) return <ChartEmpty height={height} />;
@@ -166,6 +190,9 @@ export function TrendChart({
               allowDecimals={format !== 'number' && format !== 'compact'}
             />
             <Tooltip wrapperStyle={{ zIndex: 10 }} content={renderTooltip} cursor={cursorStroke} isAnimationActive={false} />
+            {[...markersByDay.keys()].map((day) => (
+              <ReferenceLine key={day} x={day} stroke="var(--color-text-subtle)" strokeDasharray="3 3" strokeWidth={1} ifOverflow="hidden" />
+            ))}
             {[...ordered].reverse().map((s) => (
               <Line
                 key={s.key}

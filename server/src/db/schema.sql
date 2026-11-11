@@ -197,6 +197,17 @@ CREATE TABLE IF NOT EXISTS recommendation_state (
   PRIMARY KEY (project_id, rec_key)
 );
 
+-- Things that changed in a project (draft published, competitor added, audit score change, …): markers on trend charts.
+CREATE TABLE IF NOT EXISTS project_events (
+  id           TEXT PRIMARY KEY,
+  project_id   TEXT NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+  ts           TEXT NOT NULL,
+  day          TEXT NOT NULL,
+  kind         TEXT NOT NULL,          -- ProjectEventKind
+  title        TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_project_events ON project_events(project_id, day);
+
 -- Provider batch submissions for 'batch' runs (Anthropic / OpenAI / Gemini batch APIs). One row per (run, engine).
 -- items_json maps custom_id -> prompt_id so results (which arrive in any order) can be matched back.
 CREATE TABLE IF NOT EXISTS batch_jobs (

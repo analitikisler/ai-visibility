@@ -10,6 +10,7 @@ import { sourceDomainsFor } from '../data/sources.ts';
 import { languageName } from '../engines/shared.ts';
 import type { AuditResult, Competitor, Draft, DraftKind, DraftRequest, Project } from '../../../shared/types.ts';
 import { computeDiagnosis, ENGINE_NAMES, entityStats, negativeThemes, pct, type DiagnosisContext, type MentionRow, type PromptRow } from './diagnose.ts';
+import { recordEvent } from './events.ts';
 import { markRecommendationInProgress } from './recommendations.ts';
 
 interface Ctx {
@@ -697,6 +698,7 @@ export function updateDraft(draftId: string, patch: { title?: string; body?: str
   run('UPDATE drafts SET title = ?, body = ?, status = ?, updated_at = ? WHERE id = ?', [
     patch.title ?? cur.title, patch.body ?? cur.body, patch.status ?? cur.status, nowIso(), draftId,
   ]);
+  if (patch.status === 'published' && cur.status !== 'published') recordEvent(cur.projectId, 'draft_published', `Published: ${patch.title ?? cur.title}`);
   return getDraft(draftId);
 }
 

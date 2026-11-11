@@ -595,6 +595,11 @@ export const copy = {
       },
       viewAll: 'View all',
       smoothing: { label: 'Smoothing', daily: 'Daily', rolling: '7-day avg' },
+      changes: {
+        title: 'What changed in this period',
+        help: 'Dashed lines on the chart mark these days. Read a move in the score against what was done around it.',
+        more: { one: '1 earlier change', other: '{count} earlier changes' },
+      },
     },
 
     prompts: {
@@ -1004,6 +1009,13 @@ export const copy = {
         title: 'No actions match',
         body: 'Try another category or impact level, or clear the filters.',
         cta: 'Clear filters',
+      },
+      outcome: {
+        prompts: 'Marked done {date}. Visibility on its prompts: {before} before, {after} since ({answers} answers).',
+        all: 'Marked done {date}. Visibility across all prompts: {before} before, {after} since ({answers} answers).',
+        inconclusive: 'Too few answers since then, or a change inside the margin of error. Check again after more checks.',
+        noBaseline: 'Marked done {date}. No answers from the two weeks before to compare with.',
+        caveat: 'Other changes in the same weeks also move this number.',
       },
       draftsBody: 'Everything the agent has drafted. Approve a draft, then copy or download it and ship it yourself.',
       draftsWrittenBy: 'Written by',

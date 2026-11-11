@@ -8,6 +8,7 @@ import { seedCrawlerData } from '../crawlers/seed.ts';
 import { DEMO } from '../engines/demo-scenario.ts';
 import { simulateAnswer } from '../engines/simulated.ts';
 import { promptTemplatesFor } from '../data/prompt-templates.ts';
+import { recordEvent } from './events.ts';
 import { createProject, getProject, listPrompts } from './projects.ts';
 
 const DAYS = 60;
@@ -56,6 +57,11 @@ export function seedDemo(): Project {
       run('UPDATE runs SET finished_at = ? WHERE id = ?', [new Date(t).toISOString(), runId]);
     }
   });
+
+  // Sample changes, so the trend chart shows what its markers are for.
+  const at = (d: number) => new Date(Date.parse(`${daysAgo(d)}T10:00:00Z`)).toISOString();
+  recordEvent(project.id, 'competitor_added', `Competitor added: ${DEMO.competitors.at(-1)!.name}`, at(41));
+  recordEvent(project.id, 'draft_published', `Published: ${brand.name} vs ${DEMO.rival} comparison page`, at(23));
 
   try {
     seedCrawlerData(project.id, { days: DAYS, siteDomain: project.domain });

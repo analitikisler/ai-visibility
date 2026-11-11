@@ -15,7 +15,7 @@ ai visibility shows how AI assistants talk about your brand, why they pick compe
 |---|---|
 | **Monitor** | How often ChatGPT, Claude, Gemini, Perplexity, Grok and DeepSeek name you: visibility score, share of voice, position, sentiment, per prompt / engine / competitor, cited sources, every answer |
 | **Diagnose** | Why competitors win — five driver scores (content coverage, content quality, source authority, technical readiness, sentiment) with evidence, and the prompts you lose |
-| **Act** | Prioritized recommendations; an agent drafts the fix (llms.txt, comparison page, FAQ, JSON-LD, robots.txt, outreach email) and you approve it |
+| **Act** | Prioritized recommendations; an agent drafts the fix (llms.txt, comparison page, FAQ, JSON-LD, robots.txt, outreach email) and you approve it. A recommendation marked done shows visibility before and since, and what changed in a project (drafts published, competitors or prompts changed, audit scores) is marked on the trend chart |
 | **Report** | Weekly / monthly brief, printable, CSV exports |
 | **AI crawlers** | Which AI agents fetch your pages (61 catalogued: GPTBot, ClaudeBot, PerplexityBot, OAI-SearchBot, ChatGPT-User…), operator, category (training / AI search / user fetch / agent), pages read and missed, new agents, event log |
 | **AI traffic** | Human visits referred by ChatGPT, Perplexity, Gemini, Copilot, Claude and more |

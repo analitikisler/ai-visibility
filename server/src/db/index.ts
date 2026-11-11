@@ -35,6 +35,8 @@ ensureColumns('responses', {
 });
 // Secret token for server-side ingestion (snippets, log shipping); the site key alone only admits referral beacons.
 ensureColumns('projects', { ingest_token: 'TEXT' });
+// The recommendation as it read when it was marked done, so it stays listed (with its outcome) after its rule stops firing.
+ensureColumns('recommendation_state', { snapshot_json: 'TEXT' });
 ensureColumns('runs', {
   mode: "TEXT NOT NULL DEFAULT 'realtime'",
   reused_jobs: 'INTEGER NOT NULL DEFAULT 0',

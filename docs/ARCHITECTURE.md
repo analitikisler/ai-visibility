@@ -50,6 +50,7 @@ Every feature works end-to-end in **simulated mode** and switches to **live mode
 ## Module interfaces
 - `server/src/lib/llm.ts` → `hasLlm()`, `llmComplete({system,prompt,json,maxTokens,engine}) → Promise<LlmResult|null>` (null ⇒ caller falls back to templates).
 - `server/src/services/scheduler.ts` → `startScheduler()`.
+- `server/src/services/events.ts` → `recordEvent(projectId, kind, title)`, `listEvents(projectId, days)`. Call `recordEvent` wherever something changes that a score should be read against: a draft published, a recommendation done, an own-site audit score change, competitors or prompts added or removed, engines or market changed.
 - `server/src/crawlers/seed.ts` → `seedCrawlerData(projectId, opts?: { days?: number; siteDomain?: string })` — called by the demo seed.
 - `server/src/data/ai-agents.ts` → `AI_AGENTS: AiAgent[]`, `matchAgent(userAgent) → AiAgent | null`. `server/src/data/ai-referrers.ts` → `AI_REFERRERS: AiReferrer[]`, `matchReferrer(referrer, url?) → AiReferrer | null`.
 - `server/src/data/sources.ts` → `sourceDomainsFor(industry) → { domain, title, weight }[]` (plausible 3rd-party domains cited by AI for an industry: review sites, publications, forums), used by the simulator.
@@ -70,13 +71,13 @@ Common aggregate query params: `days` (default 30), `engine` (optional EngineId)
 - `GET|POST /projects/:id/competitors` · `PUT|DELETE /competitors/:cid`
 - `GET /projects/:id/prompts` → Prompt[] · `POST /projects/:id/prompts` (PromptInput | PromptInput[]) → Prompt[] · `PUT|DELETE /prompts/:pid`
 - `POST /projects/:id/runs` ({engines?, promptIds?, mode?: 'realtime'|'batch', force?: boolean}) → Run (async; poll). `mode: 'batch'` submits provider batch APIs (~50% cheaper, results within hours); `force` skips same-day reuse · `GET /projects/:id/runs` → Run[] · `GET /runs/:rid` → Run
-- `GET /projects/:id/overview` → Overview · `GET /projects/:id/prompt-stats` → PromptStat[] · `GET /projects/:id/sources` → SourcesView
+- `GET /projects/:id/overview` → Overview (incl. `events`: what changed in the project during the period) · `GET /projects/:id/prompt-stats` → PromptStat[] · `GET /projects/:id/sources` → SourcesView
 - `GET /projects/:id/responses?promptId&engine&runId&mentioned=0|1&failed=0|1&days&tier&q&citedDomain&limit&offset` → Paged<AiResponse> · `GET /responses/:rid` → AiResponse
 - `POST /demo/seed` → Project (creates a demo project with 60 days of history, five competitors, ~24 prompts, and calls seedCrawlerData)
 
 **Insights, crawlers and reports**
 - `GET /projects/:id/diagnose` → Diagnosis
-- `GET /projects/:id/recommendations` → Recommendation[] · `PUT /projects/:id/recommendations/:key` ({status}) → Recommendation
+- `GET /projects/:id/recommendations` → Recommendation[] (a done one carries `outcome`: brand visibility on its prompts over the 14 days before and since; it stays listed after its rule stops firing) · `PUT /projects/:id/recommendations/:key` ({status}) → Recommendation
 - `GET /projects/:id/drafts` → Draft[] · `POST /projects/:id/drafts` (DraftRequest) → Draft · `PUT|DELETE /drafts/:did`
 - `POST /projects/:id/audit` ({url?}) → AuditResult · `GET /projects/:id/audits/latest` → AuditResult | null · `GET /projects/:id/audits` → AuditResult[]
 - `GET /projects/:id/crawlers/overview` → CrawlerOverview · `GET /projects/:id/crawlers/events?limit&offset&agent&category&operator&path&days&verification` → Paged<BotEvent>

@@ -1,4 +1,4 @@
-export { TrendChart, type TrendChartProps } from './TrendChart';
+export { TrendChart, type TrendChartProps, type TrendMarker } from './TrendChart';
 export { StackedAreaChart, type StackedAreaChartProps } from './StackedAreaChart';
 export { BarList, type BarListItem, type BarListProps } from './BarList';
 export { DonutChart, type DonutDatum, type DonutChartProps } from './DonutChart';

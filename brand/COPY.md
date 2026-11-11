@@ -645,6 +645,8 @@ Each page: title, the question it answers, its empty state, then every other str
 | `columns.prompts` | Prompts |
 | `quiet.title` | No answers for these filters |
 | `quiet.body` | No answers were collected for this period and engine. Choose a longer period or another engine, or run a new check. |
+| `changes.title` | What changed in this period |
+| `changes.help` | Dashed lines on the chart mark these days. Read a move in the score against what was done around it. |
 | `insights.behind` | You appear in {visibility} of answers. {leader} leads at {leaderVisibility}. |
 | `insights.alone` | You appear in {visibility} of answers. |
 | `insights.leading` | You appear in {visibility} of answers and lead. {runnerUp} is next at {runnerUpVisibility}. |
@@ -893,6 +895,11 @@ Each page: title, the question it answers, its empty state, then every other str
 | `doneEmpty` | Nothing marked done yet. Finished actions show up here. |
 | `allDone.title` | All open actions handled |
 | `allDone.body` | New actions appear as fresh answers come in. |
+| `outcome.prompts` | Marked done {date}. Visibility on its prompts: {before} before, {after} since ({answers} answers). |
+| `outcome.all` | Marked done {date}. Visibility across all prompts: {before} before, {after} since ({answers} answers). |
+| `outcome.inconclusive` | Too few answers since then, or a change inside the margin of error. Check again after more checks. |
+| `outcome.noBaseline` | Marked done {date}. No answers from the two weeks before to compare with. |
+| `outcome.caveat` | Other changes in the same weeks also move this number. |
 | `draftsEmpty.title` | No drafts yet |
 | `draftsEmpty.body` | Pick an action and draft it with the agent. Drafts wait here for your review. |
 | `draftsEmpty.cta` | New draft |
