@@ -83,13 +83,6 @@ export function sentimentLabel(raw: number | null | undefined): SentimentLabel |
 
 export const SENTIMENT_NAMES: Record<SentimentLabel, string> = { positive: 'Positive', neutral: 'Neutral', negative: 'Negative' };
 
-/** `{ score: 72, label: 'positive', text: '72 · Positive' }` from raw −1..1. */
-export function sentiment(raw: number | null | undefined): { score: number | null; label: SentimentLabel | null; text: string } {
-  const s = sentimentScore(raw);
-  const label = sentimentLabelFromScore(s);
-  return { score: s, label, text: s == null || !label ? DASH : `${s} · ${SENTIMENT_NAMES[label]}` };
-}
-
 /** Rounded percentage points with a correct unit (`1 pt`, `6 pts`); sign is the caller's job. */
 export function points(n: number): string {
   const v = Math.round(Math.abs(n));
@@ -185,11 +178,6 @@ export function relativeTime(iso: string | null | undefined, now: number = Date.
   const d = Math.round(h / 24);
   if (d < 7) return `${d}d ago`;
   return date(iso);
-}
-
-/** `Last 30 days`. */
-export function rangeLabel(days: number): string {
-  return days === 1 ? 'Last 24 hours' : `Last ${days} days`;
 }
 
 /** Milliseconds → `840 ms` / `2.4 s`. */

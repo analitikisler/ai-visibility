@@ -433,7 +433,7 @@ function ReportSkeleton() {
 }
 
 export default function ReportsPage() {
-  const { projectId } = useProject();
+  const { projectId, project } = useProject();
   const [period, setPeriod] = useTabParam<Period>('period', PERIODS, 'week');
   const days = PERIOD_DAYS[period];
   const q = useReport(projectId, { days });
@@ -490,8 +490,8 @@ export default function ReportsPage() {
           bordered
           size="lg"
           illustration={<EmptyNoData width={180} />}
-          title={P.empty.title}
-          body={P.empty.body}
+          title={(project.lastRunAt ? P.quiet : P.empty).title}
+          body={(project.lastRunAt ? P.quiet : P.empty).body}
           action={
             <Button
               variant="primary"

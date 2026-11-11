@@ -349,8 +349,6 @@ export const useUsage = (days = 30, o?: Opts<UsageView>) =>
 export const useProjects = (o?: Opts<Project[]>) => useQuery({ queryKey: qk.projects, queryFn: api.listProjects, ...o });
 export const useProjectQuery = (id: string | undefined, o?: Opts<Project>) =>
   useQuery({ queryKey: qk.project(id ?? ''), queryFn: () => api.getProject(id!), enabled: !!id, ...o });
-export const useCompetitors = (id: string | undefined, o?: Opts<Competitor[]>) =>
-  useQuery({ queryKey: qk.competitors(id ?? ''), queryFn: () => api.listCompetitors(id!), enabled: !!id, ...o });
 export const usePrompts = (id: string | undefined, o?: Opts<Prompt[]>) =>
   useQuery({ queryKey: qk.prompts(id ?? ''), queryFn: () => api.listPrompts(id!), enabled: !!id, ...o });
 

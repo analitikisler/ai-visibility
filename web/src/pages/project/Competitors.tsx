@@ -398,6 +398,7 @@ function HeadToHead({ ov }: { ov: Overview }) {
                   <div className="flex items-center justify-between gap-2">
                     <EngineBadge engine={e.id as EngineId} size="sm" />
                     {q?.isLoading && <Skeleton className="h-3 w-16" />}
+                    {q?.isError && <span className="text-xs text-text-subtle">{copy.app.errors.generic.title}</span>}
                   </div>
                   {q?.data && (
                     <div className="mt-1.5 grid grid-cols-[1fr_auto] items-center gap-x-3 gap-y-1 text-xs">
@@ -421,7 +422,9 @@ function HeadToHead({ ov }: { ov: Overview }) {
           </ul>
         </section>
         <div className="grid min-w-0 grid-cols-1 gap-6 md:grid-cols-2">
-          {stats.isLoading || !split ? (
+          {stats.isError ? (
+            <ErrorState className="md:col-span-2" size="sm" error={stats.error} onRetry={() => void stats.refetch()} retrying={stats.isFetching} />
+          ) : stats.isLoading || !split ? (
             <>
               <Skeleton className="h-40 w-full" />
               <Skeleton className="h-40 w-full" />

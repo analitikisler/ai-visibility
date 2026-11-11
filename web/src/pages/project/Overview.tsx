@@ -586,8 +586,10 @@ function SentimentCard({ ov }: { ov: Overview }) {
 
 // ---------------------------------------------------------------------------- states
 
+/** First-run state, or — once the project has a completed check — "nothing for this period/engine". */
 function NoAnswers() {
-  const { projectId } = useProject();
+  const { projectId, project } = useProject();
+  const text = project.lastRunAt ? O.quiet : O.empty;
   const start = useStartRun(projectId);
   const { run } = useActiveRun(projectId);
   const toast = useToast();
@@ -596,8 +598,8 @@ function NoAnswers() {
     <Card>
       <div className="flex flex-col items-center px-6 py-16 text-center">
         <EmptyNoData width={180} />
-        <h2 className="mt-6 text-xl font-semibold text-text">{O.empty.title}</h2>
-        <p className="mt-1 max-w-md text-sm text-text-muted">{O.empty.body}</p>
+        <h2 className="mt-6 text-xl font-semibold text-text">{text.title}</h2>
+        <p className="mt-1 max-w-md text-sm text-text-muted">{text.body}</p>
         {busy ? (
           <RunProgress run={run} className="mt-6" />
         ) : (

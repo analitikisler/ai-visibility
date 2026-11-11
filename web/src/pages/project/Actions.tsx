@@ -547,7 +547,11 @@ export default function ActionsPage() {
         />
         <TabPanel idBase="actions" value={tab} className="pt-4">
           {tab === 'drafts' ? (
-            <DraftsPanel drafts={drafts.data} isLoading={drafts.isLoading} agent={agent} />
+            drafts.isError ? (
+              <ErrorState bordered title={copy.app.errors.generic.title} error={drafts.error} onRetry={() => void drafts.refetch()} retrying={drafts.isFetching} />
+            ) : (
+              <DraftsPanel drafts={drafts.data} isLoading={drafts.isLoading} agent={agent} />
+            )
           ) : recs.isLoading ? (
             <div className="space-y-3" aria-busy="true">
               <SkeletonCard height={110} />

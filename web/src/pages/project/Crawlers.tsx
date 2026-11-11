@@ -39,7 +39,7 @@ import {
   useTabParam,
 } from '@/components/ui';
 import { copy, fmt, plural } from '@/content/copy';
-import { useBotEvents, useCrawlerOverview } from '@/lib/api';
+import { useBotEvents, useCrawlerOverview, useIntegration } from '@/lib/api';
 import { cn } from '@/lib/cn';
 import { AGENT_CATEGORY_COLORS } from '@/lib/colors';
 import { useFilters } from '@/lib/filters';
@@ -657,8 +657,25 @@ function EventsPanel({ ov, days }: { ov: CrawlerOverview; days: number }) {
 
 // ---------------------------------------------------------------------------- page
 
-function NoCrawlers({ onUpload }: { onUpload: () => void }) {
+/** First-run state, or — once events have arrived (`lastEventAt`) — "nothing in this period". */
+function NoCrawlers({ onUpload, lastEventAt }: { onUpload: () => void; lastEventAt: string | null }) {
   const { projectId } = useProject();
+  if (lastEventAt) {
+    return (
+      <EmptyState
+        bordered
+        size="lg"
+        illustration={<EmptyCrawlers width={180} />}
+        title={P.quiet.title}
+        body={fmt(P.quiet.body, { when: relativeTime(lastEventAt) })}
+        action={
+          <Button icon={FileUp} onClick={onUpload}>
+            {P.upload.button}
+          </Button>
+        }
+      />
+    );
+  }
   return (
     <EmptyState
       bordered
@@ -703,6 +720,7 @@ export default function CrawlersPage() {
     );
 
   const empty = ov && ov.totals.visits.value === 0 && ov.byAgent.length === 0;
+  const integration = useIntegration(projectId, { enabled: !!empty });
 
   return (
     <Page>
@@ -730,7 +748,7 @@ export default function CrawlersPage() {
       ) : q.isError || !ov ? (
         <ErrorState bordered title={copy.app.errors.generic.title} error={q.error} onRetry={() => void q.refetch()} retrying={q.isFetching} />
       ) : empty ? (
-        <NoCrawlers onUpload={() => setUploadOpen(true)} />
+        <NoCrawlers onUpload={() => setUploadOpen(true)} lastEventAt={integration.data?.lastEventAt ?? null} />
       ) : (
         <div className={cn('space-y-4 transition-opacity duration-160', q.isPlaceholderData && 'opacity-60')}>
           <KpiRow ov={ov} days={days} />

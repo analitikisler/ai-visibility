@@ -46,17 +46,6 @@ export function entityColorMap(project: Pick<Project, 'competitors'> | null | un
   return map;
 }
 
-/** Resolve a color for an entity key with a fallback for unknown keys. */
-export function colorFor(map: Record<string, string>, key: string): string {
-  return map[key] ?? OTHER_COLOR;
-}
-
-/** Map any server-sent color (hex from the default palette) onto a theme token. */
-export function themeColor(value: string | null | undefined, fallback = OTHER_COLOR): string {
-  if (!value) return fallback;
-  return PALETTE_HEX[value.trim().toLowerCase()] ?? value;
-}
-
 export const SENTIMENT_COLORS: Record<SentimentLabel, string> = {
   positive: 'var(--color-sent-pos)',
   neutral: 'var(--color-sent-neu)',
@@ -81,14 +70,6 @@ export const AGENT_CATEGORY_COLORS: Record<AgentCategory, string> = {
   agent: 'var(--chart-7)',
   search_engine: 'var(--chart-6)',
   seo_tool: OTHER_COLOR,
-};
-export const AGENT_CATEGORY_NAMES: Record<AgentCategory, string> = {
-  training: 'Training',
-  search: 'AI search',
-  user_fetch: 'User fetch',
-  agent: 'Agent',
-  search_engine: 'Search engine',
-  seo_tool: 'SEO tool',
 };
 
 /** Heat ramp step (0..7) for a 0..1 value; null/0 → step 0. */

@@ -546,6 +546,10 @@ export const copy = {
         body: 'Run your first check to see where ChatGPT, Claude and Gemini mention you.',
         cta: 'Run check',
       },
+      quiet: {
+        title: 'No answers for these filters',
+        body: 'No answers were collected for this period and engine. Choose a longer period or another engine, or run a new check.',
+      },
       sections: {
         kpis: 'Key numbers',
         visibilityTrend: 'Visibility over time',
@@ -1028,6 +1032,10 @@ export const copy = {
         body: 'Install the snippet or upload a server log to start counting visits.',
         cta: 'Set up tracking',
       },
+      quiet: {
+        title: 'No AI crawler visits in this period',
+        body: 'Tracking is connected. The last event arrived {when}. Choose a longer period to see earlier visits.',
+      },
       kpis: {
         visits: 'AI crawler visits',
         visitsInfo: 'Visits from AI agents: training, AI search, user fetchers and agents. Search engines and SEO tools are left out — {all} visits including them.',
@@ -1137,6 +1145,10 @@ export const copy = {
         body: 'Add the tracking script to count visitors arriving from ChatGPT, Perplexity, Gemini and other assistants.',
         cta: 'Get tracking script',
       },
+      quiet: {
+        title: 'No visits from AI assistants in this period',
+        body: 'Tracking is connected. The last event arrived {when}. Choose a longer period to see earlier visits.',
+      },
       kpis: {
         visits: 'AI referral visits',
         sources: 'Assistants sending visits',
@@ -1241,6 +1253,10 @@ export const copy = {
         title: 'No report yet',
         body: 'Reports need at least one completed check. Run one, then come back for your brief.',
         cta: 'Run check',
+      },
+      quiet: {
+        title: 'No answers in this period',
+        body: 'No answers were collected in this period. Choose a longer one, or run a new check.',
       },
       period: {
         label: 'Period',

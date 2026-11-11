@@ -29,12 +29,12 @@ import {
   useSort,
 } from '@/components/ui';
 import { copy, fmt } from '@/content/copy';
-import { useReferralOverview } from '@/lib/api';
+import { useIntegration, useReferralOverview } from '@/lib/api';
 import { cn } from '@/lib/cn';
 import { OTHER_COLOR } from '@/lib/colors';
 import { engineColor, isEngineId } from '@/lib/engines';
 import { useFilters } from '@/lib/filters';
-import { compact, num, pct } from '@/lib/format';
+import { compact, num, pct, relativeTime } from '@/lib/format';
 
 const P = copy.pages.traffic;
 /** Assistants that aren't tracked engines get the remaining non-brand slots, then slate. */
@@ -137,6 +137,8 @@ export default function TrafficPage() {
     [ov?.bySource, colors],
   );
   const empty = ov && ov.totals.visits.value === 0 && ov.bySource.length === 0;
+  // Once events have arrived, an empty page means a quiet period, not a missing integration.
+  const lastEventAt = useIntegration(projectId, { enabled: !!empty }).data?.lastEventAt ?? null;
 
   return (
     <Page>
@@ -152,6 +154,8 @@ export default function TrafficPage() {
         </div>
       ) : q.isError || !ov ? (
         <ErrorState bordered title={copy.app.errors.generic.title} error={q.error} onRetry={() => void q.refetch()} retrying={q.isFetching} />
+      ) : empty && lastEventAt ? (
+        <EmptyState bordered size="lg" illustration={<EmptyTraffic width={180} />} title={P.quiet.title} body={fmt(P.quiet.body, { when: relativeTime(lastEventAt) })} />
       ) : empty ? (
         <EmptyState
           bordered

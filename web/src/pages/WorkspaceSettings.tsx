@@ -480,7 +480,8 @@ function EngineTable({ rows: data }: { rows: UsageView['byEngine'] }) {
 /** Period totals, savings, daily spend and the per-engine table. */
 function UsageDetail({ usage, liveCount }: { usage: UsageView; liveCount: number }) {
   const t = usage.totals;
-  if (t.liveAnswers === 0)
+  // Drafts and setup suggestions cost money too, so "no live answers" alone doesn't mean nothing was spent.
+  if (t.liveAnswers === 0 && t.costUsd === 0)
     return liveCount === 0 ? (
       <Note tone="neutral" icon={FlaskConical}>
         {U.simulatedOnly}
@@ -489,12 +490,14 @@ function UsageDetail({ usage, liveCount }: { usage: UsageView; liveCount: number
       <p className="text-[13px] text-text-subtle">{U.noLive}</p>
     );
   const saved = usage.savings.batchUsd + usage.savings.cacheUsd + usage.savings.reuseUsd;
+  // Answers only: total spend also covers drafts and suggestions.
+  const answerCost = usage.byEngine.reduce((s, e) => s + e.avgCostUsd * e.answers, 0);
   return (
     <div className="space-y-5">
       <dl className="grid grid-cols-2 gap-x-6 gap-y-3 sm:grid-cols-4">
         <Stat label={U.stats.spend}>{usd(t.costUsd)}</Stat>
         <Stat label={U.stats.answers}>{num(t.liveAnswers)}</Stat>
-        <Stat label={U.stats.avg}>{usd(t.costUsd / t.liveAnswers, { precise: true })}</Stat>
+        <Stat label={U.stats.avg}>{t.liveAnswers ? usd(answerCost / t.liveAnswers, { precise: true }) : '—'}</Stat>
         <Stat label={U.stats.saved}>{usd(saved)}</Stat>
       </dl>
       <SavingsLine savings={usage.savings} />
