@@ -9,7 +9,7 @@ import { bodyLimit } from 'hono/body-limit';
 import { cors } from 'hono/cors';
 import { HTTPException } from 'hono/http-exception';
 import { logger } from 'hono/logger';
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readFileSync, statSync } from 'node:fs';
 import { dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -121,8 +121,24 @@ app.onError((err, c) => {
 if (existsSync(WEB_DIST)) {
   const root = relative(process.cwd(), WEB_DIST);
   app.use('/*', serveStatic({ root }));
-  const indexHtml = readFileSync(join(WEB_DIST, 'index.html'), 'utf8');
-  app.get('*', (c) => (c.req.path.startsWith('/api/') ? c.json({ error: 'Not found' }, 404) : c.html(indexHtml)));
+  const indexPath = join(WEB_DIST, 'index.html');
+  let index = { mtimeMs: -1, html: '' };
+  /** The app shell, re-read when the file changes so a rebuild is picked up without a restart. */
+  const indexHtml = () => {
+    try {
+      const { mtimeMs } = statSync(indexPath);
+      if (mtimeMs !== index.mtimeMs) index = { mtimeMs, html: readFileSync(indexPath, 'utf8') };
+    } catch {
+      // The build is being replaced: keep serving the last shell.
+    }
+    return index.html;
+  };
+  app.get('*', (c) => {
+    if (c.req.path.startsWith('/api/')) return c.json({ error: 'Not found' }, 404);
+    // A missing file (an old hashed asset after a deploy) is a 404, not the app shell with status 200.
+    if (/\.[a-z0-9]+$/i.test(c.req.path)) return c.text('Not found', 404);
+    return c.html(indexHtml());
+  });
 }
 
 const server = serve({ fetch: app.fetch, port: PORT }, (info) => {

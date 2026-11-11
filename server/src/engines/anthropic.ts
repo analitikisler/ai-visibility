@@ -12,10 +12,10 @@ const MAX_SEARCHES = 3;
 /** Server-tool loops may pause; resume a bounded number of times. */
 const MAX_TURNS = 3;
 
-/** Dynamic-filtering web search needs Opus/Sonnet 4.6+; other models get the basic tool version. */
-const isModern = (model: string) => /^claude-(opus|sonnet)-(4-[6-9]|[5-9])/.test(model);
+/** Dynamic-filtering web search needs Opus/Sonnet 4.6+ or a Fable/Mythos model; other models get the basic tool version. */
+const isModern = (model: string) => /^claude-(?:(?:opus|sonnet)-(?:4-[6-9]|[5-9])|fable-|mythos-)/.test(model);
 /** Models that accept the server-side refusal fallback in its "default" form (Claude API only, not in batches). */
-const supportsFallback = (model: string) => /^claude-(sonnet-5-5|opus-5-5|opus-5|fable-5-1)$/.test(model);
+const supportsFallback = (model: string) => /^claude-(sonnet-5-5|opus-5-5|opus-5|fable-5-1|fable-5-2|mythos-5-2)$/.test(model);
 
 const clients = new Map<string, Anthropic>();
 /** One client per key. Base URL and auth are explicit so ambient ANTHROPIC_* env vars on the host never apply. */

@@ -219,7 +219,7 @@ export interface TechFacts {
 function technical(project: Project, days: number): TechFacts {
   const audit = ensureAudit(project);
   const robotsUnknown = audit?.checks.find((c) => c.id === 'robots_ai_search')?.status === 'info';
-  const search = robotsUnknown ? [] : (audit?.robots.agents ?? []).filter((a) => a.category === 'search' || a.category === 'user_fetch');
+  const search = robotsUnknown ? [] : (audit?.robots.agents ?? []).filter((a) => a.category === 'search' || a.category === 'user_fetch' || a.category === 'agent');
   const blocked = search.filter((a) => a.allowed === 'blocked').map((a) => a.agentName);
   const partial = search.filter((a) => a.allowed === 'partial').length;
   // Unverifiable access counts as none: if the audit couldn't read the site, neither can crawlers.

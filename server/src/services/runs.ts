@@ -80,6 +80,7 @@ export function startRun(project: Project, opts: StartRunOptions = {}): Run {
     id: runId, project_id: project.id, trigger: opts.trigger ?? 'manual', status: jobs.length ? 'queued' : 'completed',
     engines_json: JSON.stringify(engines), total_jobs: jobs.length, done_jobs: 0, failed_jobs: 0, error: null, day,
     started_at: nowIso(), finished_at: jobs.length ? null : nowIso(), mode, reused_jobs: candidates.length - jobs.length,
+    prompt_ids_json: opts.promptIds?.length ? JSON.stringify(prompts.map((p) => p.id)) : null,
   });
   if (jobs.length) void processRun(runId, project, jobs, mode);
   return getRun(runId)!;
@@ -141,7 +142,8 @@ async function processRun(runId: string, project: Project, jobs: Job[], mode: Ru
 
 /**
  * Boot recovery for runs left queued/running by a restart. Jobs inside a submitted provider batch are left to the
- * batch poller; recent runs answer their remaining jobs in real time (prompts answered today are not re-asked);
+ * batch poller; recent runs answer their remaining jobs in real time (prompts answered today are not re-asked, and a
+ * check limited to some prompts stays limited to them);
  * old runs without pending batches are marked failed. total_jobs is re-based so the run always completes.
  */
 export function recoverRuns(): void {
@@ -159,8 +161,10 @@ export function recoverRuns(): void {
       'SELECT COALESCE(SUM(error IS NULL), 0) done, COALESCE(SUM(error IS NOT NULL), 0) failed FROM responses WHERE run_id = ?', [r.id]);
     const skip = new Set([...answeredToday(project.id, r.day), ...batchedPromptKeys(r.id)]);
     const engines = parseJson<EngineId[]>(r.engines_json, []);
+    // A check limited to some prompts resumes with those prompts only, not the whole project.
+    const only = parseJson<string[] | null>(r.prompt_ids_json, null);
     const remaining = recent
-      ? listPrompts(project.id).filter((p) => p.active).flatMap((prompt) => engines.map((engine) => ({ prompt, engine })))
+      ? listPrompts(project.id).filter((p) => (only ? only.includes(p.id) : p.active)).flatMap((prompt) => engines.map((engine) => ({ prompt, engine })))
         .filter((j) => !skip.has(`${j.prompt.id}|${j.engine}`))
       : [];
     const done = counts?.done ?? 0;

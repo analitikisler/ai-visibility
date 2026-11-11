@@ -256,7 +256,7 @@ export function getReferralOverview(projectId: string, days: number): ReferralOv
   };
 }
 
-/** Most recent non-demo event (bot or referral) — "is the integration live?". */
+/** Most recent event (bot or referral, demo data included) — "is the integration live?". */
 export function lastEventAt(projectId: string): string | null {
   const row = get<{ t: string | null }>(
     `SELECT MAX(t) t FROM (SELECT MAX(ts) t FROM bot_events WHERE project_id = ?

@@ -5,7 +5,7 @@ import type { EngineId, Run, RunMode, RunStatus } from '../../../shared/types.ts
 export interface RunRow {
   id: string; project_id: string; trigger: string; status: string; engines_json: string; total_jobs: number;
   done_jobs: number; failed_jobs: number; error: string | null; day: string; started_at: string; finished_at: string | null;
-  mode: string; reused_jobs: number;
+  mode: string; reused_jobs: number; prompt_ids_json: string | null;
 }
 
 export function toRun(r: RunRow): Run {

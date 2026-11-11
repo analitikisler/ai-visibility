@@ -29,11 +29,18 @@ const RATES: Record<EngineId, [RegExp, Rate][]> = {
     [/^gpt-5-mini/, { input: 0.25, cachedInput: 0.025, output: 2.0, batchFactor: 0.5, perSearch: 0.01 }],
     [/./, { input: 2.0, cachedInput: 0.2, output: 12.0, batchFactor: 0.5, perSearch: 0.01 }],
   ],
+  // Claude rows re-checked 2026-11-03. Cache reads are 10% of input except where a model lists its own rate.
   claude: [
     [/^claude-haiku-5/, { input: 0.1, cachedInput: 0.01, output: 0.5, batchFactor: 0.5, perSearch: 0.01 }],
-    [/^claude-opus-5/, { input: 4.0, cachedInput: 0.2, output: 20.0, batchFactor: 0.5, perSearch: 0.01 }],
-    [/^claude-fable/, { input: 10.0, cachedInput: 0.25, output: 50.0, batchFactor: 0.5, perSearch: 0.01 }],
-    [/./, { input: 2.0, cachedInput: 0.2, output: 10.0, batchFactor: 0.5, perSearch: 0.01 }], // Sonnet 5.5
+    [/^claude-haiku/, { input: 1.0, cachedInput: 0.1, output: 5.0, batchFactor: 0.5, perSearch: 0.01 }], // Haiku 4.5
+    [/^claude-sonnet-5-5/, { input: 2.0, cachedInput: 0.1, output: 10.0, batchFactor: 0.5, perSearch: 0.01 }],
+    [/^claude-sonnet-5/, { input: 2.0, cachedInput: 0.2, output: 10.0, batchFactor: 0.5, perSearch: 0.01 }],
+    [/^claude-sonnet/, { input: 3.0, cachedInput: 0.3, output: 15.0, batchFactor: 0.5, perSearch: 0.01 }], // Sonnet 4.6
+    [/^claude-opus-5-5/, { input: 4.0, cachedInput: 0.2, output: 20.0, batchFactor: 0.5, perSearch: 0.01 }],
+    [/^claude-opus/, { input: 5.0, cachedInput: 0.5, output: 25.0, batchFactor: 0.5, perSearch: 0.01 }], // Opus 5, 4.8, 4.7, 4.6
+    [/^claude-(fable|mythos)-5-2/, { input: 8.0, cachedInput: 0.2, output: 40.0, batchFactor: 0.5, perSearch: 0.01 }],
+    [/^claude-(fable|mythos)/, { input: 10.0, cachedInput: 0.25, output: 50.0, batchFactor: 0.5, perSearch: 0.01 }], // Fable 5, 5.1
+    [/./, { input: 10.0, cachedInput: 1.0, output: 50.0, batchFactor: 0.5, perSearch: 0.01 }],
   ],
   gemini: [
     [/./, { input: 0.3, cachedInput: 0.03, output: 2.5, batchFactor: 0.5, perSearch: 0.035 }], // 2.5 Flash; per grounded prompt
