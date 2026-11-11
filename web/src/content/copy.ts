@@ -24,13 +24,6 @@ export function plural(count: number, forms: { readonly one: string; readonly ot
   return fmt(count === 1 ? forms.one : forms.other, { count, ...vars });
 }
 
-/** 1 → "1st", 2 → "2nd", 11 → "11th". For single-answer positions (averages use "#2.4"). */
-export function ordinal(n: number): string {
-  const r100 = n % 100;
-  const suffix = r100 >= 11 && r100 <= 13 ? 'th' : ({ 1: 'st', 2: 'nd', 3: 'rd' } as Record<number, string>)[n % 10] ?? 'th';
-  return `${n}${suffix}`;
-}
-
 export const copy = {
   // ------------------------------------------------------------------ app shell
   app: {

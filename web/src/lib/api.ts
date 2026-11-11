@@ -144,7 +144,7 @@ export interface AggParams {
   engine?: EngineId;
   tier?: PromptTier;
 }
-/** `GET /projects/:id/responses` filters (the server doesn't take `days`/`tier` here). */
+/** `GET /projects/:id/responses` filters. */
 export interface ResponsesParams {
   engine?: EngineId;
   promptId?: string;
@@ -252,7 +252,7 @@ export const api = {
   getResponse: (rid: string) => http.get<AiResponse>(`/responses/${rid}`),
 
   // diagnose / plan / act
-  // Diagnose and recommendations are computed over the project's recent history (no filters).
+  // Diagnose follows the selected period; recommendations use the server's default window (30 days).
   getDiagnosis: (projectId: string, p?: { days?: number }) => http.get<Diagnosis>(`/projects/${projectId}/diagnose`, { days: p?.days }),
   listRecommendations: (projectId: string) => http.get<Recommendation[]>(`/projects/${projectId}/recommendations`),
   updateRecommendation: (projectId: string, key: string, status: RecStatus) =>

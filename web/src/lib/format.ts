@@ -155,11 +155,6 @@ export function dayLabel(day: string | null | undefined, opts: { year?: boolean 
   return (opts.year ? MONTH_DAY_YEAR : MONTH_DAY).format(d);
 }
 
-/** `Oct 14 – Oct 20` from two 'YYYY-MM-DD' days. */
-export function dayRange(from: string, to: string): string {
-  return `${dayLabel(from)} – ${dayLabel(to)}`;
-}
-
 /** ISO → `Oct 14` (adds the year when not the current year). */
 export function date(iso: string | null | undefined): string {
   if (!iso) return DASH;

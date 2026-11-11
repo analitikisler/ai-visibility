@@ -44,6 +44,3 @@ export function Logo({ variant = 'full', size, className, tone = 'brand', title 
     />
   );
 }
-
-/** The raw artwork (viewBox + inner SVG) for compositions such as the hero or the OG card. */
-export const MARK_PATHS = { mark: MARK, lockup: LOCKUP } as const;

@@ -1,7 +1,7 @@
 // Shared chart chrome (BRAND §7): recessive axes/grid, token tooltips, legends that match entity colors.
 import type { ReactNode } from 'react';
 import { cn } from '@/lib/cn';
-import { dayLabel, num, pct, score } from '@/lib/format';
+import { num, pct, score } from '@/lib/format';
 
 export interface SeriesDef {
   /** Data key in each row (e.g. 'brand' or a competitor id). */
@@ -79,8 +79,6 @@ export function ChartTooltipBox({ title, rows, footer }: { title?: ReactNode; ro
     </div>
   );
 }
-
-export const dayTick = (d: string) => dayLabel(d);
 
 export interface LegendProps {
   items: SeriesDef[];

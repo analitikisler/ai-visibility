@@ -72,7 +72,6 @@ export const SOURCE_TYPE_COLORS: Record<SourceType, string> = {
   competitor: 'var(--chart-2)',
   third_party: OTHER_COLOR,
 };
-export const SOURCE_TYPE_NAMES: Record<SourceType, string> = { own: 'Your site', competitor: 'Competitor', third_party: 'Third party' };
 
 /** Crawler categories as a categorical series (non-brand slots, fixed order). */
 export const AGENT_CATEGORY_COLORS: Record<AgentCategory, string> = {

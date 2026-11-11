@@ -13,15 +13,6 @@ export const ENGINE_GLYPH_COLOR: Record<EngineId, string> = {
   deepseek: 'var(--chart-3)', // Orchid
 };
 
-const ENGINE_LABEL: Record<EngineId, string> = {
-  chatgpt: 'ChatGPT',
-  claude: 'Claude',
-  gemini: 'Gemini',
-  perplexity: 'Perplexity',
-  grok: 'Grok',
-  deepseek: 'DeepSeek',
-};
-
 /** Marker shapes on a 24-unit grid, optically centred on (12, 12). */
 function Shape({ engine, fill }: { engine: EngineId; fill: string }) {
   const round = { stroke: fill, strokeWidth: 1.5, strokeLinejoin: 'round' as const };
@@ -89,6 +80,3 @@ export function EngineGlyph({ engine, size = 16, variant = 'tile', className, ti
     </svg>
   );
 }
-
-/** Display name for an engine id (same strings as brand/retired/overt/BRAND.md "Engines"). */
-export const engineGlyphLabel = (engine: EngineId) => ENGINE_LABEL[engine];

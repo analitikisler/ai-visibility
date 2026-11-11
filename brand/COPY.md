@@ -1,7 +1,7 @@
 # ai visibility — UI & marketing copy
 
 > Source of truth for every word in the product and on the landing page.
-> The code version is `web/src/content/copy.ts` (`import { copy, fmt, plural, ordinal } from '@/content/copy'`). This file mirrors it for review. If the two ever disagree, `copy.ts` is what ships; change it there first, then update this file.
+> The code version is `web/src/content/copy.ts` (`import { copy, fmt, plural } from '@/content/copy'`). This file mirrors it for review. If the two ever disagree, `copy.ts` is what ships; change it there first, then update this file.
 > Voice rules come from `brand/ai/BRAND.md` §11 (the ai tool family guide; the old Overt guide is retired in `brand/retired/overt/`). When this file and the guide disagree, the guide wins.
 
 **Reading this doc**

@@ -100,10 +100,10 @@ Typed fetch (`api.*`, throws `ApiError` with the server's `{error}` text; `error
 - **Projects:** `useProjects`, `useProjectQuery`, `useCreateProject`, `useUpdateProject(id)`, `useDeleteProject`, `useSuggestProject`, `useSeedDemo`
 - **Competitors / prompts:** `useCompetitors`, `useCreateCompetitor(id)`, `useUpdateCompetitor(id)` (`{ id, …patch }`), `useDeleteCompetitor(id)`; `usePrompts`, `useCreatePrompts(id)` (one or many), `useUpdatePrompt(id)`, `useDeletePrompt(id)`
 - **Checks (runs):** `useStartRun(id)` (`{ mode: 'batch' }` cheaper, `{ force: true }` skips same-day reuse), `useRuns(id)`, `useRun(rid)` (polls every 1.5s while queued/running, every 30s while only waiting on provider batches; on completion invalidates every answer-derived query and usage), `useActiveRun(id)`, `isRunActive(run)`, `isWaitingOnBatch(run)`
-- **Monitor:** `useOverview(id, params)`, `usePromptStats(id, params)`, `useSources(id, params)`, `useResponses(id, { engine, promptId, runId, mentioned, limit, offset })`, `useResponse(rid)`
+- **Monitor:** `useOverview(id, params)`, `usePromptStats(id, params)`, `useSources(id, params)`, `useResponses(id, { engine, promptId, runId, mentioned, failed, days, tier, q, citedDomain, limit, offset })`, `useResponse(rid)`
 - **Diagnose / act:** `useDiagnosis(id)`, `useRecommendations(id)`, `useUpdateRecommendation(id)` (optimistic), `useDrafts(id)`, `useCreateDraft(id)`, `useUpdateDraft(id)`, `useDeleteDraft(id)`
-- **Readiness:** `useRunAudit(id)`, `useLatestAudit(id)`, `useAudits(id)`
-- **Crawlers / traffic:** `useCrawlerOverview(id, { days })`, `useBotEvents(id, { limit, offset, agent, category, operator, path, days })`, `useReferralOverview(id, { days })`, `useUploadLogs(id)`, `useIntegration(id)`, `useAgents()`
+- **Readiness:** `useRunAudit(id, domain)`, `useLatestAudit(id)`, `useAudits(id)`
+- **Crawlers / traffic:** `useCrawlerOverview(id, { days })`, `useBotEvents(id, { limit, offset, agent, category, operator, path, days, verification })`, `useReferralOverview(id, { days })`, `useUploadLogs(id)`, `useIntegration(id)`, `useRotateIngestToken(id)`, `useAgents()`
 - **Report:** `useReport(id, { days })`, `exportCsvUrl(id, 'responses' | 'mentions' | 'citations' | 'bot_events' | 'prompts', { days })`
 
 Mutations invalidate the right keys (`qk.*`; everything about a project lives under `['p', projectId]`). Aggregate hooks keep the previous data while filters change (`isPlaceholderData`).
