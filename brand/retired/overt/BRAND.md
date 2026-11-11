@@ -1,6 +1,11 @@
 > **Retired 25 Oct 2026.** Overt is now **ai visibility**, one of the Analitik İşler ai tools. The brand guide is
-> [`brand/ai/BRAND.md`](../../ai/BRAND.md) (board: `brand/ai/board.html`). This file is kept for history only; its name,
-> logo, blue (`#2F5CF6`) and tagline are no longer used in new work.
+> [`brand/ai/BRAND.md`](../../ai/BRAND.md) (board: `brand/ai/board.html`). The Overt identity is history: its name,
+> logo, blue (`#2F5CF6`) and tagline (sections 1–3, 5 and 12) are no longer used in new work.
+>
+> **Still in force:** the UI system. Section 4's rules for writing metrics, empty states and errors, and sections
+> 6–11 (colour, data visualization, typography, icons, layout, implementation) describe the app as it is built, and
+> `BRAND §N` in code comments and in `web/README.md` points here. Where a section names the Overt blue, the tokens
+> in `brand/tokens.css` win. Voice comes from `brand/ai/BRAND.md` §11.
 
 # Overt — Brand Guide
 

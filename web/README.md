@@ -1,7 +1,7 @@
 # ai visibility web
 
 React 19 · React Router 7 (data router, lazy routes) · TanStack Query 5 · Recharts 3 · Tailwind 4 · lucide-react.
-Read `brand/ai/BRAND.md` (the ai tool family guide) first; UI tokens are `brand/tokens.css`. Copy comes from `@/content/copy` (Creative), art from `@/components/art` (Art).
+Read `brand/ai/BRAND.md` (the ai tool family guide) first; UI tokens are `brand/tokens.css`. `BRAND §N` below and in code comments means the UI sections of `brand/retired/overt/BRAND.md` (§4 and §6–11), which still apply. Copy comes from `@/content/copy` (Creative), art from `@/components/art` (Art).
 
 ```bash
 npm run dev -w web          # :5180, proxies /api → :4400 (override with API_URL=http://localhost:4402)
@@ -98,7 +98,7 @@ Typed fetch (`api.*`, throws `ApiError` with the server's `{error}` text; `error
 
 - **Settings / engines / spend:** `useSettings`, `useUpdateSettings` (incl. `cost`: budget, scheduled mode, same-day reuse), `useEngines`, `useUsage(days)` (estimated live spend; 404 on servers without cost tracking)
 - **Projects:** `useProjects`, `useProjectQuery`, `useCreateProject`, `useUpdateProject(id)`, `useDeleteProject`, `useSuggestProject`, `useSeedDemo`
-- **Competitors / prompts:** `useCompetitors`, `useCreateCompetitor(id)`, `useUpdateCompetitor(id)` (`{ id, …patch }`), `useDeleteCompetitor(id)`; `usePrompts`, `useCreatePrompts(id)` (one or many), `useUpdatePrompt(id)`, `useDeletePrompt(id)`
+- **Competitors / prompts:** `useCreateCompetitor(id)`, `useUpdateCompetitor(id)` (`{ id, …patch }`), `useDeleteCompetitor(id)`; `usePrompts`, `useCreatePrompts(id)` (one or many), `useUpdatePrompt(id)`, `useDeletePrompt(id)`
 - **Checks (runs):** `useStartRun(id)` (`{ mode: 'batch' }` cheaper, `{ force: true }` skips same-day reuse), `useRuns(id)`, `useRun(rid)` (polls every 1.5s while queued/running, every 30s while only waiting on provider batches; on completion invalidates every answer-derived query and usage), `useActiveRun(id)`, `isRunActive(run)`, `isWaitingOnBatch(run)`
 - **Monitor:** `useOverview(id, params)`, `usePromptStats(id, params)`, `useSources(id, params)`, `useResponses(id, { engine, promptId, runId, mentioned, failed, days, tier, q, citedDomain, limit, offset })`, `useResponse(rid)`
 - **Diagnose / act:** `useDiagnosis(id)`, `useRecommendations(id)`, `useUpdateRecommendation(id)` (optimistic), `useDrafts(id)`, `useCreateDraft(id)`, `useUpdateDraft(id)`, `useDeleteDraft(id)`
@@ -111,8 +111,8 @@ Mutations invalidate the right keys (`qk.*`; everything about a project lives un
 ## Helpers
 
 - `@/lib/filters` — `useFilters()` → `{ days, engine, setDays, setEngine, params }`; `useFilterSearch()` keeps `?days&engine` on links.
-- `@/lib/format` — `pct(0.38)` "38%" / "4.2%", `pct(22.2, { from100: true })`, `score`, `num` / `compact` ("12.5k"), `position` "#2.4", `ordinal` "2nd", `sentiment(raw)` / `sentimentScore` / `sentimentLabel`, `formatDelta(d, kind)`, `points(n)` "1 pt" / "6 pts", `relativeTime`, `dayLabel('2026-10-14')` "Oct 14", `date`, `dateTime`, `rangeLabel`, `duration`, `bytes`, `usd` ("$12.40", "$0.18", "<$0.01"; `{ precise: true }` → "$0.0042" for per-answer costs). Missing values render "—"; negatives use a true minus.
-- `@/lib/colors` — `BRAND_COLOR` (`--chart-1`), `OTHER_COLOR`, `entityColorMap(project)` (already in `useProject().colors`), `competitorColor`, `themeColor(serverHex)`, `SENTIMENT_COLORS`, `SOURCE_TYPE_COLORS`, `AGENT_CATEGORY_COLORS/NAMES`, `heatStep` / `heatColor`.
+- `@/lib/format` — `pct(0.38)` "38%" / "4.2%", `pct(22.2, { from100: true })`, `score`, `num` / `compact` ("12.5k"), `position` "#2.4", `ordinal` "2nd", `sentimentScore` / `sentimentLabel`, `formatDelta(d, kind)`, `points(n)` "1 pt" / "6 pts", `relativeTime`, `dayLabel('2026-10-14')` "Oct 14", `date`, `dateTime`, `duration`, `bytes`, `usd` ("$12.40", "$0.18", "<$0.01"; `{ precise: true }` → "$0.0042" for per-answer costs). Missing values render "—"; negatives use a true minus.
+- `@/lib/colors` — `BRAND_COLOR` (`--chart-1`), `OTHER_COLOR`, `entityColorMap(project)` (already in `useProject().colors`), `competitorColor`, `SENTIMENT_COLORS`, `SOURCE_TYPE_COLORS`, `AGENT_CATEGORY_COLORS`, `heatStep` / `heatColor`.
 - `@/lib/engines` — `ENGINES[id]` `{ name, vendor, color, dotClass }`, `ENGINE_IDS`, `engineName`, `engineColor`, `isEngineId` (engine colors only on engine-series charts); `describeEngineError(raw, engine?)` → `{ message, detail }` for failed answers/checks (plain words first, HTTP status + provider code as detail, never raw JSON).
 - `@/lib/theme` — `useTheme()` `{ pref, resolved, setPref }`.
 - CSS utilities: `tnum` (tabular digits), `eyebrow` (12px muted label, sentence case), `scrollbar-none`; `data-print="hide"` / `data-print="avoid-break"` for print.

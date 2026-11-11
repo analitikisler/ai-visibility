@@ -1,7 +1,7 @@
 # ai visibility — UI & marketing copy
 
 > Source of truth for every word in the product and on the landing page.
-> The code version is `web/src/content/copy.ts` (`import { copy, fmt, plural } from '@/content/copy'`). This file mirrors it for review. If the two ever disagree, `copy.ts` is what ships; change it there first, then update this file.
+> The code version is `web/src/content/copy.ts` (`import { copy, fmt, plural } from '@/content/copy'`). This file covers the main strings for review, not every one: `copy.ts` holds the full set (newer areas such as batch checks, spend and IP verification are only partly listed here). If the two ever disagree, `copy.ts` is what ships; change it there first, then update this file.
 > Voice rules come from `brand/ai/BRAND.md` §11 (the ai tool family guide; the old Overt guide is retired in `brand/retired/overt/`). When this file and the guide disagree, the guide wins.
 
 **Reading this doc**
@@ -245,7 +245,7 @@ Landing nav: Product · How it works · FAQ · Open the demo
 | `simulatedBanner.cta` | Add API key |
 | `simulatedBanner.dismiss` | Hide for now |
 | `demoBanner.title` | Demo project |
-| `demoBanner.body` | A sample brand with 30 days of simulated answers, so you can explore every screen. |
+| `demoBanner.body` | A sample brand with 60 days of simulated answers, so you can explore every screen. |
 | `demoBanner.cta` | Start tracking your brand |
 
 ### Run check button
@@ -641,15 +641,16 @@ Each page: title, the question it answers, its empty state, then every other str
 | `columns.answers` | Answers |
 | `columns.tier` | Tier |
 | `columns.prompts` | Prompts |
+| `quiet.title` | No answers for these filters |
+| `quiet.body` | No answers were collected for this period and engine. Choose a longer period or another engine, or run a new check. |
 | `insights.behind` | You appear in {visibility} of answers. {leader} leads at {leaderVisibility}. |
 | `insights.alone` | You appear in {visibility} of answers. |
-| `insights.leading` | You lead. {runnerUp} is next at {runnerUpVisibility}. |
+| `insights.leading` | You appear in {visibility} of answers and lead. {runnerUp} is next at {runnerUpVisibility}. |
 | `insights.bestEngine` | Strongest on {engine} ({visibility}). Weakest on {weakEngine} ({weakVisibility}). |
 | `insights.notMentioned` | {engine} hasn’t mentioned you in this period. |
 | `insights.lostPrompts.one` | 1 prompt lost to a competitor. |
 | `insights.lostPrompts.other` | {count} prompts lost to competitors. |
 | `insights.seeLost` | See lost prompts |
-| `totals` | {responses} answers · {prompts} prompts · {runs} checks |
 | `viewAll` | View all |
 
 ### Prompts `/app/p/:id/prompts`
@@ -832,7 +833,6 @@ Each page: title, the question it answers, its empty state, then every other str
 | `detail.openSource` | Open source |
 | `detail.prev` | Previous answer |
 | `detail.next` | Next answer |
-| `detail.error` | {engine} didn’t return an answer. {error} |
 
 ### Diagnose `/app/p/:id/diagnose`
 
@@ -934,14 +934,16 @@ Each page: title, the question it answers, its empty state, then every other str
 | `columns.time` | Time |
 | `columns.userAgent` | User agent |
 | `columns.ip` | IP |
-| `columns.verified` | Verified |
+| `columns.verified` | IP check |
 | `columns.source` | Source |
 | `missedSource.sitemap` | Sitemap |
 | `missedSource.known` | Seen before |
-| `verified.yes` | Verified |
-| `verified.no` | Unverified |
-| `verified.yesTooltip` | IP matches the operator’s published ranges for this agent. |
-| `verified.noTooltip` | Identified by user agent. IP not confirmed against the operator’s published ranges. |
+| `verification.verified.label` | Verified |
+| `verification.verified.tooltip` | IP is in the ranges the operator publishes for this agent. |
+| `verification.unverified.label` | Unverified |
+| `verification.unverified.tooltip` | Identified by user agent only. There was no IP to check, or this agent has no published IP list. |
+| `verification.spoofed.label` | Spoofed |
+| `verification.spoofed.tooltip` | Claims to be this agent, but the IP is outside the operator’s published ranges. Left out of your totals. |
 | `eventSource.ingest` | Server snippet |
 | `eventSource.log_upload` | Log upload |
 | `eventSource.pixel` | Referral script |
@@ -959,7 +961,7 @@ Each page: title, the question it answers, its empty state, then every other str
 | `upload.placeholder` | Paste log lines here |
 | `upload.submit` | Read log |
 | `upload.reading` | Reading log… |
-| `upload.result` | Read {parsed} lines: {bots} AI crawler visits, {referrals} AI referrals, {skipped} skipped. |
+| `upload.result` | Read {parsed} lines · AI crawler visits: {bots} · AI referrals: {referrals} · Skipped: {skipped} |
 | `upload.nothingFound` | No AI agent or AI referral hits in that log. |
 | `upload.alreadyImported` | Nothing new. All {duplicates} AI hits in that log were imported before. |
 
@@ -1075,7 +1077,7 @@ Each page: title, the question it answers, its empty state, then every other str
 | `sections.api` | Ingest API |
 | `sections.apiBody` | POST one event or an array as JSON. Each event needs a user agent. |
 | `sections.siteKey` | Site key |
-| `sections.siteKeyBody` | Identifies this project. It’s visible in your tracking script and can only send events, not read them. |
+| `sections.siteKeyBody` | Public. It sits in your referral script and can only report visits from AI assistants, nothing else. |
 | `snippetTabs` | Platform |
 | `copy` | Copy snippet |
 | `copied` | Copied |
