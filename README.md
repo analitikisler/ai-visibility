@@ -60,6 +60,8 @@ Live checks are billed to your own provider accounts. Workspace settings track s
 
 Each project has a **market** (a country name or code) and a **language**. Every live engine is told which market the question comes from, and ChatGPT and Claude also search from that country; a United States project sends nothing extra. Engines answer in the language each prompt is written in, and the project language is used for suggested prompts and for drafts.
 
+Brands are found in answers by matching their names, and sentiment comes from a word list. That works offline but counts an ordinary word that happens to be a brand name ("the notion that…"). Turn on **Check brands and sentiment in answers** in Workspace settings and each live answer that names a tracked brand is also sent to the analysis engine, which drops matches that aren't about the company and scores sentiment. It costs one extra model call per answer, counted in spend; simulated answers and the demo are never sent. If the call fails, the name-matched result stays.
+
 AI answers vary from one ask to the next, so a score is an estimate: the visibility score shows its margin of error, and a change smaller than that margin is reported as steady. To narrow the margin, raise **Answers per prompt** in Workspace settings (1–5, default 1); each prompt is then asked that many times per engine in a check, and live cost multiplies by the same number.
 
 Checks run on each project's schedule (daily / weekly / manual) via an in-process scheduler, or on demand with **Run check**. Scheduled checks only run in production (`npm start`); under `npm run dev` they are off unless `SCHEDULER=on`, so a dev copy with the same keys never pays for them twice.

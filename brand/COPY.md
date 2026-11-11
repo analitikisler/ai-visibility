@@ -835,6 +835,9 @@ Each page: title, the question it answers, its empty state, then every other str
 | `detail.mentionContext` | Context |
 | `detail.copyAnswer` | Copy answer |
 | `detail.openSource` | Open source |
+| `detail.analysis` | Brands and sentiment |
+| `detail.analysisBy.rules` | Matched by name |
+| `detail.analysisBy.model` | Checked by the analysis engine |
 | `detail.prev` | Previous answer |
 | `detail.next` | Next answer |
 
@@ -1126,7 +1129,7 @@ Each page: title, the question it answers, its empty state, then every other str
 | `sections.models` | Models |
 | `sections.modelsBody` | Override the model used for live checks. Leave blank for the default. |
 | `sections.analysis` | Analysis engine |
-| `sections.analysisBody` | Writes prompt suggestions and agent drafts. Defaults to the first live engine. |
+| `sections.analysisBody` | Writes prompt suggestions and agent drafts, and can check brands and sentiment in answers. Defaults to the first live engine. |
 | `key.label` | {vendor} API key |
 | `key.placeholder` | Paste key |
 | `key.save` | Save key |

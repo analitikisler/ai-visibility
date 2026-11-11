@@ -5,6 +5,7 @@
 import { all, dayOf, get, id, insert, nowIso, parseJson, run } from '../db/index.ts';
 import type { EngineId, Project, Prompt, Run, RunMode } from '../../../shared/types.ts';
 import { saveResponse } from '../analysis/persist.ts';
+import { refineResponse } from '../analysis/refine.ts';
 import { ask } from '../engines/index.ts';
 import { batchedPromptKeys, canBatch, submitBatch } from './batches.ts';
 import { costSettings } from './cost.ts';
@@ -105,7 +106,9 @@ async function answerRealtime(runId: string, project: Project, jobs: Job[], day:
       let ok = false;
       try {
         const answer = await ask(job.engine, job.prompt.text, { project, prompt: job.prompt, day, economy, sample: job.sample });
-        saveResponse({ runId, project, promptId: job.prompt.id, engine: job.engine, answer, day, createdAt: nowIso() });
+        const responseId = saveResponse({ runId, project, promptId: job.prompt.id, engine: job.engine, answer, day, createdAt: nowIso() });
+        // Optional model check of mentions and sentiment, before the job counts as done so scores are final when the check is.
+        if (!answer.error) await refineResponse(project, responseId);
         ok = !answer.error;
         if (answer.error) noteRunError(runId, `${job.engine}: ${answer.error}`);
       } catch (err) {

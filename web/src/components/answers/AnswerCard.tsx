@@ -264,6 +264,7 @@ export function AnswerCard({ answer, hidePrompt, bare, entities, className }: An
       <footer className="mt-5 flex flex-wrap items-end justify-between gap-3 border-t border-border pt-4">
         <dl className="grid grid-cols-2 gap-x-6 gap-y-2 sm:grid-cols-3">
           <Meta label={D.model}>{answer.model}</Meta>
+          {!answer.error && <Meta label={D.analysis}>{D.analysisBy[answer.analysis ?? 'rules']}</Meta>}
           <Meta label={D.latency}>{duration(answer.latencyMs)}</Meta>
           <Meta label={copy.pages.responses.columns.date}>{dateTime(answer.createdAt)}</Meta>
           {answer.usage && <UsageMeta usage={answer.usage} />}

@@ -50,6 +50,7 @@ Every feature works end-to-end in **simulated mode** and switches to **live mode
 ## Module interfaces
 - `server/src/lib/llm.ts` → `hasLlm()`, `llmComplete({system,prompt,json,maxTokens,engine}) → Promise<LlmResult|null>` (null ⇒ caller falls back to templates).
 - `server/src/services/scheduler.ts` → `startScheduler()`.
+- `server/src/analysis/refine.ts` → `refineResponse(project, responseId)`: when `analysisMode` is `'model'` and an engine is live, asks the analysis engine whether each name-matched entity in a live answer really is that company and how the answer speaks about it, then removes false matches, re-ranks positions and replaces sentiment (`responses.analysis` = `'model'`). Runs after each answer is stored, before its job counts as done. Any failure keeps the rule-based result; re-analysis after tracked names change goes back to rules.
 - `server/src/services/notify.ts` → `notify(kind, { project?, title, text, data?, once?, cooldown? })` queues a JSON POST to the workspace webhook (returns at once; never throws; public addresses only via `lib/safe-fetch.ts`). `notifyAfterRun(runId)` reports a failed check or a real visibility drop; the budget gate and crawler ingestion call `notify` for `budget_reached` and `new_agent`.
 - `server/src/services/events.ts` → `recordEvent(projectId, kind, title)`, `listEvents(projectId, days)`. Call `recordEvent` wherever something changes that a score should be read against: a draft published, a recommendation done, an own-site audit score change, competitors or prompts added or removed, engines or market changed.
 - `server/src/crawlers/seed.ts` → `seedCrawlerData(projectId, opts?: { days?: number; siteDomain?: string })` — called by the demo seed.
@@ -65,7 +66,7 @@ Every feature works end-to-end in **simulated mode** and switches to **live mode
 Common aggregate query params: `days` (default 30), `engine` (optional EngineId), `tier` (optional).
 
 **Monitoring**
-- `GET /settings` → SettingsView · `PUT /settings` (SettingsUpdate, incl. `cost`: monthly budget, scheduled mode, same-day reuse, samples per prompt; `notifications`: webhook URL and which kinds are sent) · `POST /settings/notifications/test` → NotificationDelivery → SettingsView · `GET /engines` → EngineInfo[]
+- `GET /settings` → SettingsView · `PUT /settings` (SettingsUpdate, incl. `analysisMode`: 'rules' | 'model'; `cost`: monthly budget, scheduled mode, same-day reuse, samples per prompt; `notifications`: webhook URL and which kinds are sent) · `POST /settings/notifications/test` → NotificationDelivery → SettingsView · `GET /engines` → EngineInfo[]
 - `GET /usage?days=30` → UsageView (estimated live spend, savings, by engine / project / day)
 - `GET /projects` → Project[] · `POST /projects` (ProjectInput) → Project · `GET|PUT|DELETE /projects/:id`
 - `POST /projects/suggest` ({name, domain, description?}) → ProjectSuggestion

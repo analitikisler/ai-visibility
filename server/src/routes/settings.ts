@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { getSetting, secret, setSetting } from '../db/index.ts';
 import type { SettingsView } from '../../../shared/types.ts';
 import { ANALYSIS_ENGINE_SETTING, analysisEngine, ENGINE_IDS, ENGINES, engineModel, listEngines } from '../engines/catalog.ts';
+import { analysisMode, setAnalysisMode } from '../analysis/refine.ts';
 import { readJson, validate } from './projects.ts';
 import { costSettings, MAX_SAMPLES, updateCostSettings } from '../services/cost.ts';
 import { NOTIFICATION_KINDS, notificationSettings, sendTestNotification, updateNotificationSettings } from '../services/notify.ts';
@@ -18,6 +19,7 @@ const SettingsUpdateSchema = z.object({
   keys: z.partialRecord(z.enum(KEY_SETTINGS), z.string().trim().max(500).regex(/^[\x21-\x7e]*$/, 'API keys can only contain printable characters without spaces').nullable()).optional(),
   models: z.partialRecord(z.enum(MODEL_SETTINGS), z.string().trim().max(120).regex(/^[\w.:@/-]*$/, 'invalid model id')).optional(),
   analysisEngine: z.enum(ENGINE_IDS).nullable().optional(),
+  analysisMode: z.enum(['rules', 'model']).optional(),
   cost: z.object({
     monthlyBudgetUsd: z.number().min(0).max(100_000).optional(),
     scheduledMode: z.enum(['realtime', 'batch']).optional(),
@@ -52,6 +54,7 @@ function settingsView(): SettingsView {
     defaultModels,
     analysisEngine: analysisEngine(),
     analysisEnginePreference: ENGINE_IDS.find((id) => id === preferred) ?? null,
+    analysisMode: analysisMode(),
     cost: costSettings(),
     notifications: notificationSettings(),
   };
@@ -66,6 +69,7 @@ app.put('/settings', async (c) => {
   for (const [key, value] of Object.entries(body.keys ?? {})) setSetting(key, value || null);
   for (const [key, value] of Object.entries(body.models ?? {})) setSetting(key, value || null);
   if (body.analysisEngine !== undefined) setSetting(ANALYSIS_ENGINE_SETTING, body.analysisEngine);
+  if (body.analysisMode !== undefined) setAnalysisMode(body.analysisMode);
   if (body.cost) updateCostSettings(body.cost);
   if (body.notifications) updateNotificationSettings(body.notifications);
   return c.json(settingsView());

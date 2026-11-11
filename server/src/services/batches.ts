@@ -4,6 +4,7 @@
 import { all, dayOf, get, id, insert, nowIso, parseJson, run, tx } from '../db/index.ts';
 import type { EngineId, Project, Prompt } from '../../../shared/types.ts';
 import { persistResponse, saveResponse } from '../analysis/persist.ts';
+import { refineResponses } from '../analysis/refine.ts';
 import { engineKey, engineModel } from '../engines/catalog.ts';
 import { ask, liveAnswer, redactSecrets, type EngineAnswer } from '../engines/index.ts';
 import { typicalCostUsd } from '../engines/pricing.ts';
@@ -92,13 +93,17 @@ async function collect(b: BatchRow): Promise<void> {
     // Deleting a project deletes its runs and batches, so there is nothing left to update.
     if (!project) return reserve(-estimate);
     const day = get<{ day: string }>('SELECT day FROM runs WHERE id = ?', [b.run_id])?.day ?? dayOf();
-    const settle = (status: 'ended' | 'failed', error: string | null, answers: { promptId: string; answer: EngineAnswer }[]) => {
+    const settle = async (status: 'ended' | 'failed', error: string | null, answers: { promptId: string; answer: EngineAnswer }[]) => {
       const prompts = new Set(all<{ id: string }>('SELECT id FROM prompts WHERE project_id = ?', [project.id]).map((p) => p.id));
+      const stored: string[] = [];
       tx(() => {
         for (const { promptId, answer } of answers) {
           // A prompt deleted while the batch was out has nothing to attach its answer to; its job still counts.
           const known = prompts.has(promptId);
-          if (known) persistResponse({ runId: b.run_id, project, promptId, engine: b.engine, answer, day, createdAt: nowIso() });
+          if (known) {
+            const responseId = persistResponse({ runId: b.run_id, project, promptId, engine: b.engine, answer, day, createdAt: nowIso() });
+            if (!answer.error) stored.push(responseId);
+          }
           const jobError = known ? answer.error : 'Prompt was deleted before its answer arrived';
           bumpRun(b.run_id, !jobError);
           if (jobError) noteRunError(b.run_id, `${b.engine}: ${jobError}`);
@@ -106,6 +111,8 @@ async function collect(b: BatchRow): Promise<void> {
         run('UPDATE batch_jobs SET status = ?, error = ?, ended_at = ? WHERE id = ?', [status, error, nowIso(), b.id]);
       });
       reserve(-estimate);
+      // Optional model check of mentions and sentiment, before the check is marked finished.
+      await refineResponses(project, stored);
       maybeFinishRun(b.run_id);
     };
 
@@ -113,7 +120,7 @@ async function collect(b: BatchRow): Promise<void> {
     if (!adapter || !apiKey) {
       // The key was removed while the batch was out: fail its jobs so the run finishes instead of waiting forever.
       const reason = 'Engine key or batch API no longer available';
-      return settle('failed', reason, Object.values(items).map((promptId) => ({ promptId, answer: failed(reason) })));
+      return await settle('failed', reason, Object.values(items).map((promptId) => ({ promptId, answer: failed(reason) })));
     }
     const ctx = { apiKey, model: b.model, market: project.market };
     run('UPDATE batch_jobs SET checked_at = ? WHERE id = ?', [nowIso(), b.id]);
@@ -134,7 +141,7 @@ async function collect(b: BatchRow): Promise<void> {
       }
       answers.push({ promptId, answer });
     }
-    settle(state.state === 'failed' ? 'failed' : 'ended', state.state === 'failed' ? state.error : null, answers);
+    await settle(state.state === 'failed' ? 'failed' : 'ended', state.state === 'failed' ? state.error : null, answers);
     console.log(`[batches] ${b.engine}: collected ${results.size} of ${Object.keys(items).length} answers from ${b.provider_batch_id}`);
   } catch (err) {
     // Transient (network, 5xx): leave it submitted and try again on the next poll.

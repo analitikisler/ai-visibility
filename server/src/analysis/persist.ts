@@ -78,7 +78,7 @@ export function reanalyzeProject(project: Project): void {
     for (const r of rows) {
       const a = analyzeAnswer(r.text, [], project, entities);
       insertMentions(r.id, { projectId: project.id, promptId: r.prompt_id, engine: r.engine, day: r.day }, a);
-      stmt('UPDATE responses SET brand_mentioned = ?, brand_position = ?, brand_sentiment = ? WHERE id = ?')
+      stmt("UPDATE responses SET brand_mentioned = ?, brand_position = ?, brand_sentiment = ?, analysis = 'rules' WHERE id = ?")
         .run(a.brand.mentioned ? 1 : 0, a.brand.position, a.brand.sentiment, r.id);
     }
     // Per URL, so URL-prefix aliases (a repo or package page on a shared domain) classify correctly.

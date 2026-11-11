@@ -343,6 +343,7 @@ interface ResponseRow {
   id: string; project_id: string; run_id: string; prompt_id: string; prompt_text: string | null; engine: EngineId; model: string; mode: EngineMode; text: string;
   brand_mentioned: number; brand_position: number | null; brand_sentiment: number | null; latency_ms: number | null; error: string | null; created_at: string;
   input_tokens: number | null; output_tokens: number | null; cached_tokens: number | null; search_calls: number | null; cost_usd: number | null; batch: number;
+  analysis: string;
 }
 
 function hydrate(rows: ResponseRow[]): AiResponse[] {
@@ -366,7 +367,7 @@ function hydrate(rows: ResponseRow[]): AiResponse[] {
     citations: citations.filter((c) => c.response_id === r.id).map((c): Citation => ({
       url: c.url, domain: c.domain, title: c.title, position: c.position, sourceType: c.source_type, competitorId: c.competitor_id,
     })),
-    latencyMs: r.latency_ms, error: r.error, createdAt: r.created_at,
+    latencyMs: r.latency_ms, error: r.error, createdAt: r.created_at, analysis: r.analysis === 'model' ? 'model' : 'rules',
     usage: r.cost_usd === null ? null : {
       inputTokens: r.input_tokens ?? 0, outputTokens: r.output_tokens ?? 0, cachedTokens: r.cached_tokens ?? 0,
       searchCalls: r.search_calls ?? 0, costUsd: r.cost_usd, batch: r.batch === 1,

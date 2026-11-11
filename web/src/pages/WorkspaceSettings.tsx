@@ -196,6 +196,9 @@ function AnalysisCard({ engines, settings }: { engines: EngineInfo[]; settings: 
   const live = engines.filter((e) => e.mode === 'live');
   const pickedInfo = engines.find((e) => e.id === chosen);
   const current = engines.find((e) => e.id === settings.analysisEngine);
+  const [check, setCheck] = useState(settings.analysisMode === 'model');
+  useEffect(() => setCheck(settings.analysisMode === 'model'), [settings.analysisMode]);
+  const toast = useToast();
   return (
     <Card>
       <CardHeader title={W.sections.analysis} subtitle={W.sections.analysisBody} />
@@ -216,6 +219,18 @@ function AnalysisCard({ engines, settings }: { engines: EngineInfo[]; settings: 
           ]}
           disabled={live.length === 0 && !pickedInfo}
           wrapperClassName="max-w-sm"
+        />
+        <Switch
+          label={W.analysis.checkLabel}
+          description={current ? W.analysis.checkDescription : `${W.analysis.checkDescription} ${W.analysis.checkNeedsEngine}`}
+          checked={check}
+          onCheckedChange={(on) => {
+            setCheck(on);
+            void save({ analysisMode: on ? 'model' : 'rules' }, on ? W.analysis.checkOn : W.analysis.checkOff, undefined, (message) => {
+              setCheck(!on);
+              toast.error(copy.app.errors.saveFailed, message);
+            });
+          }}
         />
         {(pickedInfo || current) && (
           <p className="text-[13px] text-text-muted">

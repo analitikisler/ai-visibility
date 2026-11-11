@@ -32,6 +32,8 @@ ensureColumns('responses', {
   search_calls: 'INTEGER',
   cost_usd: 'REAL',
   batch: 'INTEGER NOT NULL DEFAULT 0',
+  // 'rules' (name matching + sentiment word list) or 'model' (checked by the analysis engine, analysis/refine.ts).
+  analysis: "TEXT NOT NULL DEFAULT 'rules'",
 });
 // Secret token for server-side ingestion (snippets, log shipping); the site key alone only admits referral beacons.
 ensureColumns('projects', { ingest_token: 'TEXT' });

@@ -50,6 +50,8 @@ export interface SettingsView {
   defaultModels?: Record<string, string>;
   /** The stored analysis-engine choice (may not be live yet); null = automatic. */
   analysisEnginePreference?: EngineId | null;
+  /** Whether live answers are checked by the analysis engine (takes effect only while an engine is live). */
+  analysisMode?: AnalysisMode;
   /** Cost controls (see UsageView for spend). */
   cost?: CostSettings;
   notifications?: NotificationSettings;
@@ -59,6 +61,7 @@ export interface SettingsUpdate {
   models?: Record<string, string>;        // '' resets to the default model
   /** Preferred analysis engine (setting ANALYSIS_ENGINE); null clears (= first live engine). */
   analysisEngine?: EngineId | null;
+  analysisMode?: AnalysisMode;
   cost?: Partial<CostSettings>;
   /** `webhookUrl`: a public http(s) URL; null or '' clears it. `events`: the kinds to send. */
   notifications?: { webhookUrl?: string | null; events?: NotificationKind[] };
@@ -273,7 +276,12 @@ export interface AiResponse {
   usage?: AnswerUsage | null;
   error: string | null;
   createdAt: string;
+  /** How its mentions and sentiment were decided: by name matching and a word list, or checked by the analysis engine. */
+  analysis?: AnalysisMode;
 }
+
+/** 'rules' = name matching + a sentiment word list; 'model' = each live answer is also checked by the analysis engine. */
+export type AnalysisMode = 'rules' | 'model';
 
 // ---------- Monitor (dashboard aggregates) ----------
 // Query params common to aggregates: ?days=30 (7|14|30|90) &engine=chatgpt (optional) &tier=must_win (optional)
