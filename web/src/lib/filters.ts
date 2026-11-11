@@ -40,6 +40,8 @@ export function useFilters() {
             if (patch.engine) next.set('engine', patch.engine);
             else next.delete('engine');
           }
+          // A different period or engine is a different result set: paged lists start again at page 1.
+          next.delete('page');
           return next;
         },
         { replace: true },

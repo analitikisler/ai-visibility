@@ -582,6 +582,7 @@ export const copy = {
       },
       insights: {
         behind: 'You appear in {visibility} of answers. {leader} leads at {leaderVisibility}.',
+        alone: 'You appear in {visibility} of answers.',
         leading: 'You appear in {visibility} of answers and lead. {runnerUp} is next at {runnerUpVisibility}.',
         bestEngine: 'Strongest on {engine} ({visibility}). Weakest on {weakEngine} ({weakVisibility}).',
         notMentioned: '{engine} hasn’t mentioned you in this period.',
@@ -1114,6 +1115,7 @@ export const copy = {
         reading: 'Reading log…',
         result: 'Read {parsed} lines · AI crawler visits: {bots} · AI referrals: {referrals} · Skipped: {skipped}',
         nothingFound: 'No AI agent or AI referral hits in that log.',
+        alreadyImported: 'Nothing new. All {duplicates} AI hits in that log were imported before.',
         chooseFile: 'Choose file',
         orPaste: 'or paste lines below',
         sample: 'Use sample lines',

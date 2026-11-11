@@ -85,11 +85,14 @@ export function toQuery(params?: QueryParams): string {
 }
 
 const TIMEOUT_MS = 30_000;
+/** Audits, drafts, setup suggestions and log uploads wait on other sites or an engine, which the server allows well over 30s. */
+const SLOW_TIMEOUT_MS = 180_000;
 const UNREACHABLE = "Couldn't reach the ai visibility server. Check it's running, then try again.";
 
-async function request<T>(method: string, path: string, body?: unknown, opts: { text?: boolean; headers?: Record<string, string> } = {}): Promise<T> {
+async function request<T>(method: string, path: string, body?: unknown, opts: { text?: boolean; headers?: Record<string, string>; timeoutMs?: number } = {}): Promise<T> {
   const ctrl = new AbortController();
-  const timer = setTimeout(() => ctrl.abort(), TIMEOUT_MS);
+  const timeoutMs = opts.timeoutMs ?? TIMEOUT_MS;
+  const timer = setTimeout(() => ctrl.abort(), timeoutMs);
   const url = `/api${path}`;
   let res: Response;
   try {
@@ -104,7 +107,7 @@ async function request<T>(method: string, path: string, body?: unknown, opts: { 
     });
   } catch (e) {
     const aborted = e instanceof DOMException && e.name === 'AbortError';
-    throw new ApiError(aborted ? `The server took longer than ${TIMEOUT_MS / 1000}s to answer. Try again.` : UNREACHABLE, 0, path);
+    throw new ApiError(aborted ? `The server took longer than ${timeoutMs / 1000}s to answer. Try again.` : UNREACHABLE, 0, path);
   } finally {
     clearTimeout(timer);
   }
@@ -125,10 +128,10 @@ async function request<T>(method: string, path: string, body?: unknown, opts: { 
 
 export const http = {
   get: <T>(path: string, params?: QueryParams) => request<T>('GET', path + toQuery(params)),
-  post: <T>(path: string, body?: unknown, headers?: Record<string, string>) => request<T>('POST', path, body ?? {}, { headers }),
+  post: <T>(path: string, body?: unknown, headers?: Record<string, string>, timeoutMs?: number) => request<T>('POST', path, body ?? {}, { headers, timeoutMs }),
   put: <T>(path: string, body?: unknown) => request<T>('PUT', path, body ?? {}),
   del: <T = { ok: boolean }>(path: string) => request<T>('DELETE', path),
-  postText: <T>(path: string, text: string) => request<T>('POST', path, text, { text: true }),
+  postText: <T>(path: string, text: string, timeoutMs?: number) => request<T>('POST', path, text, { text: true, timeoutMs }),
 };
 
 // ============================================================================
@@ -182,6 +185,10 @@ export interface LogUploadResult {
   botEvents: number;
   referralEvents: number;
   skipped: number;
+  /** AI hits that were already stored by an earlier upload (re-uploads are de-duplicated). */
+  duplicates: number;
+  /** Lines from ordinary visitors: neither an AI agent nor an AI referral. */
+  ignored: number;
 }
 
 const agg = (p?: AggParams): QueryParams => ({ days: p?.days, engine: p?.engine, tier: p?.tier });
@@ -203,7 +210,7 @@ export const api = {
   createProject: (body: ProjectInput) => http.post<Project>('/projects', body),
   updateProject: (id: string, body: Partial<ProjectInput>) => http.put<Project>(`/projects/${id}`, body),
   deleteProject: (id: string) => http.del(`/projects/${id}`),
-  suggestProject: (body: { name: string; domain: string; description?: string }) => http.post<ProjectSuggestion>('/projects/suggest', body),
+  suggestProject: (body: { name: string; domain: string; description?: string }) => http.post<ProjectSuggestion>('/projects/suggest', body, undefined, SLOW_TIMEOUT_MS),
   seedDemo: () => http.post<Project>('/demo/seed'),
 
   // competitors
@@ -251,12 +258,12 @@ export const api = {
   updateRecommendation: (projectId: string, key: string, status: RecStatus) =>
     http.put<Recommendation>(`/projects/${projectId}/recommendations/${encodeURIComponent(key)}`, { status }),
   listDrafts: (projectId: string) => http.get<Draft[]>(`/projects/${projectId}/drafts`),
-  createDraft: (projectId: string, body: DraftRequest) => http.post<Draft>(`/projects/${projectId}/drafts`, body),
+  createDraft: (projectId: string, body: DraftRequest) => http.post<Draft>(`/projects/${projectId}/drafts`, body, undefined, SLOW_TIMEOUT_MS),
   updateDraft: (did: string, body: Partial<Pick<Draft, 'title' | 'body' | 'status'>>) => http.put<Draft>(`/drafts/${did}`, body),
   deleteDraft: (did: string) => http.del(`/drafts/${did}`),
 
   // audit
-  runAudit: (projectId: string, body: { url?: string } = {}) => http.post<AuditResult>(`/projects/${projectId}/audit`, body),
+  runAudit: (projectId: string, body: { url?: string } = {}) => http.post<AuditResult>(`/projects/${projectId}/audit`, body, undefined, SLOW_TIMEOUT_MS),
   getLatestAudit: (projectId: string) => http.get<AuditResult | null>(`/projects/${projectId}/audits/latest`),
   listAudits: (projectId: string) => http.get<AuditResult[]>(`/projects/${projectId}/audits`),
 
@@ -264,7 +271,7 @@ export const api = {
   getCrawlerOverview: (projectId: string, p?: { days?: number }) => http.get<CrawlerOverview>(`/projects/${projectId}/crawlers/overview`, { days: p?.days }),
   listBotEvents: (projectId: string, p?: BotEventsParams) => http.get<Paged<BotEvent>>(`/projects/${projectId}/crawlers/events`, { ...p }),
   getReferralOverview: (projectId: string, p?: { days?: number }) => http.get<ReferralOverview>(`/projects/${projectId}/referrals/overview`, { days: p?.days }),
-  uploadLogs: (projectId: string, log: string) => http.postText<LogUploadResult>(`/projects/${projectId}/logs`, log),
+  uploadLogs: (projectId: string, log: string) => http.postText<LogUploadResult>(`/projects/${projectId}/logs`, log, SLOW_TIMEOUT_MS),
   getIntegration: (projectId: string) => http.get<IntegrationInfo>(`/projects/${projectId}/integration`),
   listAgents: () => http.get<AiAgent[]>('/agents'),
 

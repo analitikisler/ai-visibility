@@ -34,7 +34,7 @@ import { useSources } from '@/lib/api';
 import { cn } from '@/lib/cn';
 import { SOURCE_TYPE_COLORS } from '@/lib/colors';
 import { ENGINE_IDS, ENGINES, isEngineId } from '@/lib/engines';
-import { useFilters } from '@/lib/filters';
+import { useFilterSearch, useFilters } from '@/lib/filters';
 import { num, pct } from '@/lib/format';
 
 
@@ -154,11 +154,12 @@ function GapCard({ gaps, onPick }: { gaps: SourceStat[]; onPick: (domain: string
 
 function SampleUrls({ s }: { s: SourceStat }) {
   const { projectId } = useProject();
+  const filterSearch = useFilterSearch();
   return (
     <div className="bg-surface-2 px-4 py-3">
       <div className="mb-1.5 flex items-center justify-between gap-4">
         <div className="eyebrow">{S.columns.pages}</div>
-        <ButtonLink to={`/app/p/${projectId}/responses?domain=${encodeURIComponent(s.domain)}`} size="sm" variant="ghost" iconRight={ArrowRight}>
+        <ButtonLink to={`/app/p/${projectId}/responses${filterSearch ? `${filterSearch}&` : '?'}domain=${encodeURIComponent(s.domain)}`} size="sm" variant="ghost" iconRight={ArrowRight}>
           {S.viewAnswers}
         </ButtonLink>
       </div>

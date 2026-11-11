@@ -73,7 +73,10 @@ function SettingsForm() {
   const engines = useEngines();
   const update = useUpdateProject(projectId);
   const toast = useToast();
-  const initial = useMemo(() => fromProject(project), [project]);
+  // Keyed on the form's own fields: the project object also changes when a check finishes or a competitor is edited,
+  // and resetting then would throw away unsaved edits.
+  const saved = JSON.stringify(fromProject(project));
+  const initial = useMemo(() => JSON.parse(saved) as FormState, [saved]);
   const [f, setF] = useState<FormState>(initial);
   const [touched, setTouched] = useState(false);
   useEffect(() => setF(initial), [initial]);

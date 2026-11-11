@@ -190,10 +190,13 @@ function save(result: AuditResult): AuditResult {
   return result;
 }
 
-/** Runs (and persists) an audit. Demo projects get the sample audit unless an explicit URL is given. */
+/**
+ * Runs (and persists) an audit. Demo projects get the sample audit for their own site (the domain is fictional, and the
+ * app sends the homepage URL by default); a URL on another site is audited live.
+ */
 export async function runAudit(project: Project, rawUrl?: string): Promise<AuditResult> {
-  if (project.isDemo && !rawUrl) return save(demoAudit(project));
   const target = normalizeAuditUrl(rawUrl || project.domain);
+  if (project.isDemo && (!rawUrl || (target && isOwnSite(project, target)))) return save(demoAudit(project));
   if (!target) throw Object.assign(new Error(`Invalid URL: ${rawUrl || project.domain}`), { status: 400 });
   // Refuse private/internal targets up front (redirects and DNS changes are re-checked on every fetch).
   await assertPublicUrl(target).catch((err: unknown) => {

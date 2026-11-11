@@ -66,6 +66,14 @@ function nameMatcher(c: Competitor): RegExp | null {
   return new RegExp(`(?<![\\p{L}\\p{N}])(?:${alt})(?![\\p{L}\\p{N}])`, 'iu');
 }
 
+const matcherCache = new WeakMap<Competitor, RegExp | null>();
+/** `nameMatcher`, built once per competitor object (table cells ask for it on every row). */
+function matcherFor(c: Competitor): RegExp | null {
+  let re = matcherCache.get(c);
+  if (re === undefined) matcherCache.set(c, (re = nameMatcher(c)));
+  return re;
+}
+
 /**
  * Lost = named in 15% of answers or fewer while a competitor is named in 40% or more — the same rule as
  * Diagnose and Reports. A competitor named in the prompt itself ("X vs Y") trivially appears, so it can't win it.
@@ -74,7 +82,7 @@ function nameMatcher(c: Competitor): RegExp | null {
 function useLostWinner() {
   const { project } = useProject();
   return useMemo(() => {
-    const matchers = project.competitors.map((c) => ({ c, re: nameMatcher(c) }));
+    const matchers = project.competitors.map((c) => ({ c, re: matcherFor(c) }));
     return (s: PromptStat): { name: string; visibility: number } | null => {
       if (s.responses < 2 || s.visibility > 0.15) return null;
       if (!s.competitorVisibility) return (s.topCompetitor?.visibility ?? 0) >= 0.4 ? s.topCompetitor : null;
@@ -260,11 +268,15 @@ function RowMenu({ stat, onEdit, onDelete, onOpen }: { stat: PromptStat; onEdit:
   );
 }
 
-/** The most-named competitor on a prompt: exact from `competitorVisibility` when present, else the server's pick. */
+/**
+ * The most-named competitor on a prompt, not counting competitors the prompt itself names (same rule as the server's
+ * `topCompetitor` and as Lost): exact from `competitorVisibility` when present, else the server's pick.
+ */
 function topRival(stat: PromptStat, competitors: Competitor[]): { name: string; id?: string; visibility: number } | null {
   if (stat.competitorVisibility) {
     let best: { name: string; id: string; visibility: number } | null = null;
     for (const c of competitors) {
+      if (matcherFor(c)?.test(stat.prompt.text)) continue;
       const v = stat.competitorVisibility[c.id] ?? 0;
       if (v > 0 && (!best || v > best.visibility)) best = { name: c.name, id: c.id, visibility: v };
     }

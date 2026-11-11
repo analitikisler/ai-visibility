@@ -38,7 +38,7 @@ import {
 } from '@/components/ui';
 import { copy, fmt, plural } from '@/content/copy';
 import { errorMessage, isWaitingOnBatch, useActiveRun, useDiagnosis, useStartRun } from '@/lib/api';
-import { useFilters } from '@/lib/filters';
+import { useFilterSearch, useFilters } from '@/lib/filters';
 import { cn } from '@/lib/cn';
 import { BRAND_COLOR, OTHER_COLOR } from '@/lib/colors';
 import { ENGINES } from '@/lib/engines';
@@ -224,6 +224,7 @@ type Lost = Diagnosis['lostPrompts'][number];
 
 function LostPromptsCard({ d, onDraft, pendingKey }: { d: Diagnosis; onDraft: (l: Lost) => void; pendingKey: string | null }) {
   const { projectId } = useProject();
+  const filterSearch = useFilterSearch();
   const leaderColor = useLeaderColor();
   const C = P.lostColumns;
   const { rows, sortProps } = useSort(
@@ -264,7 +265,7 @@ function LostPromptsCard({ d, onDraft, pendingKey }: { d: Diagnosis; onDraft: (l
                 <Tr key={l.promptId}>
                   <Td className="max-w-[36rem]">
                     <Link
-                      to={`/app/p/${projectId}/responses?prompt=${encodeURIComponent(l.promptId)}`}
+                      to={`/app/p/${projectId}/responses${filterSearch ? `${filterSearch}&` : '?'}prompt=${encodeURIComponent(l.promptId)}`}
                       className="line-clamp-2 text-text hover:text-accent hover:underline"
                       title={`${P.viewAnswers}: ${l.text}`}
                     >

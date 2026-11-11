@@ -642,6 +642,7 @@ Each page: title, the question it answers, its empty state, then every other str
 | `columns.tier` | Tier |
 | `columns.prompts` | Prompts |
 | `insights.behind` | You appear in {visibility} of answers. {leader} leads at {leaderVisibility}. |
+| `insights.alone` | You appear in {visibility} of answers. |
 | `insights.leading` | You lead. {runnerUp} is next at {runnerUpVisibility}. |
 | `insights.bestEngine` | Strongest on {engine} ({visibility}). Weakest on {weakEngine} ({weakVisibility}). |
 | `insights.notMentioned` | {engine} hasn’t mentioned you in this period. |
@@ -960,6 +961,7 @@ Each page: title, the question it answers, its empty state, then every other str
 | `upload.reading` | Reading log… |
 | `upload.result` | Read {parsed} lines: {bots} AI crawler visits, {referrals} AI referrals, {skipped} skipped. |
 | `upload.nothingFound` | No AI agent or AI referral hits in that log. |
+| `upload.alreadyImported` | Nothing new. All {duplicates} AI hits in that log were imported before. |
 
 ### AI traffic `/app/p/:id/traffic`
 

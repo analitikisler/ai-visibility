@@ -131,7 +131,9 @@ export function LogUploadForm({ projectId, onUploaded, rows = 8 }: LogUploadForm
             {found ? <CheckCircle2 size={14} strokeWidth={1.75} aria-hidden className="mt-0.5 shrink-0" /> : <Info size={14} strokeWidth={1.75} aria-hidden className="mt-0.5 shrink-0" />}
             {found
               ? fmt(U.result, { parsed: num(result.parsed), bots: num(result.botEvents), referrals: num(result.referralEvents), skipped: num(result.skipped) })
-              : U.nothingFound}
+              : result.duplicates
+                ? fmt(U.alreadyImported, { duplicates: num(result.duplicates) })
+                : U.nothingFound}
           </p>
         ) : (
           <p className="text-xs text-text-subtle">{U.limits}</p>

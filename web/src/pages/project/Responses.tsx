@@ -38,15 +38,18 @@ function useAnswerParams() {
   const tier = TIERS.includes(rawTier as PromptTier) ? (rawTier as PromptTier) : undefined;
   const named: Named = sp.get('named') === '1' ? 'named' : sp.get('named') === '0' ? 'not' : 'all';
   const page = Math.max(1, Number.parseInt(sp.get('page') ?? '1', 10) || 1);
+  /** Changing a filter returns to page 1; setting `page` itself, or passing `keepPage`, keeps the page. */
   const set = (patch: Record<string, string | null>, opts: { keepPage?: boolean } = {}) =>
     setSp(
-      (prev) => {
-        const next = new URLSearchParams(prev);
+      () => {
+        // Start from the live URL, not the render's snapshot (see lib/filters.ts): the debounced search fires after
+        // other filters may have changed.
+        const next = new URLSearchParams(window.location.search);
         for (const [k, v] of Object.entries(patch)) {
           if (v) next.set(k, v);
           else next.delete(k);
         }
-        if (!opts.keepPage) next.delete('page');
+        if (!opts.keepPage && !('page' in patch)) next.delete('page');
         return next;
       },
       { replace: true },
@@ -115,7 +118,7 @@ export default function ResponsesPage() {
 
   // A page past the end (e.g. after narrowing a filter) snaps back to the last page.
   useEffect(() => {
-    if (answers.data && !answers.isPlaceholderData && total > 0 && offset >= total) f.set({ page: String(Math.ceil(total / PAGE_SIZE)) }, { keepPage: true });
+    if (answers.data && !answers.isPlaceholderData && total > 0 && offset >= total) f.set({ page: String(Math.ceil(total / PAGE_SIZE)) });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [answers.data, answers.isPlaceholderData, total, offset]);
 

@@ -115,7 +115,7 @@ function Scorecard({ r }: { r: Report }) {
     { label: copy.metrics.visibilityScore, value: score(k.visibilityScore.value), unit: copy.metrics.units.score, delta: k.visibilityScore.delta, kind: 'score' as const },
     { label: copy.metrics.shareOfVoice, value: pct(k.shareOfVoice.value, { from100: true }), delta: k.shareOfVoice.delta, kind: 'points' as const },
     { label: copy.metrics.avgPositionShort, value: hasPos ? position(k.avgPosition.value) : '—', delta: hasPos ? k.avgPosition.delta : null, kind: 'position' as const },
-    { label: copy.metrics.sentiment, value: score(k.sentiment.value), unit: copy.metrics.units.score, delta: k.sentiment.delta, kind: 'score' as const },
+    { label: copy.metrics.sentiment, value: score(k.sentiment.value), unit: k.sentiment.value === null ? undefined : copy.metrics.units.score, delta: k.sentiment.delta, kind: 'score' as const },
     { label: copy.metrics.mentions, value: compact(k.mentions.value), delta: k.mentions.delta, kind: 'count' as const },
     { label: copy.metrics.citations, value: compact(k.citations.value), delta: k.citations.delta, kind: 'count' as const },
   ];

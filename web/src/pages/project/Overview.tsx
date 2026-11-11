@@ -60,8 +60,9 @@ function Insight({ ov }: { ov: Overview }) {
   const leader = ov.leaderboard.find((e) => e.rank === 1);
   if (!brand || !leader) return null;
   const runnerUp = ov.leaderboard.filter((e) => !e.isBrand).sort((a, b) => b.visibility - a.visibility)[0];
-  const verdict =
-    leader.isBrand && runnerUp
+  const verdict = !runnerUp
+    ? fmt(O.insights.alone, { visibility: pct(brand.visibility) })
+    : leader.isBrand
       ? fmt(O.insights.leading, { visibility: pct(brand.visibility), runnerUp: runnerUp.name, runnerUpVisibility: pct(runnerUp.visibility) })
       : fmt(O.insights.behind, { visibility: pct(brand.visibility), leader: leader.name, leaderVisibility: pct(leader.visibility) });
   const engines = ov.engines.filter((e) => e.responses > 0);
