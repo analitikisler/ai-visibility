@@ -3,7 +3,7 @@ import { all, get, nowIso, parseJson, run } from '../db/index.ts';
 import { missedPages, rangeFor } from '../crawlers/overview.ts';
 import type { EngineId, Project, Recommendation, RecommendationOutcome, RecStatus } from '../../../shared/types.ts';
 import { recordEvent } from './events.ts';
-import { marginPoints } from './monitor.ts';
+import { marginPoints } from './stats.ts';
 import { computeDiagnosis, ENGINE_NAMES, entityStats, negativeThemes, num, pct, plural, type DiagnosisContext } from './diagnose.ts';
 
 type Rec = Omit<Recommendation, 'status'>;

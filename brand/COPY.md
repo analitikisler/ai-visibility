@@ -1146,6 +1146,27 @@ Each page: title, the question it answers, its empty state, then every other str
 | `analysis.current` | {engine} is writing suggestions and drafts. |
 | `saved` | Workspace settings saved. |
 
+#### Notifications
+
+| Key | Text |
+|---|---|
+| `sections.notifications` | Notifications |
+| `sections.notificationsBody` | ai visibility posts a JSON message to one webhook when something needs attention. |
+| `notifications.urlLabel` | Webhook URL |
+| `notifications.urlHint` | A public https address that accepts a JSON POST. Leave empty to turn notifications off. |
+| `notifications.urlSet` | Set to {url}. Paste a new address to replace it. |
+| `notifications.save` | Save webhook |
+| `notifications.test` | Send test |
+| `notifications.testOk` | The webhook accepted the test message. |
+| `notifications.testFailed` | The test message wasn’t delivered |
+| `notifications.eventsLabel` | Send a message when |
+| `notifications.events.visibility_drop.label` | Visibility drops |
+| `notifications.events.check_failed.label` | A check fails |
+| `notifications.events.new_agent.label` | A new AI agent appears |
+| `notifications.events.budget_reached.label` | The monthly budget is reached |
+| `notifications.lastOk` | Last message delivered {when}. |
+| `notifications.lastFailed` | Last message failed {when}: {error} |
+
 ---
 
 ## 6. Glossary

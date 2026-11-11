@@ -1,6 +1,7 @@
 // Run bookkeeping shared by realtime processing (runs.ts) and provider batches (batches.ts).
 import { all, get, nowIso, parseJson, run } from '../db/index.ts';
 import type { EngineId, Run, RunMode, RunStatus } from '../../../shared/types.ts';
+import { notifyAfterRun } from './notify.ts';
 
 export interface RunRow {
   id: string; project_id: string; trigger: string; status: string; engines_json: string; total_jobs: number;
@@ -49,8 +50,10 @@ export function maybeFinishRun(runId: string): void {
   const failed = r.total_jobs > 0 && r.failed_jobs >= r.total_jobs;
   const error = r.failed_jobs ? `${r.failed_jobs} of ${r.total_jobs} jobs failed${firstError ? `: ${firstError}` : ''}`.slice(0, 300) : null;
   run('UPDATE runs SET status = ?, error = ?, finished_at = ? WHERE id = ?', [failed ? 'failed' : 'completed', error, nowIso(), runId]);
+  notifyAfterRun(runId);
 }
 
 export function failRun(runId: string, message: string): void {
   run("UPDATE runs SET status = 'failed', error = ?, finished_at = ? WHERE id = ?", [message.slice(0, 300), nowIso(), runId]);
+  notifyAfterRun(runId);
 }

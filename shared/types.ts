@@ -52,6 +52,7 @@ export interface SettingsView {
   analysisEnginePreference?: EngineId | null;
   /** Cost controls (see UsageView for spend). */
   cost?: CostSettings;
+  notifications?: NotificationSettings;
 }
 export interface SettingsUpdate {
   keys?: Record<string, string | null>;   // null/'' clears
@@ -59,6 +60,30 @@ export interface SettingsUpdate {
   /** Preferred analysis engine (setting ANALYSIS_ENGINE); null clears (= first live engine). */
   analysisEngine?: EngineId | null;
   cost?: Partial<CostSettings>;
+  /** `webhookUrl`: a public http(s) URL; null or '' clears it. `events`: the kinds to send. */
+  notifications?: { webhookUrl?: string | null; events?: NotificationKind[] };
+}
+
+// ---------- Notifications ----------
+
+export type NotificationKind = 'visibility_drop' | 'check_failed' | 'new_agent' | 'budget_reached';
+
+/** How the last POST to the webhook went. */
+export interface NotificationDelivery {
+  at: string;
+  ok: boolean;
+  /** HTTP status the webhook answered with; null when it couldn't be reached. */
+  status: number | null;
+  error: string | null;
+  event: NotificationKind | 'test';
+}
+
+export interface NotificationSettings {
+  /** Masked ("https://hooks.example.com/…a1b2"), or null when unset. */
+  webhookUrl: string | null;
+  /** Kinds that are sent. */
+  events: NotificationKind[];
+  lastDelivery: NotificationDelivery | null;
 }
 
 // ---------- Cost controls & usage ----------

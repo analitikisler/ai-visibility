@@ -6,6 +6,7 @@ import type { SettingsView } from '../../../shared/types.ts';
 import { ANALYSIS_ENGINE_SETTING, analysisEngine, ENGINE_IDS, ENGINES, engineModel, listEngines } from '../engines/catalog.ts';
 import { readJson, validate } from './projects.ts';
 import { costSettings, MAX_SAMPLES, updateCostSettings } from '../services/cost.ts';
+import { NOTIFICATION_KINDS, notificationSettings, sendTestNotification, updateNotificationSettings } from '../services/notify.ts';
 import { getUsage } from '../services/usage.ts';
 
 const KEY_SETTINGS = ENGINES.map((e) => e.keySetting) as [string, ...string[]];
@@ -22,6 +23,10 @@ const SettingsUpdateSchema = z.object({
     scheduledMode: z.enum(['realtime', 'batch']).optional(),
     reuseSameDay: z.boolean().optional(),
     samplesPerPrompt: z.number().int().min(1).max(MAX_SAMPLES).optional(),
+  }).strict().optional(),
+  notifications: z.object({
+    webhookUrl: z.string().trim().max(2000).nullable().optional(),
+    events: z.array(z.enum(NOTIFICATION_KINDS)).optional(),
   }).strict().optional(),
 }).strict();
 
@@ -48,6 +53,7 @@ function settingsView(): SettingsView {
     analysisEngine: analysisEngine(),
     analysisEnginePreference: ENGINE_IDS.find((id) => id === preferred) ?? null,
     cost: costSettings(),
+    notifications: notificationSettings(),
   };
 }
 
@@ -61,8 +67,12 @@ app.put('/settings', async (c) => {
   for (const [key, value] of Object.entries(body.models ?? {})) setSetting(key, value || null);
   if (body.analysisEngine !== undefined) setSetting(ANALYSIS_ENGINE_SETTING, body.analysisEngine);
   if (body.cost) updateCostSettings(body.cost);
+  if (body.notifications) updateNotificationSettings(body.notifications);
   return c.json(settingsView());
 });
+
+/** Sends a test payload to the webhook now and reports how it went (also stored as the last delivery). */
+app.post('/settings/notifications/test', async (c) => c.json(await sendTestNotification()));
 
 app.get('/engines', (c) => c.json(listEngines()));
 

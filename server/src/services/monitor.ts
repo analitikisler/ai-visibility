@@ -9,6 +9,7 @@ import type {
 import { engineDef, engineMode } from '../engines/catalog.ts';
 import { nameMatcher } from './diagnose.ts';
 import { listEvents } from './events.ts';
+import { marginPoints } from './stats.ts';
 import { BRAND_COLOR, getProject, listPrompts } from './projects.ts';
 import { latestRun } from './runs.ts';
 
@@ -87,19 +88,6 @@ function kpi(cur: number, prev: number | null): Kpi {
 
 /** Ratio → 0..100 score with 2 decimals, rounded exactly like the leaderboard's 4-decimal ratios (no double rounding). */
 const score100 = (x: number) => Math.round(x * 10000) / 100;
-
-/**
- * Half-width of the 95% Wilson interval for `hits` out of `n` answers, in points (0..100, one decimal); null
- * without answers. It is a floor on the real uncertainty: answers to the same prompt on different days or engines
- * are not independent, and it says nothing about prompts that aren't tracked.
- */
-export function marginPoints(hits: number, n: number): number | null {
-  if (n <= 0) return null;
-  const z = 1.96;
-  const p = hits / n;
-  const half = (z * Math.sqrt((p * (1 - p)) / n + (z * z) / (4 * n * n))) / (1 + (z * z) / n);
-  return Math.round(half * 1000) / 10;
-}
 
 function brandKpis(cur: PeriodStats, prev: PeriodStats): Overview['kpis'] {
   const hasPrev = prev.responses > 0;

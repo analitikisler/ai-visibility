@@ -64,6 +64,21 @@ AI answers vary from one ask to the next, so a score is an estimate: the visibil
 
 Checks run on each project's schedule (daily / weekly / manual) via an in-process scheduler, or on demand with **Run check**. Scheduled checks only run in production (`npm start`); under `npm run dev` they are off unless `SCHEDULER=on`, so a dev copy with the same keys never pays for them twice.
 
+## Notifications
+
+Set a webhook URL in **Workspace settings** (or `NOTIFY_WEBHOOK_URL`) and ai visibility posts a JSON message to it when:
+
+- visibility over the last 7 days is at least 5 points below the 7 days before, outside the margin of error and on at least 10 answers a week (once a week per project at most)
+- a check fails
+- an AI agent fetches your site for the first time, after the first two days of tracking
+- the monthly budget is reached (once a month)
+
+```json
+{ "event": "visibility_drop", "title": "Acme: visibility down 8 points", "text": "Visibility over the last 7 days is 34, down from 42 in the 7 days before.", "project": { "id": "prj_…", "name": "Acme", "domain": "acme.com" }, "at": "2026-11-11T09:00:00.000Z", "data": { "visibility": 34, "previous": 42 } }
+```
+
+The URL must be a public http(s) address; the message is sent once, without retries, and a redirect is not followed. Each kind can be switched off, **Send test** posts a `test` event, and the settings page shows how the last delivery went. Demo projects never notify.
+
 ## Connecting your site (crawlers & AI traffic)
 
 Each project has a public **site key** and a secret **ingest token** (Integrations page, where the token can be rotated):

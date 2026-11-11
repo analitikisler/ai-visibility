@@ -2,6 +2,7 @@
 // that every live call and batch submission passes through. Spend is estimated at list prices (engines/pricing.ts).
 import { get, getSetting, setSetting } from '../db/index.ts';
 import type { CostSettings, RunMode } from '../../../shared/types.ts';
+import { notify } from './notify.ts';
 
 const KEYS = { budget: 'MONTHLY_BUDGET_USD', mode: 'SCHEDULED_MODE', reuse: 'REUSE_SAME_DAY', samples: 'SAMPLES_PER_PROMPT' } as const;
 /** Upper bound on answers per prompt × engine in one check. */
@@ -54,6 +55,12 @@ export function assertBudget(estimateUsd: number): void {
   const { monthlyBudgetUsd } = costSettings();
   const spent = monthSpendUsd() + reservedUsd;
   if (spent + estimateUsd > monthlyBudgetUsd) {
+    notify('budget_reached', {
+      title: 'Monthly budget reached',
+      text: `Estimated live spend is $${spent.toFixed(2)} of the $${monthlyBudgetUsd.toFixed(2)} monthly budget. Live checks are paused until it is raised or the month ends.`,
+      data: { spentUsd: Math.round(spent * 100) / 100, budgetUsd: monthlyBudgetUsd },
+      once: { key: 'budget_reached', value: monthStart() },
+    });
     throw new BudgetError(
       `Monthly budget reached ($${spent.toFixed(2)} of $${monthlyBudgetUsd.toFixed(2)} used). Raise it in Workspace settings to keep checking live.`,
     );

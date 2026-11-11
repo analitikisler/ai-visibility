@@ -6,7 +6,7 @@ import { PROVIDERS } from '../src/engines/providers.ts';
 import type { SearchResult } from '../src/engines/types.ts';
 import { pollBatches } from '../src/services/batches.ts';
 import { updateCostSettings } from '../src/services/cost.ts';
-import { marginPoints } from '../src/services/monitor.ts';
+import { marginPoints } from '../src/services/stats.ts';
 import { createProject, deletePrompt, getProject, listPrompts } from '../src/services/projects.ts';
 import { getRun, recoverRuns, RunError, startRun } from '../src/services/runs.ts';
 

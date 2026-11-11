@@ -3,7 +3,7 @@
 // Keys live in the app's local database; the server only ever returns them masked.
 import { useEffect, useState, type FormEvent, type ReactNode } from 'react';
 import { AlertTriangle, DollarSign, FlaskConical, Info, KeyRound, Lock, PauseCircle, PiggyBank, RotateCcw, Trash2, type LucideIcon } from 'lucide-react';
-import type { CostSettings, EngineId, EngineInfo, RunMode, SettingsUpdate, SettingsView, UsageView } from '@shared/types';
+import type { CostSettings, EngineId, EngineInfo, NotificationKind, NotificationSettings, RunMode, SettingsUpdate, SettingsView, UsageView } from '@shared/types';
 import { StackedAreaChart } from '@/components/charts';
 import {
   Button,
@@ -37,8 +37,8 @@ import {
 import { copy, fmt, plural } from '@/content/copy';
 import { cn } from '@/lib/cn';
 import { BRAND_COLOR } from '@/lib/colors';
-import { errorMessage, isNotFound, useEngines, useSettings, useUpdateSettings, useUsage } from '@/lib/api';
-import { dayLabel, num, pct, usd } from '@/lib/format';
+import { errorMessage, isNotFound, useEngines, useSettings, useTestNotification, useUpdateSettings, useUsage } from '@/lib/api';
+import { dayLabel, num, pct, relativeTime, usd } from '@/lib/format';
 
 const W = copy.pages.workspaceSettings;
 const U = W.usage;
@@ -393,6 +393,102 @@ function CostControls({ cost }: { cost: CostSettings }) {
   );
 }
 
+const NOTIFICATION_KINDS: NotificationKind[] = ['visibility_drop', 'check_failed', 'new_agent', 'budget_reached'];
+
+/** One webhook, a test button, and which events are sent to it. */
+function NotificationsCard({ settings }: { settings: NotificationSettings }) {
+  const N = W.notifications;
+  const save = useSave();
+  const toast = useToast();
+  const test = useTestNotification();
+  const [url, setUrl] = useState('');
+  const [urlError, setUrlError] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [events, setEvents] = useState(settings.events);
+  useEffect(() => setEvents(settings.events), [settings.events]);
+  const last = settings.lastDelivery;
+
+  const submit = (e: FormEvent) => {
+    e.preventDefault();
+    if (!url.trim()) return;
+    setUrlError(null);
+    setBusy(true);
+    void save({ notifications: { webhookUrl: url.trim() } }, N.saved, () => setUrl(''), setUrlError).finally(() => setBusy(false));
+  };
+  const toggle = (kind: NotificationKind, on: boolean) => {
+    const next = NOTIFICATION_KINDS.filter((k) => (k === kind ? on : events.includes(k)));
+    setEvents(next);
+    void save({ notifications: { events: next } }, N.eventsSaved, undefined, (message) => {
+      setEvents(settings.events);
+      toast.error(copy.app.errors.saveFailed, message);
+    });
+  };
+  const sendTest = () =>
+    test.mutate(undefined, {
+      onSuccess: (d) => (d.ok ? toast.success(N.testOk) : toast.error(N.testFailed, d.error ?? undefined)),
+      onError: (e) => toast.error(N.testFailed, errorMessage(e)),
+    });
+
+  return (
+    <Card>
+      <CardHeader title={W.sections.notifications} subtitle={W.sections.notificationsBody} />
+      <div className="space-y-5 p-4">
+        <form onSubmit={submit} className="flex flex-wrap items-start gap-2">
+          <Input
+            label={N.urlLabel}
+            hint={settings.webhookUrl ? fmt(N.urlSet, { url: settings.webhookUrl }) : N.urlHint}
+            error={urlError ?? undefined}
+            placeholder="https://"
+            inputMode="url"
+            autoComplete="off"
+            spellCheck={false}
+            value={url}
+            onChange={(e) => {
+              setUrl(e.target.value);
+              setUrlError(null);
+            }}
+            className="font-mono"
+            wrapperClassName="min-w-64 flex-1"
+            maxLength={2000}
+          />
+          <div className="mt-[22px] flex flex-wrap gap-2">
+            <Button type="submit" disabled={!url.trim()} loading={busy}>
+              {N.save}
+            </Button>
+            {settings.webhookUrl && (
+              <>
+                <Button onClick={sendTest} loading={test.isPending}>
+                  {N.test}
+                </Button>
+                <Button variant="ghost" icon={Trash2} onClick={() => void save({ notifications: { webhookUrl: null } }, N.removed)}>
+                  {N.remove}
+                </Button>
+              </>
+            )}
+          </div>
+        </form>
+        {settings.webhookUrl && last && (
+          <p role="status" className={cn('text-xs', last.ok ? 'text-text-subtle' : 'text-danger')}>
+            {last.ok ? fmt(N.lastOk, { when: relativeTime(last.at) }) : fmt(N.lastFailed, { when: relativeTime(last.at), error: last.error ?? '' })}
+          </p>
+        )}
+        <fieldset className="space-y-3">
+          <legend className="mb-2 text-xs font-medium text-text-muted">{N.eventsLabel}</legend>
+          {NOTIFICATION_KINDS.map((kind) => (
+            <Switch
+              key={kind}
+              label={N.events[kind].label}
+              description={N.events[kind].description}
+              checked={events.includes(kind)}
+              onCheckedChange={(on) => toggle(kind, on)}
+            />
+          ))}
+        </fieldset>
+      </div>
+    </Card>
+  );
+}
+
 function Stat({ label, children }: { label: string; children: ReactNode }) {
   return (
     <div className="min-w-0">
@@ -637,6 +733,7 @@ export default function WorkspaceSettingsPage() {
           </ul>
         </Card>
         <UsageCard settings={s} liveCount={liveCount} />
+        {s.notifications && <NotificationsCard settings={s.notifications} />}
         <div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
           <Card>
             <CardHeader title={W.sections.models} subtitle={W.sections.modelsBody} />

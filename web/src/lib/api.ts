@@ -22,6 +22,7 @@ import type {
   EngineId,
   EngineInfo,
   IntegrationInfo,
+  NotificationDelivery,
   Overview,
   Paged,
   Project,
@@ -201,6 +202,7 @@ export const api = {
   // settings & engines
   getSettings: () => http.get<SettingsView>('/settings'),
   updateSettings: (body: SettingsUpdate) => http.put<SettingsView>('/settings', body),
+  testNotification: () => http.post<NotificationDelivery>('/settings/notifications/test'),
   getEngines: () => http.get<EngineInfo[]>('/engines'),
   getUsage: (p?: { days?: number }) => http.get<UsageView>('/usage', { days: p?.days }),
 
@@ -470,6 +472,12 @@ export function useUpdateSettings() {
       if (body.cost) void qc.invalidateQueries({ queryKey: qk.usageAll });
     },
   });
+}
+
+/** Sends a test payload to the notification webhook; the result is also the settings' `lastDelivery`. */
+export function useTestNotification() {
+  const qc = useQueryClient();
+  return useMutation({ mutationFn: api.testNotification, onSettled: () => void qc.invalidateQueries({ queryKey: qk.settings }) });
 }
 
 // ---- projects

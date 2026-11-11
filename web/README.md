@@ -96,7 +96,7 @@ All take token colors (`var(--color-chart-n)`), show gaps for `null` days, and u
 
 Typed fetch (`api.*`, throws `ApiError` with the server's `{error}` text; `errorMessage(e)` for UI) and a hook per endpoint:
 
-- **Settings / engines / spend:** `useSettings`, `useUpdateSettings` (incl. `cost`: budget, scheduled mode, same-day reuse, samples per prompt), `useEngines`, `useUsage(days)` (estimated live spend; 404 on servers without cost tracking)
+- **Settings / engines / spend:** `useSettings`, `useUpdateSettings` (incl. `cost`: budget, scheduled mode, same-day reuse, samples per prompt), `useTestNotification()`, `useEngines`, `useUsage(days)` (estimated live spend; 404 on servers without cost tracking)
 - **Projects:** `useProjects`, `useProjectQuery`, `useCreateProject`, `useUpdateProject(id)`, `useDeleteProject`, `useSuggestProject`, `useSeedDemo`
 - **Competitors / prompts:** `useCreateCompetitor(id)`, `useUpdateCompetitor(id)` (`{ id, …patch }`), `useDeleteCompetitor(id)`; `usePrompts`, `useCreatePrompts(id)` (one or many), `useUpdatePrompt(id)`, `useDeletePrompt(id)`
 - **Checks (runs):** `useStartRun(id)` (`{ mode: 'batch' }` cheaper, `{ force: true }` skips same-day reuse), `useRuns(id)`, `useRun(rid)` (polls every 1.5s while queued/running, every 30s while only waiting on provider batches; on completion invalidates every answer-derived query and usage), `useActiveRun(id)`, `isRunActive(run)`, `isWaitingOnBatch(run)`

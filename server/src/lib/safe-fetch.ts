@@ -1,4 +1,4 @@
-// Outbound GET for user-supplied URLs (audits, sitemaps, homepage lookups) with SSRF protection:
+// Outbound requests to user-supplied URLs (audits, sitemaps, homepage lookups, notification webhooks) with SSRF protection:
 // - http(s) only; single-label, localhost, *.local, *.internal … hostnames are refused;
 // - every address a hostname resolves to must be public unicast — checked inside the socket's DNS lookup, so the
 //   address that is validated is the one connected to (no DNS-rebinding window); IP literals are checked up front;
@@ -109,6 +109,9 @@ export interface SafeFetchOptions {
   maxBytes?: number;
   maxRedirects?: number;
   headers?: Record<string, string>;
+  /** Default GET. A POST sends `body` and is never redirected (a redirect is returned as its 3xx response). */
+  method?: 'GET' | 'POST';
+  body?: string;
 }
 
 const REDIRECTS = new Set([301, 302, 303, 307, 308]);
@@ -126,12 +129,12 @@ function toHeaders(raw: http.IncomingHttpHeaders): Headers {
   return h;
 }
 
-function request(u: URL, headers: Record<string, string>, signal: AbortSignal): Promise<http.IncomingMessage> {
+function request(u: URL, headers: Record<string, string>, signal: AbortSignal, method: 'GET' | 'POST' = 'GET', body?: string): Promise<http.IncomingMessage> {
   return new Promise((resolve, reject) => {
     const mod = u.protocol === 'https:' ? https : http;
-    const req = mod.request(u, { method: 'GET', headers, lookup: safeLookup, signal, agent: false }, resolve);
+    const req = mod.request(u, { method, headers, lookup: safeLookup, signal, agent: false }, resolve);
     req.on('error', reject);
-    req.end();
+    req.end(method === 'POST' ? (body ?? '') : undefined);
   });
 }
 
@@ -164,17 +167,19 @@ async function readCapped(res: http.IncomingMessage, maxBytes: number, signal: A
   return { body: new Uint8Array(Buffer.concat(chunks, bytes)), truncated };
 }
 
-/** GET with SSRF checks on every hop. Rejects with BlockedUrlError, network errors, or an AbortError on timeout. */
+/** GET (or a single POST) with SSRF checks on every hop. Rejects with BlockedUrlError, network errors, or an AbortError on timeout. */
 export async function safeFetch(url: string, opts: SafeFetchOptions = {}): Promise<SafeResponse> {
   const signal = AbortSignal.timeout(opts.timeoutMs ?? 15_000);
   const maxBytes = opts.maxBytes ?? 5 * 1024 * 1024;
   const maxRedirects = opts.maxRedirects ?? 5;
-  const headers = { 'accept-encoding': 'gzip, deflate, br', ...opts.headers };
+  const method = opts.method ?? 'GET';
+  const headers: Record<string, string> = { 'accept-encoding': 'gzip, deflate, br', ...opts.headers };
+  if (method === 'POST') headers['content-length'] = String(Buffer.byteLength(opts.body ?? ''));
   let current = checkUrl(url);
   for (let hop = 0; ; hop++) {
-    const res = await request(current, headers, signal);
+    const res = await request(current, headers, signal, method, opts.body);
     const location = res.headers.location;
-    if (REDIRECTS.has(res.statusCode ?? 0) && location) {
+    if (method === 'GET' && REDIRECTS.has(res.statusCode ?? 0) && location) {
       res.resume();
       res.destroy();
       if (hop >= maxRedirects) throw new Error(`Too many redirects (more than ${maxRedirects})`);
