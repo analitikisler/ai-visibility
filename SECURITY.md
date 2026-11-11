@@ -18,6 +18,6 @@ Most relevant are the parts reachable without a login:
 - server-side fetches (AI-readiness audit, sitemap, onboarding suggestions), which must only reach public addresses
 - the Cloudflare Worker's Access check in `deploy/cloudflare/worker.ts`
 
-Also in scope: anything that leaks engine API keys or ingest tokens, or lets one project read or write another's data.
+Also in scope: anything that leaks engine API keys or ingest tokens, or lets one project read or write another's data. Keys saved in Workspace settings are encrypted at rest when `SECRETS_KEY` is set; a self-hosted copy without it stores them in plain text by design.
 
 Out of scope: a self-hosted copy exposed without `APP_USER`/`APP_PASSWORD` or Cloudflare Access after the operator added its host to `ALLOWED_HOSTS`, and the costs of engine API keys you configure yourself.

@@ -1,4 +1,4 @@
-// Copies engine API keys and R2 credentials from the repo-root .env into the Worker's secrets (`wrangler secret bulk`),
+// Copies engine API keys, R2 credentials and SECRETS_KEY from the repo-root .env into the Worker's secrets (`wrangler secret bulk`),
 // without printing them. Run from the repo root: node deploy/cloudflare/push-secrets.mjs
 import { execFileSync } from 'node:child_process';
 import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
@@ -8,7 +8,7 @@ import { parseEnv } from 'node:util';
 
 const KEYS = [
   'OPENAI_API_KEY', 'ANTHROPIC_API_KEY', 'GEMINI_API_KEY', 'PERPLEXITY_API_KEY', 'XAI_API_KEY', 'DEEPSEEK_API_KEY',
-  'R2_ACCESS_KEY_ID', 'R2_SECRET_ACCESS_KEY',
+  'R2_ACCESS_KEY_ID', 'R2_SECRET_ACCESS_KEY', 'SECRETS_KEY',
 ];
 const env = parseEnv(readFileSync('.env', 'utf8'));
 const secrets = Object.fromEntries(KEYS.map((k) => [k, (env[k] ?? '').trim()]).filter(([, v]) => v));
@@ -23,7 +23,9 @@ try {
   writeFileSync(file, JSON.stringify(secrets), { mode: 0o600 });
   execFileSync('npx', ['wrangler', 'secret', 'bulk', file], { stdio: ['ignore', 'inherit', 'inherit'] });
   console.log(`Uploaded ${Object.keys(secrets).length} secrets: ${Object.keys(secrets).join(', ')}`);
-  if (missing.length) console.log(`Not set (engines stay simulated): ${missing.join(', ')}`);
+  const engines = missing.filter((k) => k.endsWith('_API_KEY'));
+  if (engines.length) console.log(`Not set (engines stay simulated): ${engines.join(', ')}`);
+  if (missing.includes('SECRETS_KEY')) console.log('SECRETS_KEY not set: keys saved in Workspace settings are stored unencrypted (see .env.example).');
 } finally {
   rmSync(dir, { recursive: true, force: true });
 }

@@ -25,7 +25,7 @@ customer sites ──► /api/ingest, /api/collect, /px.js (public, no Access)
    R2_SECRET_ACCESS_KEY=...
    ```
 5. **Public ingestion is authenticated:** server snippets and log uploads send the project's secret ingest token (Integrations page; rotate it there). The public site key in the referral script can only report AI referral visits. Per-IP edge limits (`ratelimits` in wrangler.jsonc), per-site request/event budgets and daily caps bound abuse.
-6. **Secrets:** `node deploy/cloudflare/push-secrets.mjs` (engine keys + R2 credentials from `.env`; values are never printed).
+6. **Secrets:** add `SECRETS_KEY=` to `.env` with a long random value (`openssl rand -base64 32`), then `node deploy/cloudflare/push-secrets.mjs` (engine keys, R2 credentials and `SECRETS_KEY` from `.env`; values are never printed). `SECRETS_KEY` encrypts keys saved in Workspace settings; it stays a Worker secret, so the R2 backup never holds both the data and its key. Losing it only means entering those keys again.
 7. **Seed the database** (optional, before the first deploy only — uploads your local `server/data/app.db`): `sh deploy/cloudflare/seed-db.sh`
 8. **Deploy:** `npm run build && npx wrangler deploy`
 9. **Cloudflare Access** (Zero Trust → Access → Applications):

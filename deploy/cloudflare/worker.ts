@@ -21,6 +21,8 @@ declare global {
 const PASS_THROUGH = [
   'R2_ACCESS_KEY_ID', 'R2_SECRET_ACCESS_KEY', 'R2_ACCOUNT_ID', 'R2_BUCKET',
   'OPENAI_API_KEY', 'ANTHROPIC_API_KEY', 'GEMINI_API_KEY', 'PERPLEXITY_API_KEY', 'XAI_API_KEY', 'DEEPSEEK_API_KEY',
+  // Encrypts keys saved in Workspace settings; it stays a Worker secret, so the R2 backup never holds it.
+  'SECRETS_KEY',
 ] as const;
 
 export class OvertContainer extends Container<Env> {

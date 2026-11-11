@@ -28,7 +28,7 @@ A tool that shows a company **how AI assistants talk about its brand** (prompt-b
 ## Engines: live vs simulated
 Every feature works end-to-end in **simulated mode** and switches to **live mode** automatically when a key is set (Settings page or env).
 - Engines: `chatgpt` (OpenAI, key `OPENAI_API_KEY`), `claude` (Anthropic, `ANTHROPIC_API_KEY`), `gemini` (Google, `GEMINI_API_KEY`), `perplexity` (`PERPLEXITY_API_KEY`), `grok` (xAI, `XAI_API_KEY`), `deepseek` (`DEEPSEEK_API_KEY`).
-- Read keys only via `secret(key)` from `server/src/db/index.ts` (DB setting wins over env). The product's own calls read no other ambient env, such as `ANTHROPIC_BASE_URL`.
+- Read keys only via `secret(key)` from `server/src/db/index.ts` (DB setting wins over env). With `SECRETS_KEY` set, secret settings (`*_API_KEY`, `NOTIFY_WEBHOOK_URL`) are stored AES-256-GCM encrypted (`lib/secrets.ts`); `getSetting`/`setSetting` encrypt and decrypt, and `sealSecretSettings()` encrypts plain ones at startup. A value that can't be decrypted reads as unset. The product's own calls read no other ambient env, such as `ANTHROPIC_BASE_URL`.
 - Simulated engine = deterministic (seeded by prompt+engine+day) realistic answers that mention the brand/competitors with engine-specific bias and plausible citations, so the demo dashboards look believable: trends, variance between engines, some prompts lost to competitors.
 - Every response row stores `mode` ('live'|'simulated'); UI shows a "Simulated" badge.
 - Market and language: `project.market` is free text; `countryOf()` (`engines/shared.ts`) resolves a code or country name to an ISO code. Every live engine gets one neutral sentence naming the market (`marketInstruction()`), and OpenAI and Anthropic also get it as the web search's `user_location`. A United States market adds nothing, so default projects are unchanged. Engines answer in the language of the prompt; `project.language` sets the language of LLM-written setup suggestions and drafts. The simulator ignores both.
@@ -108,5 +108,6 @@ Common aggregate query params: `days` (default 30), `engine` (optional EngineId)
 ## Quality bar
 - `npm run typecheck` passes (server: `cd server && npx tsc --noEmit`), and so does `npm test` (`server/test/`).
 - No unhandled promise rejections; external fetches have timeouts (8–20s) and never crash the server.
+- Content-Security-Policy: built in `shared/csp.ts`; the server sends it with the hash of each inline script in `web/dist/index.html`, and the build writes the same to `web/dist/_headers` for Cloudflare's static assets. A new inline script needs no change; a script from another origin does.
 - Endpoints validate input with zod and return `{error}` with 400 on bad input.
 - Keep code readable: small modules, named exports, short doc comments on non-obvious logic. No dead code or TODO stubs.

@@ -5,6 +5,7 @@ import { readFileSync, mkdirSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { randomBytes } from 'node:crypto';
+import { decryptSetting, encryptionEnabled, encryptSetting, isEncrypted, isSecretSetting } from '../lib/secrets.ts';
 
 const here = dirname(fileURLToPath(import.meta.url));
 export const DATA_DIR = resolve(process.env.DATA_DIR ?? join(here, '../../data'));
@@ -125,14 +126,46 @@ export function insert(table: string, row: Record<string, SQLInputValue | boolea
 
 // ---------- settings (API keys, model overrides) ----------
 
+const unreadable = new Set<string>();
+
+/** A setting's value. Secret settings are decrypted (lib/secrets.ts); one that can't be decrypted reads as unset. */
 export function getSetting(key: string): string | undefined {
-  const row = get<{ value: string }>('SELECT value FROM settings WHERE key = ?', [key]);
-  return row?.value;
+  const value = get<{ value: string }>('SELECT value FROM settings WHERE key = ?', [key])?.value;
+  if (value === undefined || !isEncrypted(value)) return value;
+  const plain = decryptSetting(key, value);
+  if (plain === null && !unreadable.has(key)) {
+    unreadable.add(key);
+    console.warn(`[settings] ${key} is stored encrypted, but ${encryptionEnabled() ? 'SECRETS_KEY is not the key it was saved with' : 'SECRETS_KEY is not set'}; treating it as unset. Restore the key, or save the value again.`);
+  }
+  return plain ?? undefined;
 }
 
+/** Saves a setting (null or '' deletes it). Secret settings are encrypted when SECRETS_KEY is set. */
 export function setSetting(key: string, value: string | null): void {
   if (value === null || value === '') run('DELETE FROM settings WHERE key = ?', [key]);
-  else run('INSERT INTO settings(key, value) VALUES(?, ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value', [key, value]);
+  else {
+    const stored = isSecretSetting(key) && encryptionEnabled() ? encryptSetting(key, value) : value;
+    run('INSERT INTO settings(key, value) VALUES(?, ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value', [key, stored]);
+    unreadable.delete(key);
+  }
+}
+
+/**
+ * At startup: with SECRETS_KEY set, encrypts secret settings still stored in plain text (databases from before it was
+ * set); without it, says which secrets are stored in plain text. Values are never logged.
+ */
+export function sealSecretSettings(): void {
+  const rows = all<{ key: string; value: string }>('SELECT key, value FROM settings').filter((r) => isSecretSetting(r.key));
+  const plain = rows.filter((r) => !isEncrypted(r.value));
+  if (!encryptionEnabled()) {
+    if (plain.length) console.warn(`[settings] ${plain.length} API key(s) are stored unencrypted. Set SECRETS_KEY to encrypt them at rest.`);
+    return;
+  }
+  if (!plain.length) return;
+  tx(() => {
+    for (const r of plain) run('UPDATE settings SET value = ? WHERE key = ?', [encryptSetting(r.key, r.value), r.key]);
+  });
+  console.log(`[settings] encrypted ${plain.length} stored secret(s) with SECRETS_KEY`);
 }
 
 /** Setting with env fallback, e.g. secret('OPENAI_API_KEY'). DB value wins over env. */

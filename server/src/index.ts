@@ -12,8 +12,10 @@ import { logger } from 'hono/logger';
 import { existsSync, readFileSync, statSync } from 'node:fs';
 import { dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { createHash } from 'node:crypto';
+import { contentSecurityPolicy, inlineScripts } from '../../shared/csp.ts';
 
-import { db } from './db/index.ts';
+import { db, sealSecretSettings } from './db/index.ts';
 import settings from './routes/settings.ts';
 import projects from './routes/projects.ts';
 import runs from './routes/runs.ts';
@@ -29,6 +31,8 @@ import { startIpVerification } from './crawlers/verify.ts';
 const here = dirname(fileURLToPath(import.meta.url));
 const PORT = Number(process.env.PORT ?? 4400);
 const WEB_DIST = resolve(process.env.WEB_DIST ?? join(here, '../../web/dist'));
+
+sealSecretSettings();
 
 const app = new Hono();
 if (process.env.NODE_ENV !== 'production') app.use('/api/*', logger());
@@ -62,12 +66,31 @@ if (APP_USER && APP_PASSWORD) {
   });
 }
 
-// Workspace pages and API responses: no MIME sniffing, no framing by other sites (clickjacking).
+// The built app shell, re-read when the file changes (a rebuild is picked up without a restart), and the CSP that
+// allows its inline scripts by hash.
+const indexPath = join(WEB_DIST, 'index.html');
+let shell = { mtimeMs: -1, html: '', csp: contentSecurityPolicy([]) };
+function appShell(): typeof shell {
+  try {
+    const { mtimeMs } = statSync(indexPath);
+    if (mtimeMs !== shell.mtimeMs) {
+      const html = readFileSync(indexPath, 'utf8');
+      shell = { mtimeMs, html, csp: contentSecurityPolicy(inlineScripts(html).map((s) => createHash('sha256').update(s).digest('base64'))) };
+    }
+  } catch {
+    // No build yet, or it is being replaced: keep the last shell.
+  }
+  return shell;
+}
+
+// Workspace pages and API responses: no MIME sniffing, no framing by other sites (clickjacking), and a CSP that only
+// runs this app's own scripts.
 app.use('*', async (c, next) => {
   await next();
   if (isPublic(c.req.path)) return;
   c.header('x-content-type-options', 'nosniff');
   c.header('x-frame-options', 'SAMEORIGIN');
+  c.header('content-security-policy', appShell().csp);
 });
 
 // CSRF: browsers attach basic-auth credentials to cross-site requests, and "simple" POSTs (text/plain, forms) skip
@@ -121,23 +144,11 @@ app.onError((err, c) => {
 if (existsSync(WEB_DIST)) {
   const root = relative(process.cwd(), WEB_DIST);
   app.use('/*', serveStatic({ root }));
-  const indexPath = join(WEB_DIST, 'index.html');
-  let index = { mtimeMs: -1, html: '' };
-  /** The app shell, re-read when the file changes so a rebuild is picked up without a restart. */
-  const indexHtml = () => {
-    try {
-      const { mtimeMs } = statSync(indexPath);
-      if (mtimeMs !== index.mtimeMs) index = { mtimeMs, html: readFileSync(indexPath, 'utf8') };
-    } catch {
-      // The build is being replaced: keep serving the last shell.
-    }
-    return index.html;
-  };
   app.get('*', (c) => {
     if (c.req.path.startsWith('/api/')) return c.json({ error: 'Not found' }, 404);
     // A missing file (an old hashed asset after a deploy) is a 404, not the app shell with status 200.
     if (/\.[a-z0-9]+$/i.test(c.req.path)) return c.text('Not found', 404);
-    return c.html(indexHtml());
+    return c.html(appShell().html);
   });
 }
 
