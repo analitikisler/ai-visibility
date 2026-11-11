@@ -22,7 +22,7 @@ export function Pagination({ total, limit, offset, onOffsetChange, busy, classNa
   const P = copy.common.pagination;
   return (
     <nav aria-label="Pagination" className={cn('flex items-center justify-between gap-3', className)}>
-      <p className="font-mono text-xs text-text-muted tnum" aria-live="polite">
+      <p className="font-mono text-xs text-muted-foreground tnum" aria-live="polite">
         {fmt(P.range, { from: num(from), to: num(to), total: num(total) })}
       </p>
       {total > limit && (

@@ -49,7 +49,7 @@ function TopBar({ onOpenNav }: { onOpenNav: () => void }) {
             to="/app/settings"
             aria-label={copy.nav.items.workspaceSettings}
             title={copy.nav.items.workspaceSettings}
-            className="inline-flex size-8 items-center justify-center rounded-md text-text-muted transition-colors hover:bg-surface-2 hover:text-text"
+            className="inline-flex size-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-surface-2 hover:text-text"
           >
             <Settings size={16} strokeWidth={1.75} aria-hidden />
           </Link>

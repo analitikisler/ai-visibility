@@ -161,20 +161,20 @@ export function Menu({ items, footer, ...popover }: MenuProps) {
                 className={cn(
                   'flex cursor-pointer select-none gap-2 rounded-sm px-2 outline-none transition-colors hover:bg-surface-2 focus-visible:bg-surface-2 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring aria-disabled:cursor-not-allowed aria-disabled:opacity-50',
                   it.description ? 'items-start py-1.5' : 'h-8 items-center',
-                  it.danger ? 'text-danger' : 'text-text',
+                  it.danger ? 'text-bad' : 'text-text',
                 )}
               >
-                {Icon && <Icon size={16} strokeWidth={1.75} aria-hidden className={cn('shrink-0', it.description && 'mt-0.5', it.danger ? 'text-danger' : 'text-text-muted')} />}
+                {Icon && <Icon size={16} strokeWidth={1.75} aria-hidden className={cn('shrink-0', it.description && 'mt-0.5', it.danger ? 'text-bad' : 'text-muted-foreground')} />}
                 {it.description ? (
                   <span className="min-w-0 flex-1">
                     <span className="block truncate">{it.label}</span>
-                    <span className="mt-0.5 block max-w-64 whitespace-normal text-xs leading-4 text-text-subtle">{it.description}</span>
+                    <span className="mt-0.5 block max-w-64 whitespace-normal text-xs leading-4 text-subtle">{it.description}</span>
                   </span>
                 ) : (
                   <span className="min-w-0 flex-1 truncate">{it.label}</span>
                 )}
-                {it.hint && <span className="text-xs text-text-subtle">{it.hint}</span>}
-                {hasRadio && <Check size={14} strokeWidth={2} aria-hidden className={cn('text-accent', !it.selected && 'invisible')} />}
+                {it.hint && <span className="text-xs text-subtle">{it.hint}</span>}
+                {hasRadio && <Check size={14} strokeWidth={2} aria-hidden className={cn('text-strong', !it.selected && 'invisible')} />}
               </div>
             );
           })}

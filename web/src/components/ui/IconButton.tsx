@@ -17,9 +17,9 @@ export interface IconButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonEle
 const sizes = { sm: 'size-7', md: 'size-8', lg: 'size-10' } as const;
 const iconSizes = { sm: 14, md: 16, lg: 20 } as const;
 const variants = {
-  ghost: 'text-text-muted hover:bg-surface-2 hover:text-text',
-  secondary: 'border border-border-strong bg-surface text-text-muted hover:border-text-strong hover:bg-surface-2 hover:text-text',
-  primary: 'bg-primary text-primary-fg hover:bg-primary-hover',
+  ghost: 'text-muted-foreground hover:bg-surface-2 hover:text-text',
+  secondary: 'border border-border-strong bg-surface text-muted-foreground hover:border-strong hover:bg-surface-2 hover:text-text',
+  primary: 'bg-primary text-primary-foreground hover:bg-action-hover',
 } as const;
 
 /** Square icon-only button. Always pass `label`. */

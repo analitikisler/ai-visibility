@@ -6,6 +6,7 @@ import { Button, Dialog, Input, SegmentedControl, Select, Textarea, useToast } f
 import { copy, fmt, plural } from '@/content/copy';
 import { errorMessage, useCreatePrompts, usePrompts, useUpdatePrompt } from '@/lib/api';
 import { cn } from '@/lib/cn';
+import { HEAT_STEPS } from '@/lib/colors';
 
 const P = copy.pages.prompts;
 const F = copy.pages.onboarding.fields;
@@ -15,19 +16,10 @@ export const INTENTS: PromptIntent[] = ['discovery', 'comparison', 'alternatives
 export const tierOptions = TIERS.map((t) => ({ value: t, label: copy.labels.tier[t] }));
 export const intentOptions = INTENTS.map((i) => ({ value: i, label: copy.labels.intent[i] }));
 
-/** Heat ramp steps 0..7 (raw theme tokens from brand/tokens.css, defined for light and dark). */
-export const HEAT_STEPS = [
-  'var(--heat-0)',
-  'var(--heat-1)',
-  'var(--heat-2)',
-  'var(--heat-3)',
-  'var(--heat-4)',
-  'var(--heat-5)',
-  'var(--heat-6)',
-  'var(--heat-7)',
-] as const;
+/** Heat ramp steps 0..7 (kit tokens, defined for light and dark). */
+export { HEAT_STEPS };
 
-/** Ordered-category marker on the brand-blue ramp, starting at step 4 (BRAND §7.2). */
+/** Ordered-category marker on the heat ramp, starting at step 4. */
 export const TIER_HEAT: Record<PromptTier, string> = { must_win: HEAT_STEPS[7], core: HEAT_STEPS[5], foundational: HEAT_STEPS[4] };
 
 /** Tier label with its ramp swatch (identity by text, swatch is secondary). */
@@ -206,9 +198,9 @@ export function PromptDialog({ open, onClose, prompt, initialMode = 'single' }: 
               rows={8}
               error={touched ? bulkError : null}
             />
-            <p className="mt-1.5 font-mono text-xs text-text-muted tnum" aria-live="polite">
+            <p className="mt-1.5 font-mono text-xs text-muted-foreground tnum" aria-live="polite">
               {plural(count, P.dialog.bulkCount)}
-              {parsed.duplicates > 0 && <span className="text-text-subtle"> · {plural(parsed.duplicates, copy.pages.onboarding.editor.duplicatesSkipped)}</span>}
+              {parsed.duplicates > 0 && <span className="text-subtle"> · {plural(parsed.duplicates, copy.pages.onboarding.editor.duplicatesSkipped)}</span>}
             </p>
           </div>
         )}
@@ -217,10 +209,10 @@ export function PromptDialog({ open, onClose, prompt, initialMode = 'single' }: 
           <Select<PromptIntent> label={F.promptIntent.label} value={intent} onChange={setIntent} options={intentOptions} />
           <Input label={F.promptTopic.label} placeholder={F.promptTopic.placeholder} value={topic} onChange={(e) => setTopic(e.target.value)} maxLength={80} />
         </div>
-        <p className="text-xs text-text-subtle">{copy.glossary.tiers[tier].short}</p>
+        <p className="text-xs text-subtle">{copy.glossary.tiers[tier].short}</p>
         {serverError && (
-          <p role="alert" className="text-sm text-danger">
-            {copy.app.errors.saveFailed} <span className="text-text-muted">{fmt(copy.app.errors.detail, { detail: serverError })}</span>
+          <p role="alert" className="text-sm text-bad">
+            {copy.app.errors.saveFailed} <span className="text-muted-foreground">{fmt(copy.app.errors.detail, { detail: serverError })}</span>
           </p>
         )}
       </form>

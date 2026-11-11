@@ -8,7 +8,7 @@ export interface ScoreRingProps {
   /** Ring thickness in px (defaults to ~9% of size). */
   thickness?: number;
   /**
-   * `primary` (default): the brand blue (chart-1) — for the brand's own score.
+   * `primary` (default): the brand colour (cat-1) — for the brand's own score.
    * `status`: success ≥ 70, warning ≥ 40, danger below — for audits/readiness.
    */
   tone?: 'primary' | 'status';
@@ -19,7 +19,7 @@ export interface ScoreRingProps {
 }
 
 function statusColor(v: number) {
-  return v >= 70 ? 'var(--color-success)' : v >= 40 ? 'var(--color-warning)' : 'var(--color-danger)';
+  return v >= 70 ? 'var(--color-ok)' : v >= 40 ? 'var(--color-warn)' : 'var(--color-bad)';
 }
 
 /** 0..100 gauge with a mono value in the middle. */
@@ -28,7 +28,7 @@ export function ScoreRing({ value, size = 96, thickness, tone = 'primary', capti
   const r = (size - t) / 2;
   const c = 2 * Math.PI * r;
   const v = value == null || !Number.isFinite(value) ? null : Math.max(0, Math.min(100, value));
-  const color = v == null ? 'transparent' : tone === 'status' ? statusColor(v) : 'var(--color-chart-1)';
+  const color = v == null ? 'transparent' : tone === 'status' ? statusColor(v) : 'var(--color-data-cat-1)';
   const fontSize = Math.round(size * 0.3);
   return (
     <div
@@ -57,10 +57,10 @@ export function ScoreRing({ value, size = 96, thickness, tone = 'primary', capti
         )}
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center leading-none">
-        <span className={cn('text-text-strong tnum', size >= 64 ? 'font-display font-heading tracking-[-0.012em]' : 'font-mono font-medium')} style={{ fontSize }}>
+        <span className={cn('text-strong tnum', size >= 64 ? 'font-display font-heading tracking-[-0.012em]' : 'font-mono font-medium')} style={{ fontSize }}>
           {v == null ? '—' : Math.round(v)}
         </span>
-        {caption && size >= 64 && <span className="mt-1 text-2xs text-text-subtle">{caption}</span>}
+        {caption && size >= 64 && <span className="mt-1 text-2xs text-subtle">{caption}</span>}
       </div>
     </div>
   );

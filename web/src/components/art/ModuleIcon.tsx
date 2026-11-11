@@ -1,5 +1,5 @@
 // Spot illustrations for landing-page module sections.
-// 64 × 64 line art on brand tokens; one focal element each, in the brand blue (chart-1, the brand).
+// 64 × 64 line art on brand tokens; one focal element each, in the brand colour (cat-1, the brand).
 
 export type ModuleIconName = 'monitor' | 'diagnose' | 'act' | 'crawlers' | 'readiness';
 
@@ -10,13 +10,13 @@ export interface ModuleIconProps {
   className?: string;
 }
 
-const CARD = 'var(--surface)';
-const INSET = 'var(--surface-2)';
-const LINE = 'var(--border-strong)';
-const HAIR = 'var(--border)';
-const PRI = 'var(--chart-1)'; // the brand, as in charts
-const PRI_SOFT = 'var(--primary-soft)';
-const PRI_FG = 'var(--primary-fg)';
+const CARD = 'var(--color-surface)';
+const INSET = 'var(--color-surface-2)';
+const LINE = 'var(--color-border-strong)';
+const HAIR = 'var(--color-border)';
+const PRI = 'var(--color-data-cat-1)'; // the brand, as in charts
+const PRI_SOFT = 'var(--color-accent-soft)';
+const PRI_FG = 'var(--color-on-action)';
 const SW = 1.5;
 
 const Bar = ({ x, y, w, h = 3, fill = HAIR }: { x: number; y: number; w: number; h?: number; fill?: string }) => (

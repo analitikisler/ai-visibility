@@ -37,10 +37,10 @@ import { useFilters } from '@/lib/filters';
 import { compact, num, pct } from '@/lib/format';
 
 const P = copy.pages.traffic;
-/** Assistants that aren't tracked engines get the remaining non-brand slots, then slate. */
-const EXTRA_SLOTS = ['var(--color-chart-8)', 'var(--color-chart-other)'];
+/** Assistants that aren't tracked engines are grouped as "other": the kit's six categorical colours go to the engines. */
+const EXTRA_SLOTS = [OTHER_COLOR];
 
-/** Source id → color: tracked engines keep their engine-series color (BRAND §7.1). */
+/** Source id → color: tracked engines keep their engine-series color. */
 function useSourceColors(ov: ReferralOverview | undefined) {
   return useMemo(() => {
     const map: Record<string, string> = {};
@@ -60,7 +60,7 @@ function KpiRow({ ov, days }: { ov: ReferralOverview; days: number }) {
   });
   return (
     <StatGrid cols={{ base: 1, sm: 3 }}>
-      <KpiCard label={P.kpis.visits} info={copy.glossary.site.aiReferral} value={compact(t.visits.value)} delta={t.visits.delta} deltaKind="count" comparison={vs(t.visits.delta)} trend={trend} trendColor="var(--color-chart-other)" />
+      <KpiCard label={P.kpis.visits} info={copy.glossary.site.aiReferral} value={compact(t.visits.value)} delta={t.visits.delta} deltaKind="count" comparison={vs(t.visits.delta)} trend={trend} trendColor="var(--color-muted)" />
       <KpiCard label={P.kpis.sources} value={num(t.sources.value)} delta={t.sources.delta} deltaKind="count" comparison={vs(t.sources.delta)} />
       <KpiCard label={P.kpis.landingPages} value={num(t.landingPages.value)} delta={t.landingPages.delta} deltaKind="count" comparison={vs(t.landingPages.delta)} />
     </StatGrid>
@@ -199,9 +199,9 @@ export default function TrafficPage() {
             <LandingPages ov={ov} colors={colors} />
             <Card className="flex flex-col">
               <CardHeader title={P.howTitle} />
-              <div className="flex flex-1 flex-col gap-3 p-4 text-[13px] leading-5 text-text-muted">
+              <div className="flex flex-1 flex-col gap-3 p-4 text-[13px] leading-5 text-muted-foreground">
                 <p>{copy.glossary.site.aiReferral.long}</p>
-                <Link to={`/app/p/${projectId}/integrations`} className="mt-auto inline-flex items-center gap-1 text-xs font-medium text-accent hover:underline">
+                <Link to={`/app/p/${projectId}/integrations`} className="mt-auto inline-flex items-center gap-1 text-xs font-medium text-link hover:underline">
                   {P.empty.cta}
                   <ArrowRight size={12} strokeWidth={2} aria-hidden />
                 </Link>

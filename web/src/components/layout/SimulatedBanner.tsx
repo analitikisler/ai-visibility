@@ -36,7 +36,7 @@ export function SimulatedBanner() {
     }
   };
   return (
-    <div role="note" data-print="hide" className="flex items-center gap-3 border-b border-border bg-surface-2 px-4 py-1.5 text-xs text-text-muted lg:px-6">
+    <div role="note" data-print="hide" className="flex items-center gap-3 border-b border-border bg-surface-2 px-4 py-1.5 text-xs text-muted-foreground lg:px-6">
       <FlaskConical size={14} strokeWidth={1.75} aria-hidden className="shrink-0" />
       <p className="min-w-0 flex-1 truncate">
         <span className="hidden sm:inline">
@@ -44,10 +44,10 @@ export function SimulatedBanner() {
         </span>
         <span className="sm:hidden">{b.short}</span>
       </p>
-      <Link to="/app/settings" className="shrink-0 font-medium text-accent hover:underline">
+      <Link to="/app/settings" className="shrink-0 font-medium text-link hover:underline">
         {b.cta}
       </Link>
-      <button type="button" onClick={dismiss} aria-label={b.dismiss} title={b.dismiss} className="shrink-0 rounded-sm p-0.5 text-text-subtle hover:text-text">
+      <button type="button" onClick={dismiss} aria-label={b.dismiss} title={b.dismiss} className="shrink-0 rounded-sm p-0.5 text-subtle hover:text-text">
         <X size={14} strokeWidth={1.75} aria-hidden />
       </button>
     </div>

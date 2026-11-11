@@ -4,9 +4,9 @@ import { cn } from '@/lib/cn';
 import { SENTIMENT_NAMES, sentimentLabel, sentimentScore } from '@/lib/format';
 
 const meta: Record<SentimentLabel, { icon: LucideIcon; cls: string }> = {
-  positive: { icon: ThumbsUp, cls: 'text-sent-pos' },
-  neutral: { icon: Minus, cls: 'text-sent-neu' },
-  negative: { icon: ThumbsDown, cls: 'text-sent-neg' },
+  positive: { icon: ThumbsUp, cls: 'text-ok' },
+  neutral: { icon: Minus, cls: 'text-subtle' },
+  negative: { icon: ThumbsDown, cls: 'text-bad' },
 };
 
 export interface SentimentPillProps {
@@ -21,20 +21,20 @@ export interface SentimentPillProps {
   className?: string;
 }
 
-/** Sentiment chip: icon + label (never color alone, BRAND §7.3). */
+/** Sentiment chip: icon + label (never color alone). */
 export function SentimentPill({ label, raw, showScore, compact, className }: SentimentPillProps) {
   const l = label ?? sentimentLabel(raw);
-  if (!l) return <span className={cn('text-text-subtle', className)}>—</span>;
+  if (!l) return <span className={cn('text-subtle', className)}>—</span>;
   const { icon: Icon, cls } = meta[l];
   const s = sentimentScore(raw);
   return (
     <span
       title={compact ? SENTIMENT_NAMES[l] : undefined}
-      className={cn('inline-flex items-center gap-1 whitespace-nowrap rounded-sm border border-border bg-surface px-1.5 h-5 text-2xs font-medium text-text-muted', className)}
+      className={cn('inline-flex items-center gap-1 whitespace-nowrap rounded-sm border border-border bg-surface px-1.5 h-5 text-2xs font-medium text-muted-foreground', className)}
     >
       <Icon size={12} strokeWidth={2} aria-hidden className={cls} />
       {compact ? <span className="sr-only">{SENTIMENT_NAMES[l]}</span> : SENTIMENT_NAMES[l]}
-      {showScore && s != null && <span className="font-mono text-text-subtle tnum">{s}</span>}
+      {showScore && s != null && <span className="font-mono text-subtle tnum">{s}</span>}
     </span>
   );
 }

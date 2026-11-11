@@ -24,12 +24,12 @@ function useMentionColor() {
 
 const byPosition = (a: Mention, b: Mention) => a.position - b.position;
 
-/** "Named 2nd" / "Not named" status chip. Brand presence uses the brand blue + an icon, never color alone. */
+/** "Named 2nd" / "Not named" status chip. Brand presence uses the brand colour + an icon, never color alone. */
 /** A failed engine call: the reason in plain words, the status/provider code in a mono detail line. */
 function EngineErrorNote({ answer }: { answer: AiResponse }) {
   const e = describeEngineError(answer.error, answer.engine);
   return (
-    <div role="alert" className="mt-4 flex items-start gap-2 rounded-md bg-warning-soft px-3 py-2 text-sm text-warning">
+    <div role="alert" className="mt-4 flex items-start gap-2 rounded-md bg-warn-soft px-3 py-2 text-sm text-warn">
       <AlertTriangle size={16} strokeWidth={1.75} aria-hidden className="mt-0.5 shrink-0" />
       <span className="min-w-0">
         <span className="block">{e.message}</span>
@@ -52,13 +52,13 @@ export function NamedBadge({ answer, className }: { answer: Pick<AiResponse, 'br
 }
 
 const SENT_ICON = { positive: ThumbsUp, neutral: Minus, negative: ThumbsDown } as const;
-const SENT_CLS = { positive: 'text-sent-pos', neutral: 'text-sent-neu', negative: 'text-sent-neg' } as const;
+const SENT_CLS = { positive: 'text-ok', neutral: 'text-subtle', negative: 'text-bad' } as const;
 
 /** Sentiment as icon + accessible label (the chip shows the label on hover too). */
 function SentimentIcon({ label }: { label: SentimentLabel }) {
   const Icon = SENT_ICON[label];
   return (
-    <span className="inline-flex items-center gap-1 text-2xs font-medium text-text-muted" title={copy.labels.sentiment[label]}>
+    <span className="inline-flex items-center gap-1 text-2xs font-medium text-muted-foreground" title={copy.labels.sentiment[label]}>
       <Icon size={12} strokeWidth={2} aria-hidden className={SENT_CLS[label]} />
       <span className="hidden sm:inline">{copy.labels.sentiment[label]}</span>
       <span className="sr-only sm:hidden">{copy.labels.sentiment[label]}</span>
@@ -75,7 +75,7 @@ export function MentionChip({ mention, color }: { mention: Mention; color: strin
         mention.context ? (
           <span className="block">
             <span className="mb-0.5 block font-semibold">{D.mentionContext}</span>
-            <span className="block text-text-muted">{mention.context}</span>
+            <span className="block text-muted-foreground">{mention.context}</span>
           </span>
         ) : null
       }
@@ -84,10 +84,10 @@ export function MentionChip({ mention, color }: { mention: Mention; color: strin
         tabIndex={mention.context ? 0 : undefined}
         className={cn(
           'inline-flex h-7 max-w-full items-center gap-1.5 rounded-md border px-2 text-xs',
-          brand ? 'border-transparent bg-primary-soft text-accent-ink' : 'border-border bg-surface text-text',
+          brand ? 'border-transparent bg-accent-soft text-accent-ink' : 'border-border bg-surface text-text',
         )}
       >
-        <span className="font-mono text-2xs text-text-subtle tnum">#{mention.position}</span>
+        <span className="font-mono text-2xs text-subtle tnum">#{mention.position}</span>
         <Dot color={color} />
         <span className={cn('truncate', brand ? 'font-semibold' : 'font-medium')}>{mention.entityName}</span>
         {brand && <span className="sr-only">({copy.app.badges.you})</span>}
@@ -102,7 +102,7 @@ function SourceRow({ c, colors }: { c: Citation; colors: Record<string, string> 
   const color = c.sourceType === 'competitor' && c.competitorId ? (colors[c.competitorId] ?? SOURCE_TYPE_COLORS.competitor) : SOURCE_TYPE_COLORS[c.sourceType];
   return (
     <li className="flex min-w-0 items-start gap-2.5 py-2">
-      <span className="mt-px inline-flex h-[18px] min-w-[18px] shrink-0 items-center justify-center rounded-sm border border-border bg-surface-2 px-1 font-mono text-[11px] text-text-muted tnum">
+      <span className="mt-px inline-flex h-[18px] min-w-[18px] shrink-0 items-center justify-center rounded-sm border border-border bg-surface-2 px-1 font-mono text-[11px] text-muted-foreground tnum">
         {c.position}
       </span>
       <div className="min-w-0 flex-1">
@@ -110,13 +110,13 @@ function SourceRow({ c, colors }: { c: Citation; colors: Record<string, string> 
           href={c.url}
           target="_blank"
           rel="noopener noreferrer"
-          className="group inline-flex max-w-full items-center gap-1 text-[13px] font-medium text-text hover:text-accent"
+          className="group inline-flex max-w-full items-center gap-1 text-[13px] font-medium text-text hover:text-link"
         >
           <span className="truncate">{c.title || c.domain}</span>
-          <ExternalLink size={12} strokeWidth={1.75} aria-hidden className="shrink-0 text-text-subtle group-hover:text-accent" />
+          <ExternalLink size={12} strokeWidth={1.75} aria-hidden className="shrink-0 text-subtle group-hover:text-link" />
           <span className="sr-only">({D.openSource})</span>
         </a>
-        <p className="mt-0.5 flex min-w-0 items-center gap-2 text-xs text-text-subtle">
+        <p className="mt-0.5 flex min-w-0 items-center gap-2 text-xs text-subtle">
           <span className="truncate font-mono">{c.domain}</span>
           <span className="inline-flex shrink-0 items-center gap-1">
             <Dot color={color} size={6} />
@@ -132,7 +132,7 @@ function Meta({ label, title, children }: { label: string; title?: string; child
   return (
     <div className="min-w-0">
       <dt className="eyebrow">{label}</dt>
-      <dd className="mt-0.5 truncate font-mono text-xs text-text-muted tnum" title={title}>
+      <dd className="mt-0.5 truncate font-mono text-xs text-muted-foreground tnum" title={title}>
         {children}
       </dd>
     </div>
@@ -147,12 +147,12 @@ function UsageMeta({ usage }: { usage: AnswerUsage }) {
     <>
       <Meta label={D.tokens} title={[tokens, cached].filter(Boolean).join(' · ')}>
         {tokens}
-        {cached && <span className="text-text-subtle"> · {cached}</span>}
+        {cached && <span className="text-subtle"> · {cached}</span>}
       </Meta>
       <Meta label={D.searches}>{num(usage.searchCalls)}</Meta>
       <div className="min-w-0">
         <dt className="eyebrow">{D.cost}</dt>
-        <dd className="mt-0.5 flex items-center gap-1.5 font-mono text-xs text-text-muted tnum">
+        <dd className="mt-0.5 flex items-center gap-1.5 font-mono text-xs text-muted-foreground tnum">
           <Tooltip content={D.costTooltip}>
             <span tabIndex={0}>{usd(usage.costUsd, { precise: true })}</span>
           </Tooltip>
@@ -203,7 +203,7 @@ export function AnswerCard({ answer, hidePrompt, bare, entities, className }: An
           <ModeBadge mode={answer.mode} engineName={name} />
           <NamedBadge answer={answer} />
         </span>
-        <time dateTime={answer.createdAt} title={dateTime(answer.createdAt)} className="text-xs text-text-subtle">
+        <time dateTime={answer.createdAt} title={dateTime(answer.createdAt)} className="text-xs text-subtle">
           {fmt(D.collected, { time: relativeTime(answer.createdAt) })}
         </time>
       </header>
@@ -230,7 +230,7 @@ export function AnswerCard({ answer, hidePrompt, bare, entities, className }: An
           </section>
 
           <div className="mt-5 border-t border-border pt-4">
-            <p className="mb-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-text-subtle">
+            <p className="mb-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-subtle">
               <span aria-hidden className="inline-flex items-center gap-3">
                 <mark className="px-1">{copy.app.badges.you}</mark>
                 <span className="underline decoration-2 underline-offset-[3px]" style={{ textDecorationColor: OTHER_COLOR }}>
@@ -256,7 +256,7 @@ export function AnswerCard({ answer, hidePrompt, bare, entities, className }: An
                 ))}
             </ol>
           ) : (
-            <p className="mt-1.5 text-[13px] text-text-subtle">{D.noCitations}</p>
+            <p className="mt-1.5 text-[13px] text-subtle">{D.noCitations}</p>
           )}
         </section>
       )}
@@ -312,28 +312,28 @@ export function AnswerListItem({ answer, onOpen, selected, hidePrompt, entities 
             <NamedBadge answer={answer} />
           )}
         </span>
-        <time dateTime={answer.createdAt} title={dateTime(answer.createdAt)} className="text-xs text-text-subtle">
+        <time dateTime={answer.createdAt} title={dateTime(answer.createdAt)} className="text-xs text-subtle">
           {relativeTime(answer.createdAt)}
         </time>
       </span>
-      {!hidePrompt && <span className="mt-2 line-clamp-2 text-sm font-medium text-text group-hover:text-accent">{answer.promptText}</span>}
+      {!hidePrompt && <span className="mt-2 line-clamp-2 text-sm font-medium text-text group-hover:text-link">{answer.promptText}</span>}
       {answer.error ? (
-        <span className="mt-1.5 block text-[13px] text-text-muted">{describeEngineError(answer.error, answer.engine).message}</span>
+        <span className="mt-1.5 block text-[13px] text-muted-foreground">{describeEngineError(answer.error, answer.engine).message}</span>
       ) : (
         // Lead with the sentence that names the brand, so the highlight is visible in the list.
         <AnswerSnippet text={answer.text} from={brandMention?.context} max={260} entities={entities} className="mt-1.5 line-clamp-3" />
       )}
       {(shown.length > 0 || answer.citations.length > 0) && (
-        <span className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs text-text-muted">
+        <span className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs text-muted-foreground">
           {shown.map((m) => (
             <span key={`${m.entityType}-${m.competitorId ?? 'b'}`} className="inline-flex min-w-0 items-center gap-1.5">
-              <span className="font-mono text-2xs text-text-subtle tnum">#{m.position}</span>
+              <span className="font-mono text-2xs text-subtle tnum">#{m.position}</span>
               <Dot color={colorOf(m)} size={6} />
               <span className={cn('max-w-36 truncate', m.entityType === 'brand' && 'font-semibold text-text')}>{m.entityName}</span>
             </span>
           ))}
-          {mentions.length > shown.length && <span className="text-text-subtle">+{mentions.length - shown.length}</span>}
-          {answer.citations.length > 0 && <span className="ml-auto text-text-subtle">{plural(answer.citations.length, L.citations)}</span>}
+          {mentions.length > shown.length && <span className="text-subtle">+{mentions.length - shown.length}</span>}
+          {answer.citations.length > 0 && <span className="ml-auto text-subtle">{plural(answer.citations.length, L.citations)}</span>}
         </span>
       )}
     </button>

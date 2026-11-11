@@ -68,7 +68,7 @@ export interface DialogProps {
 
 const widths = { sm: 'max-w-sm', md: 'max-w-lg', lg: 'max-w-2xl', xl: 'max-w-4xl' } as const;
 
-/** Modal dialog (6px radius, the overlay shadow, navy scrim). Esc / backdrop / close button all call `onClose`. */
+/** Modal dialog (6px radius, the overlay shadow, the kit overlay scrim). Esc / backdrop / close button all call `onClose`. */
 export function Dialog({ open, onClose, title, description, children, footer, size = 'md', className }: DialogProps) {
   const { ref, onBackdrop } = useNativeDialog(open, onClose);
   const titleId = useId();
@@ -89,11 +89,11 @@ export function Dialog({ open, onClose, title, description, children, footer, si
         <div className="flex max-h-[min(85dvh,52rem)] flex-col">
           <div className="flex items-start justify-between gap-4 px-5 pt-5">
             <div className="min-w-0">
-              <h2 id={titleId} className="text-base font-semibold text-text-strong">
+              <h2 id={titleId} className="text-base font-semibold text-strong">
                 {title}
               </h2>
               {description && (
-                <p id={descId} className="mt-1 text-sm text-text-muted">
+                <p id={descId} className="mt-1 text-sm text-muted-foreground">
                   {description}
                 </p>
               )}
@@ -147,11 +147,11 @@ export function Drawer({ open, onClose, title, description, children, footer, si
             <div className="flex items-start justify-between gap-4 border-b border-border px-5 py-4">
               <div className="min-w-0">
                 {title && (
-                  <h2 id={titleId} className="text-base font-semibold text-text-strong">
+                  <h2 id={titleId} className="text-base font-semibold text-strong">
                     {title}
                   </h2>
                 )}
-                {description && <p className="mt-0.5 text-sm text-text-muted">{description}</p>}
+                {description && <p className="mt-0.5 text-sm text-muted-foreground">{description}</p>}
               </div>
               <IconButton icon={X} label="Close" size="sm" onClick={onClose} className="-mr-1.5" />
             </div>

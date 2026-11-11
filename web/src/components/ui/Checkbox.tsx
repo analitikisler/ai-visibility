@@ -33,9 +33,9 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(function Che
         {...rest}
       />
       {indeterminate ? (
-        <Minus size={12} strokeWidth={3} aria-hidden className="pointer-events-none absolute inset-0 m-auto text-primary-fg" />
+        <Minus size={12} strokeWidth={3} aria-hidden className="pointer-events-none absolute inset-0 m-auto text-primary-foreground" />
       ) : (
-        <Check size={12} strokeWidth={3} aria-hidden className="pointer-events-none absolute inset-0 m-auto text-primary-fg opacity-0 peer-checked:opacity-100" />
+        <Check size={12} strokeWidth={3} aria-hidden className="pointer-events-none absolute inset-0 m-auto text-primary-foreground opacity-0 peer-checked:opacity-100" />
       )}
     </span>
   );
@@ -45,7 +45,7 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(function Che
       <span className="mt-0.5">{box}</span>
       <span className="min-w-0">
         <span className="block">{label}</span>
-        {description && <span className="block text-xs text-text-subtle">{description}</span>}
+        {description && <span className="block text-xs text-subtle">{description}</span>}
       </span>
     </label>
   );
@@ -83,7 +83,7 @@ export function Switch({ checked, onCheckedChange, label, description, disabled,
         checked ? 'border-primary bg-primary' : 'border-border-strong bg-bg',
       )}
     >
-      <span data-on={checked} className={cn('rounded-xs transition-[transform,background-color] duration-160 ease-out', checked ? 'bg-primary-fg' : 'bg-text-muted', thumb)} />
+      <span data-on={checked} className={cn('rounded-xs transition-[transform,background-color] duration-160 ease-out', checked ? 'bg-primary-foreground' : 'bg-subtle', thumb)} />
     </button>
   );
   if (!label) return <span className={className}>{btn}</span>;
@@ -91,7 +91,7 @@ export function Switch({ checked, onCheckedChange, label, description, disabled,
     <div className={cn('flex items-start justify-between gap-4', className)}>
       <label htmlFor={id} className="min-w-0 cursor-pointer text-sm text-text">
         <span className="block font-medium">{label}</span>
-        {description && <span className="block text-xs text-text-subtle">{description}</span>}
+        {description && <span className="block text-xs text-subtle">{description}</span>}
       </label>
       {btn}
     </div>

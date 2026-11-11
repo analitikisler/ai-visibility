@@ -88,7 +88,7 @@ export function DonutChart({ data, size = 168, thickness = 0.28, center, format 
             <li key={d.key} className="flex min-w-0 items-center justify-between gap-3 text-[13px]">
               <span className="flex min-w-0 items-center gap-2">
                 <span aria-hidden className="size-2 shrink-0 rounded-xs" style={{ background: d.color }} />
-                <span className={cn('truncate', d.emphasis ? 'font-semibold text-text' : 'text-text-muted')}>{d.name}</span>
+                <span className={cn('truncate', d.emphasis ? 'font-semibold text-text' : 'text-muted-foreground')}>{d.name}</span>
               </span>
               <span className={cn('shrink-0 font-mono tnum', d.emphasis ? 'font-semibold text-text' : 'text-text')}>{pct(total ? d.value / total : null)}</span>
             </li>

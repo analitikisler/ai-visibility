@@ -4,22 +4,22 @@ import { cn } from '@/lib/cn';
 
 export type BadgeTone = 'neutral' | 'primary' | 'success' | 'warning' | 'danger' | 'info' | 'accent' | 'outline';
 
-// Tally tags: 2px radius, 1px border, muted or status text on its tint. Never a filled pill.
+// Çini tags: 2px radius, 1px border, muted or status text on its tint. Never a filled pill.
 const tones: Record<BadgeTone, string> = {
-  neutral: 'border-border bg-surface-2 text-text-muted',
-  primary: 'border-accent/40 bg-accent-soft text-accent-ink',
-  success: 'border-success/40 bg-success-soft text-success',
-  warning: 'border-warning/40 bg-warning-soft text-warning',
-  danger: 'border-danger/40 bg-danger-soft text-danger',
-  info: 'border-info/40 bg-info-soft text-accent-ink',
-  accent: 'border-accent/40 bg-accent-soft text-accent-ink',
-  outline: 'border-border-strong text-text-muted',
+  neutral: 'border-border bg-surface-2 text-muted-foreground',
+  primary: 'border-link/30 bg-accent-soft text-accent-ink',
+  success: 'border-ok/40 bg-ok-soft text-ok',
+  warning: 'border-warn/40 bg-warn-soft text-warn',
+  danger: 'border-bad/40 bg-bad-soft text-bad',
+  info: 'border-info/40 bg-info-soft text-info',
+  accent: 'border-link/30 bg-accent-soft text-accent-ink',
+  outline: 'border-border-strong text-muted-foreground',
 };
 
 export interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {
   tone?: BadgeTone;
   icon?: LucideIcon;
-  /** Colored 6px dot before the label (any CSS color, e.g. `var(--color-success)`). */
+  /** Colored 6px dot before the label (any CSS color, e.g. `var(--color-ok)`). */
   dot?: string;
   size?: 'sm' | 'md';
   children?: ReactNode;

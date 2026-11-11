@@ -1,5 +1,5 @@
-// Engine metadata for the UI. Colors follow brand/retired/overt/BRAND.md §7.1 "Engine series" and are only for
-// engine-series charts (never on the same chart as competitor series).
+// Engine metadata for the UI. Engine colors are the kit's categorical series and are only for engine-series charts
+// (never on the same chart as competitor series). The four default engines take cat-2…5, so cat-1 (the brand) is last.
 import type { EngineId } from '@shared/types';
 import { copy, fmt } from '@/content/copy';
 
@@ -7,21 +7,21 @@ export interface EngineMeta {
   id: EngineId;
   name: string;
   vendor: string;
-  /** CSS color for engine-series marks, e.g. `var(--color-chart-4)`. */
+  /** CSS color for engine-series marks, e.g. `var(--color-data-cat-2)`. */
   color: string;
-  /** Tailwind class pair for a swatch dot (`bg-chart-4`). */
+  /** Tailwind class pair for a swatch dot (`bg-cat-2`). */
   dotClass: string;
 }
 
 export const ENGINE_IDS: EngineId[] = ['chatgpt', 'claude', 'gemini', 'perplexity', 'grok', 'deepseek'];
 
 export const ENGINES: Record<EngineId, EngineMeta> = {
-  chatgpt: { id: 'chatgpt', name: 'ChatGPT', vendor: 'OpenAI', color: 'var(--color-chart-4)', dotClass: 'bg-chart-4' },
-  claude: { id: 'claude', name: 'Claude', vendor: 'Anthropic', color: 'var(--color-chart-2)', dotClass: 'bg-chart-2' },
-  gemini: { id: 'gemini', name: 'Gemini', vendor: 'Google', color: 'var(--color-chart-5)', dotClass: 'bg-chart-5' },
-  perplexity: { id: 'perplexity', name: 'Perplexity', vendor: 'Perplexity', color: 'var(--color-chart-7)', dotClass: 'bg-chart-7' },
-  grok: { id: 'grok', name: 'Grok', vendor: 'xAI', color: 'var(--color-chart-6)', dotClass: 'bg-chart-6' },
-  deepseek: { id: 'deepseek', name: 'DeepSeek', vendor: 'DeepSeek', color: 'var(--color-chart-3)', dotClass: 'bg-chart-3' },
+  chatgpt: { id: 'chatgpt', name: 'ChatGPT', vendor: 'OpenAI', color: 'var(--color-data-cat-2)', dotClass: 'bg-cat-2' },
+  claude: { id: 'claude', name: 'Claude', vendor: 'Anthropic', color: 'var(--color-data-cat-3)', dotClass: 'bg-cat-3' },
+  gemini: { id: 'gemini', name: 'Gemini', vendor: 'Google', color: 'var(--color-data-cat-4)', dotClass: 'bg-cat-4' },
+  perplexity: { id: 'perplexity', name: 'Perplexity', vendor: 'Perplexity', color: 'var(--color-data-cat-5)', dotClass: 'bg-cat-5' },
+  grok: { id: 'grok', name: 'Grok', vendor: 'xAI', color: 'var(--color-data-cat-6)', dotClass: 'bg-cat-6' },
+  deepseek: { id: 'deepseek', name: 'DeepSeek', vendor: 'DeepSeek', color: 'var(--color-data-cat-1)', dotClass: 'bg-cat-1' },
 };
 
 export function isEngineId(v: unknown): v is EngineId {
@@ -29,7 +29,7 @@ export function isEngineId(v: unknown): v is EngineId {
 }
 
 export const engineName = (id: EngineId | string) => (isEngineId(id) ? ENGINES[id].name : id);
-export const engineColor = (id: EngineId | string) => (isEngineId(id) ? ENGINES[id].color : 'var(--color-chart-other)');
+export const engineColor = (id: EngineId | string) => (isEngineId(id) ? ENGINES[id].color : 'var(--color-muted)');
 
 export interface EngineErrorView {
   /** One plain sentence with the way out ("ChatGPT rejected the API key. Paste a new key…"). */
@@ -40,7 +40,7 @@ export interface EngineErrorView {
 
 /**
  * Turns a raw engine/run error ("chatgpt: HTTP 401: { "error": { … } }" or "N of M jobs failed: …") into
- * BRAND §4 error copy: what happened in plain words first, codes in a detail line, never raw JSON.
+ * Error copy: what happened in plain words first, codes in a detail line, never raw JSON.
  */
 export function describeEngineError(raw: string | null | undefined, engine?: EngineId | string): EngineErrorView {
   const text = (raw ?? '').replace(/^\d+ of \d+ jobs failed:\s*/, '');

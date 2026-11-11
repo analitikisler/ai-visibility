@@ -8,13 +8,13 @@ export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger';
 export type ButtonSize = 'sm' | 'md' | 'lg';
 
 const base =
-  'inline-flex shrink-0 select-none items-center justify-center gap-1.5 whitespace-nowrap rounded-md font-medium transition-[color,background-color,border-color,box-shadow] duration-160 ease-out disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50';
+  'inline-flex shrink-0 select-none items-center justify-center gap-1.5 whitespace-nowrap rounded-md font-semibold transition-[color,background-color,border-color,box-shadow] duration-160 ease-out disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50';
 
 const variants: Record<ButtonVariant, string> = {
-  primary: 'bg-primary text-primary-fg hover:bg-primary-hover',
-  secondary: 'border border-border-strong bg-surface text-text hover:border-text-strong hover:bg-surface-2',
-  ghost: 'text-text-muted hover:bg-surface-2 hover:text-text',
-  danger: 'border border-transparent bg-danger-soft text-danger hover:border-danger',
+  primary: 'bg-primary text-primary-foreground hover:bg-action-hover',
+  secondary: 'border border-border-strong bg-surface text-text hover:border-strong hover:bg-surface-2',
+  ghost: 'text-muted-foreground hover:bg-surface-2 hover:text-text',
+  danger: 'border border-transparent bg-bad-soft text-bad hover:border-bad',
 };
 
 const sizes: Record<ButtonSize, string> = {
@@ -46,7 +46,7 @@ export interface ButtonProps extends CommonProps, Omit<ButtonHTMLAttributes<HTML
 }
 
 /**
- * Button. One `primary` per view (BRAND §6.2); everything else `secondary` or `ghost`.
+ * Button. One `primary` per view; everything else `secondary` or `ghost`.
  * Labels are verb + object in sentence case ("Run check").
  */
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(

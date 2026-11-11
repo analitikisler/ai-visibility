@@ -154,7 +154,7 @@ function SettingsForm() {
               return (
                 <label
                   key={e.id}
-                  className="flex cursor-pointer items-start gap-2.5 rounded-md border border-border px-3 py-2.5 transition-colors hover:border-border-strong has-[:checked]:border-primary has-[:checked]:bg-primary-soft"
+                  className="flex cursor-pointer items-start gap-2.5 rounded-md border border-border px-3 py-2.5 transition-colors hover:border-border-strong has-[:checked]:border-primary has-[:checked]:bg-accent-soft"
                 >
                   <Checkbox
                     checked={checked}
@@ -167,13 +167,13 @@ function SettingsForm() {
                       {e.name}
                       <ModeBadge mode={e.mode} engineName={e.name} tooltip={false} />
                     </span>
-                    <span className="mt-0.5 block text-xs text-text-subtle">{copy.engines[e.id].note}</span>
+                    <span className="mt-0.5 block text-xs text-subtle">{copy.engines[e.id].note}</span>
                   </span>
                 </label>
               );
             })}
           </div>
-          {err('engines') && <p className="mt-2 text-xs text-danger">{err('engines')}</p>}
+          {err('engines') && <p className="mt-2 text-xs text-bad">{err('engines')}</p>}
           <Select<Schedule>
             label={F.schedule.label}
             hint={F.schedule.help}
@@ -186,8 +186,8 @@ function SettingsForm() {
       </Card>
 
       <div className="sticky bottom-0 z-10 -mx-1 flex flex-wrap items-center justify-end gap-2 rounded-lg border border-border bg-surface px-4 py-3">
-        {dirty && <span className="mr-auto text-[13px] text-text-muted">{PS.unsaved}</span>}
-        {touched && invalid && <span className="mr-auto text-[13px] text-danger">{copy.app.errors.validation}</span>}
+        {dirty && <span className="mr-auto text-[13px] text-muted-foreground">{PS.unsaved}</span>}
+        {touched && invalid && <span className="mr-auto text-[13px] text-bad">{copy.app.errors.validation}</span>}
         <Button variant="ghost" disabled={!dirty || update.isPending} onClick={() => {
             setF(initial);
             setTouched(false);
@@ -266,7 +266,7 @@ export default function ProjectSettingsPage() {
           title={PS.sections.tracking}
           subtitle={I.siteKeyBody}
           actions={
-            <Link to={`/app/p/${projectId}/integrations`} className="inline-flex items-center gap-1 text-xs font-medium text-accent hover:underline">
+            <Link to={`/app/p/${projectId}/integrations`} className="inline-flex items-center gap-1 text-xs font-medium text-link hover:underline">
               {PS.siteKeyLink}
               <ArrowRight size={12} strokeWidth={2} aria-hidden />
             </Link>

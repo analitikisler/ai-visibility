@@ -44,11 +44,12 @@ import { num, pct, points, position, sentimentScore } from '@/lib/format';
 
 const C = copy.pages.competitors;
 const G = copy.glossary.metrics;
-const MAX_SERIES = 7;
+/** The brand plus five competitors fill the kit's six chart colours; the rest are grouped as Other. */
+const MAX_SERIES = 5;
 
 function SentimentCell({ raw }: { raw: number | null }) {
   const s = sentimentScore(raw);
-  if (s == null) return <span className="text-text-subtle">—</span>;
+  if (s == null) return <span className="text-subtle">—</span>;
   const label: SentimentLabel = s >= 60 ? 'positive' : s <= 40 ? 'negative' : 'neutral';
   const Icon = label === 'positive' ? ThumbsUp : label === 'negative' ? ThumbsDown : Minus;
   return (
@@ -62,12 +63,12 @@ function SentimentCell({ raw }: { raw: number | null }) {
 
 /** "12 pts ahead of you" / "behind you" / "Level with you" — neutral ink with an arrow, never color alone. */
 function GapCell({ e, brand }: { e: EntityStat; brand: EntityStat | undefined }) {
-  if (e.isBrand || !brand) return <span className="text-text-subtle">—</span>;
+  if (e.isBrand || !brand) return <span className="text-subtle">—</span>;
   const d = Math.round((e.visibility - brand.visibility) * 100);
   const Icon = d > 0 ? ArrowUpRight : d < 0 ? ArrowDownRight : Minus;
   const text = d === 0 ? C.gap.even : fmt(d > 0 ? C.gap.ahead : C.gap.behind, { delta: points(d) });
   return (
-    <span className="inline-flex items-center justify-end gap-1 whitespace-nowrap text-text-muted">
+    <span className="inline-flex items-center justify-end gap-1 whitespace-nowrap text-muted-foreground">
       <Icon size={12} strokeWidth={2} aria-hidden />
       {text}
     </span>
@@ -305,17 +306,17 @@ function DuelList({ title, items, color, compName }: { title: string; items: Due
     <section className="min-w-0">
       <h3 className="flex items-center gap-2 text-sm font-semibold text-text">
         {title}
-        <span className="rounded-sm border border-border bg-surface-2 px-1 font-mono text-2xs text-text-subtle tnum">{items.length}</span>
+        <span className="rounded-sm border border-border bg-surface-2 px-1 font-mono text-2xs text-subtle tnum">{items.length}</span>
       </h3>
       {items.length === 0 ? (
-        <p className="mt-2 text-[13px] text-text-subtle">{C.headToHead.none}</p>
+        <p className="mt-2 text-[13px] text-subtle">{C.headToHead.none}</p>
       ) : (
         <ul className="mt-2 divide-y divide-border">
           {shown.map((d) => (
             <li key={d.stat.prompt.id} className="py-2">
               <Link
                 to={`/app/p/${projectId}/prompts${filterSearch ? `${filterSearch}&` : '?'}prompt=${d.stat.prompt.id}`}
-                className="line-clamp-2 text-[13px] font-medium text-text hover:text-accent"
+                className="line-clamp-2 text-[13px] font-medium text-text hover:text-link"
               >
                 {d.stat.prompt.text}
               </Link>
@@ -323,13 +324,13 @@ function DuelList({ title, items, color, compName }: { title: string; items: Due
                 <span className="h-1.5 overflow-hidden rounded-xs bg-well" aria-hidden>
                   <span className="block h-full" style={{ width: `${d.you * 100}%`, background: BRAND_COLOR }} />
                 </span>
-                <span className="font-mono text-text-muted tnum">
+                <span className="font-mono text-muted-foreground tnum">
                   {project.name} {pct(d.you)}
                 </span>
                 <span className="h-1.5 overflow-hidden rounded-xs bg-well" aria-hidden>
                   <span className={cn('block h-full', d.upperBound && 'opacity-50')} style={{ width: `${d.them * 100}%`, background: color }} />
                 </span>
-                <span className="font-mono text-text-muted tnum">
+                <span className="font-mono text-muted-foreground tnum">
                   {compName} {d.upperBound ? `≤ ${pct(d.them)}` : pct(d.them)}
                 </span>
               </div>
@@ -405,13 +406,13 @@ function HeadToHead({ ov }: { ov: Overview }) {
                         <span className="block h-full" style={{ width: `${(you ?? 0) * 100}%`, background: BRAND_COLOR }} />
                       </span>
                       <span className="w-28 truncate text-right font-mono text-text tnum">
-                        <span className="text-text-muted">{project.name}</span> {pct(you)}
+                        <span className="text-muted-foreground">{project.name}</span> {pct(you)}
                       </span>
                       <span className="h-2 overflow-hidden rounded-xs bg-well" aria-hidden>
                         <span className="block h-full" style={{ width: `${(them ?? 0) * 100}%`, background: color }} />
                       </span>
                       <span className="w-28 truncate text-right font-mono text-text tnum">
-                        <span className="text-text-muted">{comp.name}</span> {pct(them)}
+                        <span className="text-muted-foreground">{comp.name}</span> {pct(them)}
                       </span>
                     </div>
                   )}

@@ -79,7 +79,7 @@ function Insight({ ov }: { ov: Overview }) {
       : null;
   return (
     <p className="text-sm text-text">
-      <span className="font-medium">{verdict}</span> {engineLine && <span className="text-text-muted">{engineLine}</span>}
+      <span className="font-medium">{verdict}</span> {engineLine && <span className="text-muted-foreground">{engineLine}</span>}
     </p>
   );
 }
@@ -90,19 +90,19 @@ function LastCheckLine({ ov }: { ov: Overview }) {
   const count = (n: number, forms: { one: string; other: string }) => plural(n, forms, { count: num(n) });
   const totals = [count(ov.totals.responses, T.responses), count(ov.totals.prompts, T.prompts), count(ov.totals.runs, T.runs)].join(' · ');
   return (
-    <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-text-subtle">
+    <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-subtle">
       {run && (
         <>
           <span className="inline-flex items-center gap-1.5">
             <Dot
               color={
                 run.status === 'failed'
-                  ? 'var(--color-danger)'
+                  ? 'var(--color-bad)'
                   : run.failedJobs > 0
-                    ? 'var(--color-warning)'
+                    ? 'var(--color-warn)'
                     : isWaitingOnBatch(run)
-                      ? 'var(--color-text-subtle)'
-                      : 'var(--color-success)'
+                      ? 'var(--color-muted)'
+                      : 'var(--color-ok)'
               }
               size={6}
             />
@@ -294,8 +294,8 @@ function ShareCard({ ov }: { ov: Overview }) {
           size={164}
           center={
             <>
-              <span className="font-display font-heading text-2xl leading-7 tracking-[-0.012em] text-text-strong tnum">{pct(brand?.shareOfVoice)}</span>
-              <span className="mt-0.5 max-w-24 truncate text-2xs text-text-subtle">{brand?.name}</span>
+              <span className="font-display font-heading text-2xl leading-7 tracking-[-0.012em] text-strong tnum">{pct(brand?.shareOfVoice)}</span>
+              <span className="mt-0.5 max-w-24 truncate text-2xs text-subtle">{brand?.name}</span>
             </>
           }
           className="sm:flex-col sm:items-stretch 2xl:flex-row 2xl:items-center"
@@ -335,7 +335,7 @@ function Leaderboard({ ov }: { ov: Overview }) {
         title={O.sections.leaderboard}
         subtitle={copy.pages.competitors.subtitle}
         actions={
-          <Link to={`/app/p/${projectId}/competitors${filterSearch}`} className="inline-flex items-center gap-1 text-xs font-medium text-accent hover:underline">
+          <Link to={`/app/p/${projectId}/competitors${filterSearch}`} className="inline-flex items-center gap-1 text-xs font-medium text-link hover:underline">
             {O.viewAll}
             <ArrowRight size={12} strokeWidth={2} aria-hidden />
           </Link>
@@ -420,7 +420,7 @@ function Leaderboard({ ov }: { ov: Overview }) {
 /** 0..100 sentiment with a label icon (never color alone). */
 function SentimentScore({ raw }: { raw: number | null }) {
   const s = sentimentScore(raw);
-  if (s == null) return <span className="text-text-subtle">—</span>;
+  if (s == null) return <span className="text-subtle">—</span>;
   const label: SentimentLabel = s >= 60 ? 'positive' : s <= 40 ? 'negative' : 'neutral';
   const Icon = label === 'positive' ? ThumbsUp : label === 'negative' ? ThumbsDown : Minus;
   return (
@@ -445,7 +445,7 @@ function SourcesCard({ ov }: { ov: Overview }) {
       <CardHeader
         title={O.sections.topSources}
         actions={
-          <Link to={`/app/p/${projectId}/sources${filterSearch}`} className="inline-flex items-center gap-1 text-xs font-medium text-accent hover:underline">
+          <Link to={`/app/p/${projectId}/sources${filterSearch}`} className="inline-flex items-center gap-1 text-xs font-medium text-link hover:underline">
             {O.viewAll}
             <ArrowRight size={12} strokeWidth={2} aria-hidden />
           </Link>
@@ -467,10 +467,10 @@ function SourcesCard({ ov }: { ov: Overview }) {
           valueHeader={copy.metrics.citations}
           empty={copy.pages.sources.subtitle}
         />
-        <ul className="mt-3 flex flex-wrap gap-x-3 gap-y-1 px-2 text-xs text-text-muted">
+        <ul className="mt-3 flex flex-wrap gap-x-3 gap-y-1 px-2 text-xs text-muted-foreground">
           {types.map((t) => (
             <li key={t} className="inline-flex items-center gap-1.5">
-              <Dot color={t === 'own' ? BRAND_COLOR : t === 'competitor' ? 'var(--color-chart-2)' : OTHER_COLOR} />
+              <Dot color={t === 'own' ? BRAND_COLOR : t === 'competitor' ? 'var(--color-data-cat-2)' : OTHER_COLOR} />
               {copy.labels.sourceType[t]}
               <InfoTip term={copy.glossary.sourceTypes[t]} />
             </li>
@@ -499,15 +499,15 @@ function EnginesCard({ engines }: { engines: EngineStat[] }) {
               <span className="font-mono text-[13px] text-text tnum">{pct(e.visibility)}</span>
             </div>
             <ProgressBar value={e.visibility / top} color={ENGINES[e.engine].color} size="xs" label={`${e.name} ${copy.metrics.visibility}`} className="mt-2" />
-            <p className="mt-1.5 flex flex-wrap gap-x-3 text-xs text-text-subtle">
+            <p className="mt-1.5 flex flex-wrap gap-x-3 text-xs text-subtle">
               <span>
-                {copy.metrics.avgPositionShort} <span className="font-mono text-text-muted tnum">{position(e.avgPosition)}</span>
+                {copy.metrics.avgPositionShort} <span className="font-mono text-muted-foreground tnum">{position(e.avgPosition)}</span>
               </span>
               <span>
-                {copy.metrics.shareOfVoice} <span className="font-mono text-text-muted tnum">{pct(e.shareOfVoice)}</span>
+                {copy.metrics.shareOfVoice} <span className="font-mono text-muted-foreground tnum">{pct(e.shareOfVoice)}</span>
               </span>
               <span>
-                <span className="font-mono text-text-muted tnum">{num(e.responses)}</span> {copy.metrics.answers.toLowerCase()}
+                <span className="font-mono text-muted-foreground tnum">{num(e.responses)}</span> {copy.metrics.answers.toLowerCase()}
               </span>
             </p>
           </li>
@@ -555,8 +555,8 @@ function SentimentCard({ ov }: { ov: Overview }) {
       <CardHeader title={O.sections.sentiment} titleAddon={<InfoTip term={G.sentiment} />} subtitle={copy.metrics.sentimentScale} />
       <div className="p-4">
         <div className="flex items-baseline gap-2">
-          <span className="font-display font-heading text-2xl leading-8 tracking-[-0.012em] text-text-strong tnum">{total > 0 ? score(ov.kpis.sentiment.value) : '—'}</span>
-          {total > 0 && <span className="font-mono text-sm text-text-muted">{copy.metrics.units.score}</span>}
+          <span className="font-display font-heading text-2xl leading-8 tracking-[-0.012em] text-strong tnum">{total > 0 ? score(ov.kpis.sentiment.value) : '—'}</span>
+          {total > 0 && <span className="font-mono text-sm text-muted-foreground">{copy.metrics.units.score}</span>}
           <DeltaBadge delta={total > 0 ? ov.kpis.sentiment.delta : null} kind="score" />
         </div>
         <div className="mt-3 flex h-2.5 w-full gap-0.5 overflow-hidden rounded-xs bg-well" role="img" aria-label={order.map((l) => `${copy.labels.sentiment[l]} ${pct(total ? b[l] / total : null)}`).join(', ')}>
@@ -567,12 +567,12 @@ function SentimentCard({ ov }: { ov: Overview }) {
             const Icon = icons[l];
             return (
               <li key={l} className="flex items-center justify-between gap-3 text-[13px]">
-                <span className="inline-flex items-center gap-2 text-text-muted">
+                <span className="inline-flex items-center gap-2 text-muted-foreground">
                   <Icon size={14} strokeWidth={2} aria-hidden style={{ color: SENTIMENT_COLORS[l] }} />
                   {copy.labels.sentiment[l]}
                 </span>
                 <span className="font-mono text-text tnum">
-                  {pct(total ? b[l] / total : null)} <span className="text-text-subtle">· {num(b[l])}</span>
+                  {pct(total ? b[l] / total : null)} <span className="text-subtle">· {num(b[l])}</span>
                 </span>
               </li>
             );
@@ -596,7 +596,7 @@ function NoAnswers() {
       <div className="flex flex-col items-center px-6 py-16 text-center">
         <EmptyNoData width={180} />
         <h2 className="mt-6 text-xl font-semibold text-text">{O.empty.title}</h2>
-        <p className="mt-1 max-w-md text-sm text-text-muted">{O.empty.body}</p>
+        <p className="mt-1 max-w-md text-sm text-muted-foreground">{O.empty.body}</p>
         {busy ? (
           <RunProgress run={run} className="mt-6" />
         ) : (

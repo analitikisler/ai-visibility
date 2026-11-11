@@ -1,6 +1,6 @@
 // Empty-state and error illustrations.
 // 160 × 120 line art, theme-aware through brand tokens: neutral structure
-// (`--surface`, `--surface-2`, `--border-strong`) plus one focal color: the brand blue (chart-1, the brand).
+// (`--surface`, `--surface-2`, `--border-strong`) plus one focal color: the brand colour (cat-1, the brand).
 import type { ReactNode } from 'react';
 
 export interface IllustrationProps {
@@ -9,13 +9,13 @@ export interface IllustrationProps {
   className?: string;
 }
 
-const CARD = 'var(--surface)';
-const INSET = 'var(--surface-2)';
-const LINE = 'var(--border-strong)';
-const HAIR = 'var(--border)';
-const PRI = 'var(--chart-1)'; // the brand, as in charts
-const PRI_SOFT = 'var(--primary-soft)';
-const PRI_FG = 'var(--primary-fg)';
+const CARD = 'var(--color-surface)';
+const INSET = 'var(--color-surface-2)';
+const LINE = 'var(--color-border-strong)';
+const HAIR = 'var(--color-border)';
+const PRI = 'var(--color-data-cat-1)'; // the brand, as in charts
+const PRI_SOFT = 'var(--color-accent-soft)';
+const PRI_FG = 'var(--color-on-action)';
 const SW = 1.5;
 
 function Art({ width = 160, className, children }: IllustrationProps & { children: ReactNode }) {
@@ -192,8 +192,8 @@ export function ErrorState(props: IllustrationProps) {
       <Bar x={108} y={54} w={28} />
       <Bar x={108} y={62} w={20} />
       <path d="M56 60H68M90 60H100" stroke={LINE} strokeWidth={SW} />
-      <circle cx="79" cy="60" r="8" fill="var(--danger-soft)" />
-      <path d="M76 57l6 6M82 57l-6 6" stroke="var(--danger)" strokeWidth={SW} />
+      <circle cx="79" cy="60" r="8" fill="var(--color-bad-soft)" />
+      <path d="M76 57l6 6M82 57l-6 6" stroke="var(--color-bad)" strokeWidth={SW} />
     </Art>
   );
 }

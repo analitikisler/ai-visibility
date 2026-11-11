@@ -55,7 +55,7 @@ const aliases = z.array(z.string().trim().min(1).max(120)).max(20);
 const CompetitorSchema = z.object({ name, domain: optionalDomain.optional(), aliases: aliases.optional() });
 const CompetitorPatchSchema = z.object({
   name: name.optional(), domain: optionalDomain.optional(), aliases: aliases.optional(),
-  color: z.string().regex(/^#[0-9a-fA-F]{6}$/, 'must be a hex color like #e5560f').optional(),
+  color: z.string().regex(/^#[0-9a-fA-F]{6}$/, 'must be a hex color like #584687').optional(),
 });
 const PromptSchema = z.object({
   text: z.string().trim().min(3).max(500),

@@ -1,6 +1,6 @@
 # ai visibility — Architecture
 
-> Product name: **ai visibility** (formerly Overt), one of the Analitik İşler ai tools; tagline "Be the answer." Brand system: `brand/ai/BRAND.md` (ai tool family; the Overt brand is retired) + `brand/tokens.css` (UI tokens).
+> Product name: **ai visibility** (formerly Overt), one of the Analitik İşler ai tools; tagline "Be the answer." Brand system: BRAND.md v1.1 (ai tool family; see `brand/README.md`) + the Çini design kit in `web/src/cini/` (colour, type, logos).
 
 ## Product in one paragraph
 A tool that shows a company **how AI assistants talk about its brand** (prompt-based tracking) and **how AI agents consume its website** (first-party crawler analytics). Loop: **Monitor → Diagnose → Plan → Act → Report**, plus **Crawlers** and **AI Readiness**.
@@ -41,7 +41,7 @@ Every feature works end-to-end in **simulated mode** and switches to **live mode
 | `server/src/engines/**`, `server/src/analysis/**`, `server/src/lib/llm.ts` | Live adapters and the simulator; entity, position, sentiment and citation extraction; LLM helper for suggestions and drafts |
 | `server/src/services/{runs,scheduler,seed,projects,monitor}.ts`, `server/src/routes/{settings,projects,runs,monitor}.ts` | Checks, scheduling, demo seed, projects and monitor aggregates |
 | `server/src/audit/**`, `server/src/crawlers/**`, `server/src/services/{diagnose,recommendations,drafts,report}.ts`, `server/src/routes/{insights,audit,crawlers,ingest}.ts` | AI-readiness audit, crawler/referral ingestion, diagnosis, recommendations, drafts, reports |
-| `brand/**` | ai brand guide and logos (`brand/ai/`), UI tokens, copy deck; retired Overt brand in `brand/retired/` |
+| `brand/**` | pointer to the ai brand guide (BRAND.md v1.1) and the design kit, copy deck |
 | `web/src/content/**` | Typed UI copy (`copy.ts`) |
 | `web/src/components/art/**`, `web/public/**` | Logo, favicon, OG image, theme-aware SVG illustrations |
 | `web/**` | The React app |

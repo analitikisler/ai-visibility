@@ -15,13 +15,13 @@ export interface DeltaBadgeProps {
 }
 
 const tones = {
-  good: { soft: 'border border-success/40 bg-success-soft text-success', plain: 'text-success' },
-  bad: { soft: 'border border-danger/40 bg-danger-soft text-danger', plain: 'text-danger' },
-  neutral: { soft: 'border border-border bg-surface-2 text-text-subtle', plain: 'text-text-subtle' },
+  good: { soft: 'border border-ok/40 bg-ok-soft text-ok', plain: 'text-ok' },
+  bad: { soft: 'border border-bad/40 bg-bad-soft text-bad', plain: 'text-bad' },
+  neutral: { soft: 'border border-border bg-surface-2 text-subtle', plain: 'text-subtle' },
 } as const;
 
 /**
- * Signed change colored by good/bad, never by direction alone (BRAND §7.4). Arrow + sign always shown;
+ * Signed change colored by good/bad, never by direction alone. Arrow + sign always shown;
  * null → "—" (no previous period).
  */
 export function DeltaBadge({ delta, kind, invert, variant = 'soft', size = 'sm', className }: DeltaBadgeProps) {

@@ -1,11 +1,11 @@
 // ============================================================================
 // ai visibility UI copy. Readable version: brand/COPY.md.
-// Voice: brand/ai/BRAND.md §11 (the ai tool family guide).
+// Voice: BRAND.md v1.1 (see brand/README.md) §11 (the ai tool family guide).
 //
 // - Plain strings only. `{name}` placeholders are filled with `fmt()`.
 // - Enum maps (labels.*, glossary.tiers, glossary.drivers, …) are keyed by the exact
 //   values in shared/types.ts, so `copy.labels.tier[prompt.tier]` type-checks.
-// - Numbers are formatted by the caller (brand/retired/overt/BRAND.md §4 "Writing metrics") before they
+// - Numbers are formatted by the caller before they
 //   go into a template: pass "38%", "+6 pts", "#2.4", never raw ratios.
 // ============================================================================
 
@@ -489,7 +489,7 @@ export const copy = {
         add: 'Add competitor',
         remove: 'Remove {name}',
         empty: 'No competitors yet. Add the brands buyers compare you with.',
-        limitNote: 'Charts show up to 7 competitors. Any more are grouped as Other.',
+        limitNote: 'Charts show up to 5 competitors. Any more are grouped as Other.',
       },
       prompts: {
         add: 'Add prompt',
@@ -747,7 +747,7 @@ export const copy = {
       },
       colorNote: 'Each competitor keeps its color on every chart.',
       otherBucket: 'Other',
-      otherNote: 'Charts show your top 7 competitors by share of voice. The rest are grouped as Other.',
+      otherNote: 'Charts show your top 5 competitors by share of voice. The rest are grouped as Other.',
       sovBody: 'Each brand’s part of all tracked mentions, day by day.',
       manage: {
         nameRequired: 'Add the competitor’s name.',

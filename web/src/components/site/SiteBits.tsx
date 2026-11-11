@@ -11,7 +11,7 @@ export const AGENT_CATEGORIES: AgentCategory[] = ['training', 'search', 'user_fe
 /** Category swatch + label (identity color, never status). */
 export function CategoryBadge({ category, info }: { category: AgentCategory; info?: boolean }) {
   return (
-    <span className="inline-flex min-w-0 items-center gap-1.5 whitespace-nowrap text-[13px] text-text-muted">
+    <span className="inline-flex min-w-0 items-center gap-1.5 whitespace-nowrap text-[13px] text-muted-foreground">
       <Dot color={AGENT_CATEGORY_COLORS[category]} />
       <span className="truncate">{copy.labels.agentCategory[category]}</span>
       {info && <InfoTip term={copy.glossary.agentCategories[category]} />}
@@ -37,7 +37,7 @@ export function statusClass(status: number | null | undefined): keyof typeof STA
 /** HTTP status chip: color + icon + code (never color alone). */
 export function StatusCodeChip({ status }: { status: number | null | undefined }) {
   const cls = statusClass(status);
-  if (!cls) return <span className="text-text-subtle">—</span>;
+  if (!cls) return <span className="text-subtle">—</span>;
   const s = STATUS_CLASS[cls];
   return (
     <Badge tone={s.tone} icon={s.icon} className="font-mono">

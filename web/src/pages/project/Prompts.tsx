@@ -3,7 +3,7 @@
 // pause/resume, delete. Click a row for the latest answer from each engine.
 import { useCallback, useMemo, useRef, useState, type KeyboardEvent } from 'react';
 import { useSearchParams } from 'react-router';
-import { CheckCircle2, ClipboardPaste, Equal, MessagesSquare, MoreHorizontal, Pause, Pencil, Play, Plus, Search, Trash2, X } from 'lucide-react';
+import { AlertTriangle, CheckCircle2, ClipboardPaste, Equal, MessagesSquare, MoreHorizontal, Pause, Pencil, Play, Plus, Search, Trash2, X } from 'lucide-react';
 import type { Competitor, EngineId, EngineInfo, Prompt, PromptStat, PromptTier } from '@shared/types';
 import { EmptyPrompts } from '@/components/art';
 import { AnswerCard, useAnswerEntities } from '@/components/answers';
@@ -89,10 +89,10 @@ function useLostWinner() {
   }, [project.competitors]);
 }
 
-/** Heat-ramp label ink (BRAND §7.2): light → white on 6–7; dark → canvas ink on 5–7. */
+/** Heat-ramp label ink, as in HeatmapGrid: light → on-action (white) on 5–7; dark → on-action on 4–7. */
 function inkFor(step: number) {
-  if (step >= 6) return 'text-white dark:text-bg';
-  if (step === 5) return 'text-text dark:text-bg';
+  if (step >= 5) return 'text-on-action';
+  if (step === 4) return 'text-text dark:text-on-action';
   return 'text-text';
 }
 
@@ -107,12 +107,12 @@ function EngineCell({ stat, engine }: { stat: PromptStat; engine: EngineInfo }) 
         <span className="block">
           <span className="block font-medium">{engine.name}</span>
           {has ? (
-            <span className="block text-text-muted">
+            <span className="block text-muted-foreground">
               {copy.metrics.visibility} <span className="font-mono text-text">{text}</span> · {copy.metrics.avgPositionShort}{' '}
               <span className="font-mono text-text">{position(e.position)}</span> · {plural(e.responses, { one: '1 answer', other: '{count} answers' })}
             </span>
           ) : (
-            <span className="block text-text-muted">{P.status.noData}</span>
+            <span className="block text-muted-foreground">{P.status.noData}</span>
           )}
         </span>
       }
@@ -121,7 +121,7 @@ function EngineCell({ stat, engine }: { stat: PromptStat; engine: EngineInfo }) 
       <span
         role="img"
         aria-label={`${engine.name}: ${text}`}
-        className={cn('flex h-7 w-full min-w-12 items-center justify-center rounded-sm font-mono text-xs tnum', has ? inkFor(step) : 'text-text-subtle')}
+        className={cn('flex h-7 w-full min-w-12 items-center justify-center rounded-sm font-mono text-xs tnum', has ? inkFor(step) : 'hatch-missing text-subtle')}
         style={{ background: HEAT_STEPS[step] }}
       >
         {text}
@@ -150,7 +150,7 @@ function TierMenu({ prompt }: { prompt: Prompt }) {
             p.onClick();
           }}
           aria-label={`${P.changeTier}: ${copy.labels.tier[prompt.tier]}`}
-          className="inline-flex h-6 items-center rounded-sm border border-transparent px-1 text-xs font-medium text-text-muted transition-colors hover:border-border-strong hover:text-text"
+          className="inline-flex h-6 items-center rounded-sm border border-transparent px-1 text-xs font-medium text-muted-foreground transition-colors hover:border-border-strong hover:text-text"
         >
           <TierLabel tier={prompt.tier} />
         </button>
@@ -216,7 +216,7 @@ function TopicEditor({ prompt }: { prompt: Prompt }) {
         setEditing(true);
       }}
       title={P.editTopic}
-      className={cn('max-w-48 truncate rounded-sm text-xs hover:text-text hover:underline', prompt.topic ? 'text-text-muted' : 'italic text-text-subtle')}
+      className={cn('max-w-48 truncate rounded-sm text-xs hover:text-text hover:underline', prompt.topic ? 'text-muted-foreground' : 'italic text-subtle')}
     >
       {prompt.topic || P.addTopic}
     </button>
@@ -279,28 +279,28 @@ const same = (a: number, b: number) => Math.abs(a - b) < 0.0005;
 
 function TopCompetitorCell({ stat }: { stat: PromptStat }) {
   const { project, colors } = useProject();
-  if (!stat.responses) return <span className="text-text-subtle">—</span>;
+  if (!stat.responses) return <span className="text-subtle">—</span>;
   const top = topRival(stat, project.competitors);
   if (!top)
     return stat.visibility > 0 ? (
-      <span className="inline-flex items-center gap-1.5 text-text-muted">
-        <CheckCircle2 size={14} strokeWidth={1.75} aria-hidden className="text-success" />
+      <span className="inline-flex items-center gap-1.5 text-muted-foreground">
+        <CheckCircle2 size={14} strokeWidth={1.75} aria-hidden className="text-ok" />
         {P.status.winning}
       </span>
     ) : (
-      <span className="text-text-subtle">{P.status.notMentioned}</span>
+      <span className="text-subtle">{P.status.notMentioned}</span>
     );
   if (same(stat.visibility, top.visibility))
     return (
-      <span className="inline-flex min-w-0 items-center gap-1.5 text-text-muted" title={fmt(P.tiedTooltip, { name: top.name })}>
+      <span className="inline-flex min-w-0 items-center gap-1.5 text-muted-foreground" title={fmt(P.tiedTooltip, { name: top.name })}>
         <Equal size={14} strokeWidth={1.75} aria-hidden className="shrink-0" />
         <span className="truncate">{fmt(P.tied, { name: top.name })}</span>
       </span>
     );
   if (stat.visibility > top.visibility)
     return (
-      <span className="inline-flex items-center gap-1.5 text-text-muted">
-        <CheckCircle2 size={14} strokeWidth={1.75} aria-hidden className="text-success" />
+      <span className="inline-flex items-center gap-1.5 text-muted-foreground">
+        <CheckCircle2 size={14} strokeWidth={1.75} aria-hidden className="text-ok" />
         {P.status.winning}
       </span>
     );
@@ -308,7 +308,7 @@ function TopCompetitorCell({ stat }: { stat: PromptStat }) {
     <span className="inline-flex min-w-0 items-center gap-1.5">
       <Dot color={(top.id && colors[top.id]) || OTHER_COLOR} />
       <span className="truncate">{top.name}</span>
-      <span className="font-mono text-text-subtle tnum">{pct(top.visibility)}</span>
+      <span className="font-mono text-subtle tnum">{pct(top.visibility)}</span>
     </span>
   );
 }
@@ -325,7 +325,7 @@ function EngineBars({ stat, engines }: { stat: PromptStat; engines: EngineInfo[]
             <div className="flex items-center justify-between gap-3 text-[13px]">
               <EngineBadge engine={e.id} />
               <span className="font-mono text-text tnum">
-                {v ? pct(v.visibility) : '—'} <span className="text-text-subtle">· {position(v?.position)}</span>
+                {v ? pct(v.visibility) : '—'} <span className="text-subtle">· {position(v?.position)}</span>
               </span>
             </div>
             <ProgressBar value={v?.visibility ?? 0} color={ENGINES[e.id].color} size="xs" label={`${e.name} ${copy.metrics.visibility}`} className="mt-1.5" />
@@ -368,7 +368,7 @@ function LatestAnswers({ promptId, engines }: { promptId: string; engines: Engin
               <span className="inline-flex items-center gap-1.5">
                 <EngineMark engine={e.id} size={14} />
                 {e.name}
-                {a && (a.brandMentioned ? <CheckCircle2 size={12} strokeWidth={2} aria-label={copy.pages.responses.namedFilter.named} className="text-accent" /> : null)}
+                {a && (a.brandMentioned ? <CheckCircle2 size={12} strokeWidth={2} aria-label={copy.pages.responses.namedFilter.named} className="text-ok" /> : null)}
               </span>
             ),
           };
@@ -380,7 +380,7 @@ function LatestAnswers({ promptId, engines }: { promptId: string; engines: Engin
         ) : fallback.isFetching ? (
           <Skeleton className="h-48 w-full" />
         ) : (
-          <p className="rounded-md border border-dashed border-border-strong px-4 py-8 text-center text-sm text-text-muted">
+          <p className="rounded-md border border-dashed border-border-strong px-4 py-8 text-center text-sm text-muted-foreground">
             {fmt(P.drawer.noAnswer, { engine: engines.find((e) => e.id === current)?.name ?? '' })}
           </p>
         )}
@@ -424,17 +424,17 @@ function PromptDrawer({ stat, engines, onClose, onEdit }: { stat: PromptStat | n
             <div>
               <div className="eyebrow">{copy.metrics.visibility}</div>
               <div className="mt-1 flex items-center gap-2">
-                <span className="font-display font-heading text-2xl tracking-[-0.012em] text-text-strong tnum">{stat.responses ? pct(stat.visibility) : '—'}</span>
+                <span className="font-display font-heading text-2xl tracking-[-0.012em] text-strong tnum">{stat.responses ? pct(stat.visibility) : '—'}</span>
                 <Sparkline values={stat.trend} domain={[0, 1]} width={56} height={22} label={`${copy.metrics.visibility} trend`} />
               </div>
             </div>
             <div>
               <div className="eyebrow">{copy.metrics.avgPositionShort}</div>
-              <div className="mt-1 font-display font-heading text-2xl tracking-[-0.012em] text-text-strong tnum">{position(stat.avgPosition)}</div>
+              <div className="mt-1 font-display font-heading text-2xl tracking-[-0.012em] text-strong tnum">{position(stat.avgPosition)}</div>
             </div>
             <div>
               <div className="eyebrow">{copy.metrics.answers}</div>
-              <div className="mt-1 font-display font-heading text-2xl tracking-[-0.012em] text-text-strong tnum">{num(stat.responses)}</div>
+              <div className="mt-1 font-display font-heading text-2xl tracking-[-0.012em] text-strong tnum">{num(stat.responses)}</div>
             </div>
             <div className="min-w-0">
               <div className="eyebrow">{COLS.topCompetitor}</div>
@@ -444,8 +444,8 @@ function PromptDrawer({ stat, engines, onClose, onEdit }: { stat: PromptStat | n
             </div>
           </div>
           {lostTo && (
-            <p className="flex items-start gap-2 rounded-md bg-warning-soft px-3 py-2 text-[13px] text-warning">
-              <InfoTip term={copy.glossary.concepts.lostPrompt} className="mt-0.5 text-warning" />
+            <p className="flex items-start gap-2 rounded-md bg-warn-soft px-3 py-2 text-[13px] text-warn">
+              <InfoTip term={copy.glossary.concepts.lostPrompt} className="mt-0.5 text-warn" />
               {fmt(P.status.lost, { name: lostTo.name })}. {P.lostHelp}
             </p>
           )}
@@ -617,7 +617,7 @@ export default function PromptsPage() {
           />
         </div>
         {tab === 'lost' && (
-          <p className="flex items-center gap-1.5 text-[13px] text-text-muted">
+          <p className="flex items-center gap-1.5 text-[13px] text-muted-foreground">
             <InfoTip term={copy.glossary.concepts.lostPrompt} />
             {P.lostHelp}
           </p>
@@ -683,11 +683,11 @@ export default function PromptsPage() {
                             e.stopPropagation();
                             openPrompt(p.id);
                           }}
-                          className="line-clamp-2 text-left font-medium text-text hover:text-accent"
+                          className="line-clamp-2 text-left font-medium text-text hover:text-link"
                         >
                           {p.text}
                         </button>
-                        <span className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-text-subtle">
+                        <span className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-subtle">
                           <span className="md:hidden">
                             <TierLabel tier={p.tier} />
                           </span>
@@ -698,7 +698,7 @@ export default function PromptsPage() {
                           <span aria-hidden>·</span>
                           <span>{copy.labels.intent[p.intent]}</span>
                           {!p.active && <Badge icon={Pause}>{P.status.paused}</Badge>}
-                          {isLost(s) && tab !== 'lost' && <Badge tone="warning">{P.tabs.lost}</Badge>}
+                          {isLost(s) && tab !== 'lost' && <Badge tone="warning" icon={AlertTriangle}>{P.tabs.lost}</Badge>}
                         </span>
                       </Td>
                       {/* Menus render in a portal, but React still bubbles their clicks to the row: stop them here. */}
@@ -738,7 +738,7 @@ export default function PromptsPage() {
             </TBody>
           </Table>
         </Card>
-        <p className="text-xs text-text-subtle">
+        <p className="text-xs text-subtle">
           {plural(rows.length, P.count)}
           {rows.length !== list.length && ` ${copy.common.of} ${list.length}`} · {fmt(copy.filters.range.lastDays, { days: params.days })}
           {engine && ` · ${ENGINES[engine].name}`}

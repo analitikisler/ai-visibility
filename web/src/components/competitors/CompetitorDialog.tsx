@@ -139,8 +139,8 @@ export function CompetitorDialog({ open, onClose, competitor }: CompetitorDialog
         />
         <ChipsInput label={F.aliases.label} placeholder={F.competitorAliases.placeholder} hint={F.aliases.help} values={aliases} onChange={setAliases} />
         {serverError && (
-          <p role="alert" className="text-sm text-danger">
-            {copy.app.errors.saveFailed} <span className="text-text-muted">{fmt(copy.app.errors.detail, { detail: serverError })}</span>
+          <p role="alert" className="text-sm text-bad">
+            {copy.app.errors.saveFailed} <span className="text-muted-foreground">{fmt(copy.app.errors.detail, { detail: serverError })}</span>
           </p>
         )}
       </form>
@@ -201,7 +201,7 @@ export function CompetitorList() {
   return (
     <div>
       {project.competitors.length === 0 ? (
-        <p className="rounded-md border border-dashed border-border-strong px-4 py-6 text-center text-sm text-text-muted">{copy.pages.onboarding.competitors.empty}</p>
+        <p className="rounded-md border border-dashed border-border-strong px-4 py-6 text-center text-sm text-muted-foreground">{copy.pages.onboarding.competitors.empty}</p>
       ) : (
         <ul className="divide-y divide-border rounded-md border border-border">
           {project.competitors.map((c) => (
@@ -209,7 +209,7 @@ export function CompetitorList() {
               <Dot color={colors[c.id] ?? OTHER_COLOR} size={10} />
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-medium text-text">{c.name}</p>
-                <p className="truncate text-xs text-text-subtle">
+                <p className="truncate text-xs text-subtle">
                   <span className="font-mono">{c.domain || '—'}</span>
                   {c.aliases.length > 0 && <span> · {plural(c.aliases.length, C.manage.aliasesCount)}</span>}
                 </p>
@@ -221,7 +221,7 @@ export function CompetitorList() {
         </ul>
       )}
       <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
-        <p className="text-xs text-text-subtle">{project.competitors.length > 7 ? C.otherNote : C.colorNote}</p>
+        <p className="text-xs text-subtle">{project.competitors.length > 5 ? C.otherNote : C.colorNote}</p>
         <Button size="sm" icon={Plus} onClick={d.add}>
           {C.actions.add}
         </Button>

@@ -9,7 +9,7 @@ import { ModeBadge } from './ModeBadge';
  * `tile` = white marker on a colored tile; `marker` = colored marker only (legends, dense tables).
  */
 export function EngineMark({ engine, size = 16, variant = 'tile', className }: { engine: EngineId | string; size?: number; variant?: 'tile' | 'marker'; className?: string }) {
-  if (!isEngineId(engine)) return <span aria-hidden className={cn('inline-block shrink-0 rounded-sm bg-chart-other', className)} style={{ width: size, height: size }} />;
+  if (!isEngineId(engine)) return <span aria-hidden className={cn('inline-block shrink-0 rounded-sm bg-subtle', className)} style={{ width: size, height: size }} />;
   return <EngineGlyph engine={engine} size={size} variant={variant} className={cn('shrink-0', className)} />;
 }
 
@@ -33,7 +33,7 @@ export function EngineBadge({ engine, mode, showVendor, iconOnly, size = 'md', c
     <span className={cn('inline-flex min-w-0 items-center gap-1.5', size === 'sm' ? 'text-xs' : 'text-[13px]', className)} title={iconOnly ? name : undefined}>
       <EngineMark engine={engine} size={size === 'sm' ? 14 : 16} />
       {iconOnly ? <span className="sr-only">{name}</span> : <span className="truncate font-medium text-text">{name}</span>}
-      {showVendor && meta && !iconOnly && <span className="truncate text-text-subtle">{meta.vendor}</span>}
+      {showVendor && meta && !iconOnly && <span className="truncate text-subtle">{meta.vendor}</span>}
       {mode && <ModeBadge mode={mode} engineName={name} />}
     </span>
   );

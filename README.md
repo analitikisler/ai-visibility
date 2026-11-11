@@ -1,7 +1,7 @@
 <h1>
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="brand/ai/assets/lockups/ai-visibility-dark.svg">
-    <img src="brand/ai/assets/lockups/ai-visibility-light.svg" alt="ai visibility" height="48">
+    <source media="(prefers-color-scheme: dark)" srcset="web/src/cini/logos/lockups/ai-visibility-dark.svg">
+    <img src="web/src/cini/logos/lockups/ai-visibility-light.svg" alt="ai visibility" height="48">
   </picture>
 </h1>
 
@@ -96,8 +96,8 @@ server/src/
   audit/  crawlers/    AI-readiness audit · crawler/referral ingestion, logs, pixel, integration snippets
   data/                AI agent & referrer catalogs, source domains, prompt templates, sentiment lexicon
   routes/  db/         Hono routes · node:sqlite schema + helpers
-web/src/               React 19 + Tailwind 4 app (pages, UI kit, charts, copy, art)
-brand/                 ai/ (the ai brand guide, board, logos), UI tokens, COPY.md
+web/src/               React 19 + Tailwind 4 app (pages, UI kit, charts, copy, art); cini/ = the design kit
+brand/                 pointer to the brand guide and the design kit (web/src/cini), COPY.md
 docs/ARCHITECTURE.md   architecture, code map, API, metric definitions
 ```
 

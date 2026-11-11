@@ -84,7 +84,7 @@ function KpiRow({ ov, days }: { ov: CrawlerOverview; days: number }) {
         deltaKind="count"
         comparison={vs(t.visits.delta)}
         trend={trend}
-        trendColor="var(--color-chart-other)"
+        trendColor="var(--color-muted)"
       />
       <KpiCard label={P.kpis.agents} value={num(t.agents.value)} delta={t.agents.delta} deltaKind="count" comparison={vs(t.agents.delta)} />
       <KpiCard label={P.kpis.pages} value={num(t.pages.value)} delta={t.pages.delta} deltaKind="count" comparison={vs(t.pages.delta)} />
@@ -104,8 +104,8 @@ function VerificationStrip({ ov, onFakes }: { ov: CrawlerOverview; onFakes: () =
     <div className="flex flex-col gap-3 rounded-lg border border-border bg-surface px-4 py-3 text-[13px] md:flex-row md:items-center md:gap-6">
       {total > 0 && (
         <div className="flex min-w-0 flex-1 items-start gap-2.5">
-          <BadgeCheck size={16} strokeWidth={1.75} aria-hidden className="mt-px shrink-0 text-success" />
-          <p className="min-w-0 text-text-muted">
+          <BadgeCheck size={16} strokeWidth={1.75} aria-hidden className="mt-px shrink-0 text-ok" />
+          <p className="min-w-0 text-muted-foreground">
             <span className="font-medium text-text">{fmt(V.share, { share: pct(verified / total) })}</span>
             {' · '}
             {fmt(V.shareBody, { verified: num(verified), total: num(total) })}
@@ -114,11 +114,11 @@ function VerificationStrip({ ov, onFakes }: { ov: CrawlerOverview; onFakes: () =
         </div>
       )}
       <div className="flex shrink-0 flex-wrap items-center gap-x-2.5 gap-y-1">
-        <ShieldAlert size={16} strokeWidth={1.75} aria-hidden className={cn('shrink-0', fakes ? 'text-danger' : 'text-text-subtle')} />
+        <ShieldAlert size={16} strokeWidth={1.75} aria-hidden className={cn('shrink-0', fakes ? 'text-bad' : 'text-subtle')} />
         <span className="font-medium text-text">{plural(fakes, V.fakes, { count: num(fakes) })}</span>
         <InfoTip term={V.fakesInfo} />
         {fakes > 0 && (
-          <button type="button" onClick={onFakes} className="inline-flex items-center gap-1 text-xs font-medium text-accent hover:underline">
+          <button type="button" onClick={onFakes} className="inline-flex items-center gap-1 text-xs font-medium text-link hover:underline">
             {V.viewFakes}
             <ArrowRight size={12} strokeWidth={2} aria-hidden />
           </button>
@@ -137,14 +137,14 @@ function Alerts({ ov, onAgent }: { ov: CrawlerOverview; onAgent: (agentId: strin
         <div key={a.agentId} className="flex flex-wrap items-center gap-x-3 gap-y-1.5 rounded-lg border border-border bg-surface px-4 py-3 text-[13px]">
           <Badge tone="accent">{copy.app.badges.new}</Badge>
           <span className="min-w-0 flex-1 text-text">{fmt(P.alerts.newAgent, { name: a.name, date: date(a.firstSeen) })}</span>
-          <button type="button" onClick={() => onAgent(a.agentId)} className="inline-flex items-center gap-1 text-xs font-medium text-accent hover:underline">
+          <button type="button" onClick={() => onAgent(a.agentId)} className="inline-flex items-center gap-1 text-xs font-medium text-link hover:underline">
             {P.viewVisits}
             <ArrowRight size={12} strokeWidth={2} aria-hidden />
           </button>
         </div>
       ))}
       {serverErrors > 0 && (
-        <div className="flex items-start gap-2.5 rounded-lg border border-transparent bg-warning-soft px-4 py-3 text-[13px] text-warning">
+        <div className="flex items-start gap-2.5 rounded-lg border border-transparent bg-warn-soft px-4 py-3 text-[13px] text-warn">
           <AlertTriangle size={16} strokeWidth={1.75} aria-hidden className="mt-px shrink-0" />
           <span>{fmt(P.alerts.serverErrors, { count: num(serverErrors) })}</span>
         </div>
@@ -186,7 +186,7 @@ function StatusCodesCard({ ov }: { ov: CrawlerOverview }) {
     <Card className="flex flex-col">
       <CardHeader title={P.sections.statusCodes} subtitle={P.statusCodesBody} />
       <ul className="flex flex-col gap-3 px-4 pb-4 pt-4">
-        {ov.statusCodes.length === 0 && <li className="py-6 text-center text-[13px] text-text-subtle">{P.eventsEmpty}</li>}
+        {ov.statusCodes.length === 0 && <li className="py-6 text-center text-[13px] text-subtle">{P.eventsEmpty}</li>}
         {[...ov.statusCodes]
           .sort((a, b) => b.visits - a.visits)
           .map((s) => (
@@ -194,14 +194,14 @@ function StatusCodesCard({ ov }: { ov: CrawlerOverview }) {
               <div className="flex items-center justify-between gap-3">
                 <StatusCodeChip status={s.status} />
                 <span className="font-mono text-[13px] text-text tnum">
-                  {pct(total ? s.visits / total : null)} <span className="text-text-subtle">· {num(s.visits)}</span>
+                  {pct(total ? s.visits / total : null)} <span className="text-subtle">· {num(s.visits)}</span>
                 </span>
               </div>
               <ProgressBar value={total ? s.visits / total : 0} tone={toneFor(s.status)} size="xs" label={`HTTP ${s.status}`} className="mt-1.5" />
             </li>
           ))}
       </ul>
-      {notFound > 0 && <p className="mt-auto border-t border-border px-4 py-3 text-xs text-text-muted">{fmt(P.alerts.notFound, { count: num(notFound) })}</p>}
+      {notFound > 0 && <p className="mt-auto border-t border-border px-4 py-3 text-xs text-muted-foreground">{fmt(P.alerts.notFound, { count: num(notFound) })}</p>}
     </Card>
   );
 }
@@ -214,7 +214,7 @@ function CategoryChips({ ov, value, onChange }: { ov: CrawlerOverview; value: 'a
   const chip = (active: boolean) =>
     cn(
       'inline-flex h-7 items-center gap-1.5 rounded-sm border px-2.5 text-xs font-medium transition-colors',
-      active ? 'border-primary bg-primary-soft text-accent' : 'border-border bg-surface text-text-muted hover:border-border-strong hover:text-text',
+      active ? 'border-primary bg-accent-soft text-accent-ink' : 'border-border bg-surface text-muted-foreground hover:border-border-strong hover:text-text',
     );
   return (
     <div role="group" aria-label={C.category} className="flex flex-wrap gap-1.5">
@@ -286,12 +286,12 @@ function AgentsPanel({ ov, onAgent }: { ov: CrawlerOverview; onAgent: (agentId: 
                         onAgent(a.agentId);
                       }}
                       title={P.viewVisits}
-                      className="flex min-w-0 items-center gap-2 text-left font-medium text-text hover:text-accent"
+                      className="flex min-w-0 items-center gap-2 text-left font-medium text-text hover:text-link"
                     >
                       <span className="truncate">{a.name}</span>
                       {ov.newAgents.some((n) => n.agentId === a.agentId) && <Badge tone="accent">{copy.app.badges.new}</Badge>}
                     </button>
-                    <span className="block text-xs text-text-subtle md:hidden">{a.operator}</span>
+                    <span className="block text-xs text-subtle md:hidden">{a.operator}</span>
                   </Td>
                   <Td muted className="hidden md:table-cell">
                     {a.operator}
@@ -354,14 +354,14 @@ function PlatformsPanel({ ov, onOperator }: { ov: CrawlerOverview; onOperator: (
             data={AGENT_CATEGORIES.map((c) => ({ key: c, name: copy.labels.agentCategory[c], value: ov.byCategory.find((x) => x.category === c)?.visits ?? 0, color: AGENT_CATEGORY_COLORS[c] })).filter((d) => d.value > 0)}
             center={
               <>
-                <span className="font-display font-heading text-xl leading-7 tracking-[-0.012em] text-text-strong tnum">{compact(total)}</span>
-                <span className="text-2xs text-text-subtle">{C.visits.toLowerCase()}</span>
+                <span className="font-display font-heading text-xl leading-7 tracking-[-0.012em] text-strong tnum">{compact(total)}</span>
+                <span className="text-2xs text-subtle">{C.visits.toLowerCase()}</span>
               </>
             }
           />
           <ul className="mt-5 grid gap-2 border-t border-border pt-4 sm:grid-cols-2">
             {categoriesIn(ov).map((c) => (
-              <li key={c} className="text-xs text-text-muted">
+              <li key={c} className="text-xs text-muted-foreground">
                 <span className="font-medium text-text">{copy.glossary.agentCategories[c].term}.</span> {copy.glossary.agentCategories[c].short}
               </li>
             ))}
@@ -442,10 +442,10 @@ function PagesPanel({ ov }: { ov: CrawlerOverview }) {
           title={P.sections.missedPages}
           titleAddon={<InfoTip term={copy.glossary.concepts.missedPages} />}
           subtitle={P.sections.missedPagesBody}
-          actions={ov.missedPages.length > 0 && <Badge tone="warning">{ov.missedPages.length}</Badge>}
+          actions={ov.missedPages.length > 0 && <Badge tone="warning" icon={AlertTriangle}>{ov.missedPages.length}</Badge>}
         />
         {ov.missedPages.length === 0 ? (
-          <p className="px-4 py-8 text-center text-[13px] text-text-subtle">{P.noMissed}</p>
+          <p className="px-4 py-8 text-center text-[13px] text-subtle">{P.noMissed}</p>
         ) : (
           <ul className="mt-3 divide-y divide-border border-y border-border">
             {ov.missedPages.map((m) => (
@@ -459,8 +459,8 @@ function PagesPanel({ ov }: { ov: CrawlerOverview }) {
           </ul>
         )}
         <div className="mt-auto px-4 py-3">
-          <p className="mb-2 text-xs text-text-muted">{copy.glossary.concepts.missedPages.long}</p>
-          <Link to={`/app/p/${projectId}/actions?category=crawlers`} className="inline-flex items-center gap-1 text-xs font-medium text-accent hover:underline">
+          <p className="mb-2 text-xs text-muted-foreground">{copy.glossary.concepts.missedPages.long}</p>
+          <Link to={`/app/p/${projectId}/actions?category=crawlers`} className="inline-flex items-center gap-1 text-xs font-medium text-link hover:underline">
             {P.missedCta}
             <ArrowRight size={12} strokeWidth={2} aria-hidden />
           </Link>
@@ -567,7 +567,7 @@ function EventsPanel({ ov, days }: { ov: CrawlerOverview; days: number }) {
             </Button>
           )}
         </div>
-        <p className="font-mono text-xs text-text-subtle tnum" aria-live="polite">
+        <p className="font-mono text-xs text-subtle tnum" aria-live="polite">
           {data ? fmt(copy.common.pagination.range, { from: num(from), to: num(to), total: num(data.total) }) : ' '}
         </p>
       </div>
@@ -604,8 +604,8 @@ function EventsPanel({ ov, days }: { ov: CrawlerOverview; days: number }) {
                         content={
                           <span className="block">
                             <span className="mb-0.5 block font-semibold">{C.userAgent}</span>
-                            <span className="block break-all font-mono text-[11px] text-text-muted">{e.userAgent}</span>
-                            {e.ip && <span className="mt-1 block font-mono text-[11px] text-text-subtle">{C.ip} {e.ip}</span>}
+                            <span className="block break-all font-mono text-[11px] text-muted-foreground">{e.userAgent}</span>
+                            {e.ip && <span className="mt-1 block font-mono text-[11px] text-subtle">{C.ip} {e.ip}</span>}
                           </span>
                         }
                       >

@@ -99,14 +99,14 @@ function RecommendationDone({ projectId, recKey }: { projectId: string; recKey: 
   if (!rec || (rec.status === 'done' && !justDone)) return null;
   if (rec.status === 'done')
     return (
-      <p role="status" className="flex items-start gap-2 rounded-md bg-success-soft px-3 py-2 text-[13px] text-success">
+      <p role="status" className="flex items-start gap-2 rounded-md bg-ok-soft px-3 py-2 text-[13px] text-ok">
         <CheckCircle2 size={14} strokeWidth={1.75} aria-hidden className="mt-0.5 shrink-0" />
         <span>{fmt(W.recDone, { title: rec.title })}</span>
       </p>
     );
   return (
     <div className="flex flex-col gap-2 rounded-md border border-border bg-surface-2 px-3 py-2.5 sm:flex-row sm:items-center sm:justify-between">
-      <p className="min-w-0 text-[13px] text-text-muted">{fmt(W.recDonePrompt, { title: rec.title })}</p>
+      <p className="min-w-0 text-[13px] text-muted-foreground">{fmt(W.recDonePrompt, { title: rec.title })}</p>
       <Button
         size="sm"
         icon={Check}
@@ -126,10 +126,10 @@ function RecommendationDone({ projectId, recKey }: { projectId: string; recKey: 
 }
 
 function DraftPending({ isError }: { isError: boolean }) {
-  if (isError) return <p className="px-5 py-10 text-center text-sm text-text-muted">{copy.recommendations.generateFailed}</p>;
+  if (isError) return <p className="px-5 py-10 text-center text-sm text-muted-foreground">{copy.recommendations.generateFailed}</p>;
   return (
     <div className="flex flex-col gap-4 px-5 py-5" aria-busy="true">
-      <p className="text-sm text-text-muted">{W.draftingBody}</p>
+      <p className="text-sm text-muted-foreground">{W.draftingBody}</p>
       <Skeleton className="h-5 w-40" />
       <Skeleton className="h-[52vh] w-full" />
     </div>
@@ -198,9 +198,9 @@ function DraftEditor({ draft, projectId, onDirtyChange, onDeleted }: EditorProps
         <div className="flex flex-wrap items-center gap-2">
           <DraftStatusBadge status={draft.status} />
           <DraftModeBadge mode={draft.mode} />
-          <span className="text-xs text-text-subtle">{fmt(W.updated, { time: relativeTime(draft.updatedAt) })}</span>
-          {dirty && <span className="text-xs font-medium text-warning">· {W.unsaved}</span>}
-          <span role="status" aria-live="polite" className="ml-auto inline-flex min-w-0 items-center gap-1 text-xs font-medium text-success">
+          <span className="text-xs text-subtle">{fmt(W.updated, { time: relativeTime(draft.updatedAt) })}</span>
+          {dirty && <span className="text-xs font-medium text-warn">· {W.unsaved}</span>}
+          <span role="status" aria-live="polite" className="ml-auto inline-flex min-w-0 items-center gap-1 text-xs font-medium text-ok">
             {notice && !dirty && (
               <>
                 <Check size={12} strokeWidth={2.25} aria-hidden />
@@ -210,18 +210,18 @@ function DraftEditor({ draft, projectId, onDirtyChange, onDeleted }: EditorProps
           </span>
         </div>
         <dl className="grid gap-x-4 gap-y-1 text-[13px] sm:grid-cols-[auto_1fr]">
-            <dt className="text-text-subtle">{W.file}</dt>
+            <dt className="text-subtle">{W.file}</dt>
             <dd className="min-w-0 truncate font-mono text-text">{file.filename}</dd>
             {url && (
               <>
-                <dt className="text-text-subtle">{W.suggestedUrl}</dt>
+                <dt className="text-subtle">{W.suggestedUrl}</dt>
                 <dd className="min-w-0 truncate font-mono text-text">{url}</dd>
               </>
             )}
             {placement && (
               <>
-                <dt className="text-text-subtle">{W.placement}</dt>
-                <dd className="text-text-muted">{placement}</dd>
+                <dt className="text-subtle">{W.placement}</dt>
+                <dd className="text-muted-foreground">{placement}</dd>
               </>
             )}
         </dl>
@@ -231,7 +231,7 @@ function DraftEditor({ draft, projectId, onDirtyChange, onDeleted }: EditorProps
             {D.mode.templateNote}
           </p>
         )}
-        {draft.kind === 'outreach_email' && <p className="text-[13px] text-text-muted">{E.emailNote}</p>}
+        {draft.kind === 'outreach_email' && <p className="text-[13px] text-muted-foreground">{E.emailNote}</p>}
         {draft.status === 'published' && recKey && <RecommendationDone projectId={projectId} recKey={recKey} />}
       </div>
 
@@ -246,15 +246,15 @@ function DraftEditor({ draft, projectId, onDirtyChange, onDeleted }: EditorProps
           wrapperClassName="min-h-0 flex-1"
           className="h-full min-h-[44vh] resize-none bg-well text-[12.5px] leading-5"
         />
-        <p className="mt-2 flex items-center gap-1.5 text-xs text-text-muted">
-          <ShieldCheck size={14} strokeWidth={1.75} aria-hidden className="shrink-0 text-text-subtle" />
+        <p className="mt-2 flex items-center gap-1.5 text-xs text-muted-foreground">
+          <ShieldCheck size={14} strokeWidth={1.75} aria-hidden className="shrink-0 text-subtle" />
           {copy.recommendations.humanInLoop}
         </p>
       </div>
 
       <div className="flex flex-wrap items-center justify-between gap-2 border-t border-border px-5 py-3">
         <div className="flex items-center gap-1">
-          <IconButton icon={Trash2} label={E.delete} onClick={() => setConfirmDelete(true)} className="hover:text-danger" />
+          <IconButton icon={Trash2} label={E.delete} onClick={() => setConfirmDelete(true)} className="hover:text-bad" />
           {draft.status === 'dismissed' ? (
             <Button variant="ghost" icon={Undo2} onClick={() => save({ status: 'draft' }, W.restored)} disabled={busy}>
               {W.restore}

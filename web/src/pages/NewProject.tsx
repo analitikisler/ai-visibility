@@ -80,14 +80,14 @@ function Stepper({ step, maxStep, onGo }: { step: number; maxStep: number; onGo:
                 <span
                   className={cn(
                     'flex size-6 shrink-0 items-center justify-center rounded-sm border font-mono text-xs font-medium tnum transition-colors',
-                    current && 'border-primary bg-primary text-primary-fg',
-                    done && 'border-primary bg-primary-soft text-accent',
-                    !current && !done && 'border-border-strong bg-surface text-text-subtle',
+                    current && 'border-primary bg-primary text-primary-foreground',
+                    done && 'border-primary bg-accent-soft text-accent-ink',
+                    !current && !done && 'border-border-strong bg-surface text-subtle',
                   )}
                 >
                   {done ? <Check size={12} strokeWidth={2.5} aria-hidden /> : i + 1}
                 </span>
-                <span className={cn('truncate text-[13px] font-medium', current ? 'text-text' : done ? 'text-text-muted' : 'text-text-subtle', !current && 'hidden sm:inline')}>
+                <span className={cn('truncate text-[13px] font-medium', current ? 'text-text' : done ? 'text-muted-foreground' : 'text-subtle', !current && 'hidden sm:inline')}>
                   {O.steps[s].label}
                 </span>
                 <span className="sr-only">{done ? ` (${O.stepper.done})` : current ? ` (${O.stepper.current})` : ''}</span>
@@ -110,7 +110,7 @@ function StepCard({ k, children, headingRef, aside }: { k: StepKey; children: Re
           <h2 ref={headingRef} tabIndex={-1} className="text-lg font-semibold text-text outline-none">
             {s.title}
           </h2>
-          <p className="mt-0.5 text-sm text-text-muted">{s.description}</p>
+          <p className="mt-0.5 text-sm text-muted-foreground">{s.description}</p>
         </div>
         {aside}
       </div>
@@ -419,7 +419,7 @@ export default function NewProjectPage() {
         <Textarea
           label={
             <>
-              {F.description.label} <span className="font-normal text-text-subtle">({copy.common.optional})</span>
+              {F.description.label} <span className="font-normal text-subtle">({copy.common.optional})</span>
             </>
           }
           placeholder={F.description.placeholder}
@@ -433,10 +433,10 @@ export default function NewProjectPage() {
           <Button icon={ListPlus} onClick={() => runSuggest()} loading={suggesting}>
             {suggesting ? O.suggest.running : O.suggest.details}
           </Button>
-          {!brandOk && <span className="text-xs text-text-subtle">{O.suggest.needsBrand}</span>}
+          {!brandOk && <span className="text-xs text-subtle">{O.suggest.needsBrand}</span>}
         </div>
         {suggestError && !suggesting && (
-          <p role="alert" className="flex items-start gap-2 rounded-md bg-danger-soft px-3 py-2 text-[13px] text-danger">
+          <p role="alert" className="flex items-start gap-2 rounded-md bg-bad-soft px-3 py-2 text-[13px] text-bad">
             <XCircle size={14} strokeWidth={1.75} aria-hidden className="mt-0.5 shrink-0" />
             <span>
               <span className="font-medium">{O.suggest.failed}</span> {suggestError}
@@ -468,7 +468,7 @@ export default function NewProjectPage() {
     >
       {suggesting && competitors.length === 0 ? (
         <div className="space-y-2" aria-busy="true">
-          <p className="text-sm text-text-muted">{E.loadingCompetitors}</p>
+          <p className="text-sm text-muted-foreground">{E.loadingCompetitors}</p>
           <Skeleton className="h-8 w-full" />
           <Skeleton className="h-8 w-full" />
           <Skeleton className="h-8 w-2/3" />
@@ -476,12 +476,12 @@ export default function NewProjectPage() {
       ) : (
         <div className="space-y-4">
           {competitors.length === 0 ? (
-            <p className="rounded-md border border-dashed border-border-strong px-4 py-6 text-center text-sm text-text-muted">
+            <p className="rounded-md border border-dashed border-border-strong px-4 py-6 text-center text-sm text-muted-foreground">
               {freshSuggestion && freshSuggestion.competitors.length === 0 ? E.noCompetitorSuggestions : O.competitors.empty}
             </p>
           ) : (
             <ul className="space-y-2">
-              <li aria-hidden className="hidden grid-cols-[minmax(0,1fr)_minmax(0,1fr)_2rem] gap-2 px-0.5 text-xs font-medium text-text-muted sm:grid">
+              <li aria-hidden className="hidden grid-cols-[minmax(0,1fr)_minmax(0,1fr)_2rem] gap-2 px-0.5 text-xs font-medium text-muted-foreground sm:grid">
                 <span>{F.competitorName.label}</span>
                 <span>{F.competitorDomain.label}</span>
               </li>
@@ -535,7 +535,7 @@ export default function NewProjectPage() {
               </Button>
             )}
           </div>
-          {competitors.filter((c) => c.name.trim()).length > 7 && <p className="text-xs text-text-subtle">{O.competitors.limitNote}</p>}
+          {competitors.filter((c) => c.name.trim()).length > 5 && <p className="text-xs text-subtle">{O.competitors.limitNote}</p>}
           {freshSuggestion && freshSuggestion.competitors.length > 0 && <SuggestNote s={freshSuggestion} />}
         </div>
       )}
@@ -548,7 +548,7 @@ export default function NewProjectPage() {
       headingRef={headingRef}
       aside={
         filledPrompts.length > 0 ? (
-          <p className="font-mono text-xs text-text-muted tnum" aria-live="polite">
+          <p className="font-mono text-xs text-muted-foreground tnum" aria-live="polite">
             <span className="text-text">{plural(filledPrompts.length, E.total)}</span>
             {tierCounts.map((t) => (
               <span key={t.tier}> · {fmt(E.tierCount, { count: t.count, tier: copy.labels.tier[t.tier].toLowerCase() })}</span>
@@ -559,7 +559,7 @@ export default function NewProjectPage() {
     >
       {suggesting && prompts.length === 0 ? (
         <div className="space-y-2" aria-busy="true">
-          <p className="text-sm text-text-muted">{E.loadingPrompts}</p>
+          <p className="text-sm text-muted-foreground">{E.loadingPrompts}</p>
           {Array.from({ length: 5 }, (_, i) => (
             <Skeleton key={i} className="h-9 w-full" />
           ))}
@@ -607,7 +607,7 @@ export default function NewProjectPage() {
             <div className="flex flex-col items-center rounded-md border border-dashed border-border-strong px-4 py-8 text-center">
               <EmptyPrompts width={120} />
               <h3 className="mt-4 text-base font-semibold text-text">{O.empty.title}</h3>
-              <p className="mt-1 max-w-sm text-sm text-text-muted">{O.empty.body}</p>
+              <p className="mt-1 max-w-sm text-sm text-muted-foreground">{O.empty.body}</p>
               <Button className="mt-4" icon={ListPlus} onClick={() => runSuggest()} disabled={!brandOk}>
                 {O.empty.cta}
               </Button>
@@ -660,13 +660,13 @@ export default function NewProjectPage() {
               ))}
             </ul>
           )}
-          {showErrors && filledPrompts.length === 0 && <p className="text-xs text-danger">{O.validation.promptsRequired}</p>}
-          {filledPrompts.length > SOFT_PROMPT_LIMIT && <p className="text-xs text-warning">{O.prompts.tooMany}</p>}
+          {showErrors && filledPrompts.length === 0 && <p className="text-xs text-bad">{O.validation.promptsRequired}</p>}
+          {filledPrompts.length > SOFT_PROMPT_LIMIT && <p className="text-xs text-warn">{O.prompts.tooMany}</p>}
           {prompts.length > 0 && (
-            <p className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-text-subtle">
+            <p className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-subtle">
               {TIERS.map((t) => (
                 <span key={t} className="inline-flex items-baseline gap-1.5">
-                  <TierLabel tier={t} className="font-medium text-text-muted" />
+                  <TierLabel tier={t} className="font-medium text-muted-foreground" />
                   <span>{copy.glossary.tiers[t].short}</span>
                 </span>
               ))}
@@ -684,11 +684,11 @@ export default function NewProjectPage() {
     <StepCard
       k="engines"
       headingRef={headingRef}
-      aside={engineList.length > 0 ? <span className="font-mono text-xs text-text-muted tnum">{fmt(E.liveCount, { live: liveCount, total: engineList.length })}</span> : undefined}
+      aside={engineList.length > 0 ? <span className="font-mono text-xs text-muted-foreground tnum">{fmt(E.liveCount, { live: liveCount, total: engineList.length })}</span> : undefined}
     >
       <div className="space-y-5">
         <fieldset>
-          <legend className="text-xs font-medium text-text-muted">{F.engines.label}</legend>
+          <legend className="text-xs font-medium text-muted-foreground">{F.engines.label}</legend>
           {engines.isLoading ? (
             <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
               {Array.from({ length: 6 }, (_, i) => (
@@ -700,7 +700,7 @@ export default function NewProjectPage() {
               {engineList.map((e) => (
                 <label
                   key={e.id}
-                  className="flex cursor-pointer items-start gap-2.5 rounded-md border border-border px-3 py-2.5 transition-colors hover:border-border-strong has-[:checked]:border-primary has-[:checked]:bg-primary-soft"
+                  className="flex cursor-pointer items-start gap-2.5 rounded-md border border-border px-3 py-2.5 transition-colors hover:border-border-strong has-[:checked]:border-primary has-[:checked]:bg-accent-soft"
                 >
                   <Checkbox
                     checked={picked.includes(e.id)}
@@ -711,23 +711,23 @@ export default function NewProjectPage() {
                   <span className="min-w-0 flex-1">
                     <span className="flex flex-wrap items-center gap-2 text-sm font-medium text-text">
                       {e.name}
-                      {e.vendor !== e.name && <span className="text-xs font-normal text-text-subtle">{e.vendor}</span>}
+                      {e.vendor !== e.name && <span className="text-xs font-normal text-subtle">{e.vendor}</span>}
                       <ModeBadge mode={e.mode} engineName={e.name} tooltip={false} />
                     </span>
-                    <span className="mt-0.5 block text-xs text-text-subtle">{e.mode === 'live' ? copy.engines[e.id].note : O.engines.simulated}</span>
+                    <span className="mt-0.5 block text-xs text-subtle">{e.mode === 'live' ? copy.engines[e.id].note : O.engines.simulated}</span>
                   </span>
                 </label>
               ))}
             </div>
           )}
-          <p className="mt-2 flex flex-wrap items-center gap-x-2 text-xs text-text-subtle">
+          <p className="mt-2 flex flex-wrap items-center gap-x-2 text-xs text-subtle">
             {F.engines.help}
-            <Link to="/app/settings" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 font-medium text-accent hover:underline">
+            <Link to="/app/settings" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 font-medium text-link hover:underline">
               {E.manageKeys}
               <ExternalLink size={12} strokeWidth={1.75} aria-hidden />
             </Link>
           </p>
-          {showErrors && !enginesOk && <p className="mt-1 text-xs text-danger">{O.validation.enginesRequired}</p>}
+          {showErrors && !enginesOk && <p className="mt-1 text-xs text-bad">{O.validation.enginesRequired}</p>}
         </fieldset>
         <Select<Schedule>
           label={F.schedule.label}
@@ -740,7 +740,7 @@ export default function NewProjectPage() {
         <Checkbox label={F.runNow.label} description={copy.glossary.concepts.check.short} checked={runNow} onCheckedChange={setRunNow} />
         <div className="rounded-md border border-border bg-surface-2 px-4 py-3">
           <h3 className="text-sm font-semibold text-text">{O.summary.title}</h3>
-          <p className="mt-0.5 text-sm text-text-muted">
+          <p className="mt-0.5 text-sm text-muted-foreground">
             {name.trim() || F.name.placeholder} · <span className="font-mono">{normalizeDomain(domain)}</span>
           </p>
           <p className="mt-1 text-sm text-text">
@@ -748,8 +748,8 @@ export default function NewProjectPage() {
           </p>
         </div>
         {submitError && (
-          <p role="alert" className="text-sm text-danger">
-            {E.createFailed} <span className="text-text-muted">{fmt(copy.app.errors.detail, { detail: submitError })}</span>
+          <p role="alert" className="text-sm text-bad">
+            {E.createFailed} <span className="text-muted-foreground">{fmt(copy.app.errors.detail, { detail: submitError })}</span>
           </p>
         )}
       </div>
@@ -769,7 +769,7 @@ export default function NewProjectPage() {
         <div className="flex items-center gap-3 sm:hidden">
           <ProgressBar value={(step + 1) / STEPS.length} size="xs" label={fmt(O.progress, { step: step + 1, total: STEPS.length })} />
         </div>
-        <p className="font-mono text-xs text-text-subtle tnum">
+        <p className="font-mono text-xs text-subtle tnum">
           {fmt(O.progress, { step: step + 1, total: STEPS.length })} · {O.steps[current].label}
         </p>
       </div>

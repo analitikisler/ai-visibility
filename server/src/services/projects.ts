@@ -20,10 +20,29 @@ interface ProjectRow {
 interface CompetitorRow { id: string; project_id: string; name: string; domain: string; aliases_json: string; color: string }
 interface PromptRow { id: string; project_id: string; text: string; topic: string; tier: string; intent: string; active: number; created_at: string }
 
-/** Chart colors mirror brand/tokens.json (light values): chart-1 is the brand, competitors take chart-2… in order.
- *  The web maps these hexes to theme tokens (web/src/lib/colors.ts). */
-export const BRAND_COLOR = '#1161bb';
-const COMPETITOR_COLORS = ['#e5560f', '#cf4fb9', '#009068', '#8658e1', '#9f7100', '#0794b0', '#818c01', '#646d7e'];
+/** Chart slot keys: the Çini kit's light categorical colours (web/src/cini/tokens.json). cat-1 is the brand, competitors
+ *  take cat-2…6 in order, then the muted "other". The web maps these hexes to theme tokens (web/src/lib/colors.ts). */
+export const BRAND_COLOR = '#c45e3d';
+const COMPETITOR_COLORS = ['#584687', '#778536', '#245289', '#5a9354', '#77396b', '#5b5551'];
+
+/** Every competitor carries one of the kit keys above. Any other stored colour is reassigned once, at startup, to the
+ *  first key its project isn't using yet, in the order the competitors were added. */
+function normalizeCompetitorColors(): void {
+  const kit = new Set(COMPETITOR_COLORS);
+  const rows = all<{ id: string; project_id: string; color: string }>('SELECT id, project_id, color FROM competitors ORDER BY project_id, created_at, name');
+  const used = new Map<string, Set<string>>();
+  for (const r of rows) if (kit.has(r.color)) (used.get(r.project_id) ?? used.set(r.project_id, new Set()).get(r.project_id)!).add(r.color);
+  tx(() => {
+    for (const r of rows) {
+      if (!r.color || kit.has(r.color)) continue;
+      const taken = used.get(r.project_id) ?? used.set(r.project_id, new Set()).get(r.project_id)!;
+      const color = COMPETITOR_COLORS.find((c) => !taken.has(c)) ?? COMPETITOR_COLORS[COMPETITOR_COLORS.length - 1]!;
+      taken.add(color);
+      run('UPDATE competitors SET color = ? WHERE id = ?', [color, r.id]);
+    }
+  });
+}
+normalizeCompetitorColors();
 export const DEFAULT_ENGINES: EngineId[] = ['chatgpt', 'claude', 'gemini', 'perplexity'];
 
 export function toCompetitor(r: CompetitorRow): Competitor {

@@ -1,6 +1,6 @@
-// ai visibility logo. The ai tool family's lockup and mark from brand/ai/assets (brand/ai/BRAND.md §5–6),
+// ai visibility logo. The ai tool family's lockup and mark from web/src/cini/logos (BRAND.md v1.1 (see brand/README.md) §5–6),
 // inlined by aiArtwork.ts: the ink follows `currentColor` (the text ink, so light and dark need nothing), the red
-// point is `--point` (brand/tokens.css, the family's one red). Never redraw it; regenerate aiArtwork.ts instead.
+// point is `--color-brand-point` (web/src/cini/tokens.css, the family's one red). Never redraw it; regenerate aiArtwork.ts instead.
 import { LOCKUP, MARK } from './aiArtwork';
 
 /** `full` = the ai visibility lockup (default), `mark` = the ai mark alone. `wordmark` is kept for old callers and
@@ -27,8 +27,8 @@ export function Logo({ variant = 'full', size, className, tone = 'brand', title 
   const height = size ?? (className ? undefined : 24);
   const width = height === undefined ? undefined : Math.round(((height * w) / h) * 100) / 100;
   const a11y = title === null ? { 'aria-hidden': true as const } : { role: 'img', 'aria-label': title };
-  const color = tone === 'reversed' ? '#fff' : undefined;
-  const inner = tone === 'brand' ? art.inner : art.inner.replaceAll('var(--point)', 'currentColor');
+  const color = tone === 'reversed' ? 'var(--color-tile-line)' : undefined;
+  const inner = tone === 'brand' ? art.inner : art.inner.replaceAll('var(--color-brand-point)', 'currentColor');
 
   return (
     <svg

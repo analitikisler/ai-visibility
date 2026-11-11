@@ -12,7 +12,7 @@ import { useProjectContext } from './ProjectContext';
 const itemCls = ({ isActive }: { isActive: boolean }) =>
   cn(
     'flex h-8 items-center gap-2.5 rounded-md px-2 text-sm font-medium transition-colors duration-160',
-    isActive ? 'bg-primary-soft text-accent-ink' : 'text-text-muted hover:bg-surface-2 hover:text-text',
+    isActive ? 'bg-accent-soft text-accent-ink' : 'text-muted-foreground hover:bg-surface-2 hover:text-text',
   );
 
 /** Project switcher: current project name + domain, menu of all projects. */
@@ -39,11 +39,11 @@ function ProjectSwitcher() {
       footer={(close) => (
         <div className="flex flex-col">
           <Link to="/app" onClick={close} className="flex h-8 items-center gap-2 rounded-md px-2 text-sm text-text hover:bg-surface-2">
-            <LayoutGrid size={16} strokeWidth={1.75} aria-hidden className="text-text-muted" />
+            <LayoutGrid size={16} strokeWidth={1.75} aria-hidden className="text-muted-foreground" />
             {copy.nav.project.all}
           </Link>
           <Link to="/app/new" onClick={close} className="flex h-8 items-center gap-2 rounded-md px-2 text-sm text-text hover:bg-surface-2">
-            <Plus size={16} strokeWidth={1.75} aria-hidden className="text-text-muted" />
+            <Plus size={16} strokeWidth={1.75} aria-hidden className="text-muted-foreground" />
             {copy.nav.project.new}
           </Link>
         </div>
@@ -56,7 +56,7 @@ function ProjectSwitcher() {
         >
           {current ? (
             <>
-              <span aria-hidden className="flex size-7 shrink-0 items-center justify-center rounded-md bg-primary-soft font-display text-sm font-semibold text-accent-ink">
+              <span aria-hidden className="flex size-7 shrink-0 items-center justify-center rounded-md bg-accent-soft font-display text-sm font-semibold text-accent-ink">
                 {initial}
               </span>
               <span className="min-w-0 flex-1">
@@ -64,7 +64,7 @@ function ProjectSwitcher() {
                   <span className="truncate text-[13px] font-semibold text-text">{current.name}</span>
                   {current.isDemo && <Badge tone="neutral">{copy.app.badges.demo}</Badge>}
                 </span>
-                <span className="block truncate text-xs text-text-subtle">{current.domain}</span>
+                <span className="block truncate text-xs text-subtle">{current.domain}</span>
               </span>
             </>
           ) : ctx?.isLoading ? (
@@ -74,13 +74,13 @@ function ProjectSwitcher() {
             </span>
           ) : (
             <span className="flex min-w-0 flex-1 items-center gap-2.5">
-              <span aria-hidden className="flex size-7 shrink-0 items-center justify-center rounded-md bg-surface-2 text-text-muted">
+              <span aria-hidden className="flex size-7 shrink-0 items-center justify-center rounded-md bg-surface-2 text-muted-foreground">
                 <FolderKanban size={16} strokeWidth={1.75} />
               </span>
-              <span className="truncate text-[13px] font-medium text-text-muted">{copy.nav.project.switch}</span>
+              <span className="truncate text-[13px] font-medium text-muted-foreground">{copy.nav.project.switch}</span>
             </span>
           )}
-          <ChevronsUpDown size={14} strokeWidth={1.75} aria-hidden className="shrink-0 text-text-subtle" />
+          <ChevronsUpDown size={14} strokeWidth={1.75} aria-hidden className="shrink-0 text-subtle" />
         </button>
       )}
     />

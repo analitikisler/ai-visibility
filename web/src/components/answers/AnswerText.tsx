@@ -1,6 +1,6 @@
 // Safe answer renderer: Markdown subset → React elements (never HTML strings), with the brand
-// named on the tinted ground with an underline in the brand blue (the <mark> base style) and competitors
-// underlined in their series color (BRAND §10.7).
+// named on the tinted ground with an underline in the brand colour (the <mark> base style) and competitors
+// underlined in their series color.
 import { Fragment, useMemo, type ReactNode } from 'react';
 import type { Citation } from '@shared/types';
 import { cn } from '@/lib/cn';
@@ -43,7 +43,7 @@ function EntityMark({ entity, text }: { entity: AnswerEntity; text: string }) {
 function CiteChip({ n, citations }: { n: number; citations: Citation[] }) {
   const c = citations.find((x) => x.position === n) ?? citations[n - 1];
   const cls =
-    'mx-0.5 inline-flex h-[18px] min-w-[18px] items-center justify-center rounded-sm border border-border bg-surface-2 px-1 align-[2px] font-mono text-[11px] leading-none text-text-muted tnum';
+    'mx-0.5 inline-flex h-[18px] min-w-[18px] items-center justify-center rounded-sm border border-border bg-surface-2 px-1 align-[2px] font-mono text-[11px] leading-none text-muted-foreground tnum';
   if (!c) return <span className={cls}>{n}</span>;
   return (
     <a
@@ -88,7 +88,7 @@ function renderInline(nodes: Inline[], ctx: Ctx, key: string, plain = false): Re
             href={n.href}
             target="_blank"
             rel="noopener noreferrer"
-            className={cn('text-accent underline decoration-1 underline-offset-2 hover:decoration-2', n.citationLike && 'font-mono text-[0.85em] no-underline hover:underline')}
+            className={cn('text-link underline decoration-1 underline-offset-2 hover:decoration-2', n.citationLike && 'font-mono text-[0.85em] no-underline hover:underline')}
           >
             {/* Domain-labelled links are citations, not mentions (same rule as the server). */}
             {renderInline(n.c, ctx, k, plain || n.citationLike)}
@@ -105,7 +105,7 @@ function renderBlock(b: Block, ctx: Ctx, key: string): ReactNode {
     case 'h': {
       const cls = b.level <= 2 ? 'text-lg font-semibold' : 'text-base font-semibold';
       return (
-        <p key={key} role="heading" aria-level={Math.min(6, b.level + 2)} className={cn('text-text-strong', cls)}>
+        <p key={key} role="heading" aria-level={Math.min(6, b.level + 2)} className={cn('text-strong', cls)}>
           {renderInline(b.c, ctx, key)}
         </p>
       );
@@ -118,18 +118,18 @@ function renderBlock(b: Block, ctx: Ctx, key: string): ReactNode {
         </li>
       ));
       return b.ordered ? (
-        <ol key={key} start={b.start !== 1 ? b.start : undefined} className="list-decimal space-y-1.5 pl-6 marker:font-mono marker:text-[0.85em] marker:text-text-subtle">
+        <ol key={key} start={b.start !== 1 ? b.start : undefined} className="list-decimal space-y-1.5 pl-6 marker:font-mono marker:text-[0.85em] marker:text-subtle">
           {items}
         </ol>
       ) : (
-        <ul key={key} className="list-disc space-y-1.5 pl-6 marker:text-text-subtle">
+        <ul key={key} className="list-disc space-y-1.5 pl-6 marker:text-subtle">
           {items}
         </ul>
       );
     }
     case 'quote':
       return (
-        <blockquote key={key} className="space-y-2 border-l-2 border-border-strong pl-3 text-text-muted">
+        <blockquote key={key} className="space-y-2 border-l-2 border-border-strong pl-3 text-muted-foreground">
           {b.c.map((c, j) => renderBlock(c, ctx, `${key}.${j}`))}
         </blockquote>
       );
@@ -221,5 +221,5 @@ export function AnswerSnippet({ text, from, max = 220, entities, className }: An
   // A span (block) so it can sit inside buttons and links. A `line-clamp-*` class brings its own display
   // (-webkit-box), which `block` would override and silently disable the clamp.
   const clamped = /\bline-clamp-/.test(className ?? '');
-  return <span className={cn(!clamped && 'block', 'break-words text-[13px] leading-5 text-text-muted', className)}>{highlight(value, matcher, 's')}</span>;
+  return <span className={cn(!clamped && 'block', 'break-words text-[13px] leading-5 text-muted-foreground', className)}>{highlight(value, matcher, 's')}</span>;
 }

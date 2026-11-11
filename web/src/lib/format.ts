@@ -1,4 +1,4 @@
-// Number, date and delta formatting per brand/retired/overt/BRAND.md §4 "Writing metrics".
+// Number, date and delta formatting (the app's one way of writing metrics).
 // Every formatter returns '—' for null/undefined/NaN so callers never print "0" for missing data.
 import type { SentimentLabel } from '@shared/types';
 

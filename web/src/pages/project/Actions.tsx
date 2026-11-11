@@ -73,10 +73,10 @@ const DRIVERS: DriverId[] = ['content_coverage', 'content_quality', 'source_auth
 const CATEGORY_ICONS: Record<RecCategory, LucideIcon> = { content: FileText, technical: CodeXml, sources: Link2, reputation: MessageSquareText, crawlers: Bot };
 const IMPACT_ICONS: Record<RecImpact, LucideIcon> = { high: SignalHigh, medium: SignalMedium, low: SignalLow };
 const STATUS_ICONS: Record<RecStatus, { icon: LucideIcon; cls: string }> = {
-  open: { icon: Circle, cls: 'text-text-subtle' },
+  open: { icon: Circle, cls: 'text-subtle' },
   in_progress: { icon: CircleDot, cls: 'text-info' },
-  done: { icon: CheckCircle2, cls: 'text-success' },
-  dismissed: { icon: CircleSlash, cls: 'text-text-subtle' },
+  done: { icon: CheckCircle2, cls: 'text-ok' },
+  dismissed: { icon: CircleSlash, cls: 'text-subtle' },
 };
 
 const isQuickWin = (r: Recommendation) => r.impact === 'high' && r.effort === 'low';
@@ -129,7 +129,7 @@ function StatusMenu({ rec }: { rec: Recommendation }) {
         >
           <S.icon size={14} strokeWidth={2} aria-hidden className={S.cls} />
           {R.status[rec.status]}
-          <ChevronDown size={14} strokeWidth={1.75} aria-hidden className="text-text-subtle" />
+          <ChevronDown size={14} strokeWidth={1.75} aria-hidden className="text-subtle" />
         </button>
       )}
     />
@@ -146,13 +146,13 @@ function Evidence({ items }: { items: string[] }) {
       <ul className="space-y-1 text-[13px] leading-5 text-text">
         {shown.map((e, i) => (
           <li key={i} className="flex gap-2">
-            <span aria-hidden className="mt-[7px] size-1 shrink-0 rounded-xs bg-text-subtle" />
+            <span aria-hidden className="mt-[7px] size-1 shrink-0 rounded-xs bg-subtle" />
             <span className="min-w-0">{e}</span>
           </li>
         ))}
       </ul>
       {items.length > 3 && (
-        <button type="button" onClick={() => setAll((v) => !v)} className="mt-1 text-xs font-medium text-accent hover:underline">
+        <button type="button" onClick={() => setAll((v) => !v)} className="mt-1 text-xs font-medium text-link hover:underline">
           {all ? copy.common.showLess : fmt(copy.common.showMore, { count: items.length - 3 })}
         </button>
       )}
@@ -214,7 +214,7 @@ function RecCard({ rec, draft, pending, disabled, onDraft, onOpenDraft }: RecCar
     <Card as="article" className={cn('p-4 sm:p-5', closed && 'bg-surface/60')}>
       <div className="flex flex-col gap-4 sm:flex-row">
         <div className="flex shrink-0 items-center gap-2 sm:w-14 sm:flex-col sm:items-start sm:gap-0.5" title={fmt(R.priority, { priority: rec.priority })}>
-          <span className="font-display font-heading text-xl leading-7 tracking-[-0.012em] text-text-strong tnum">{rec.priority}</span>
+          <span className="font-display font-heading text-xl leading-7 tracking-[-0.012em] text-strong tnum">{rec.priority}</span>
           <span className="eyebrow">{P.columns.priority}</span>
         </div>
         <div className="min-w-0 flex-1">
@@ -234,11 +234,11 @@ function RecCard({ rec, draft, pending, disabled, onDraft, onOpenDraft }: RecCar
               </Tooltip>
             )}
           </div>
-          <h3 className={cn('text-base font-semibold leading-6', closed ? 'text-text-muted' : 'text-text-strong')}>{rec.title}</h3>
-          <p className="mt-1 max-w-3xl text-[13px] leading-5 text-text-muted">{rec.description}</p>
+          <h3 className={cn('text-base font-semibold leading-6', closed ? 'text-muted-foreground' : 'text-strong')}>{rec.title}</h3>
+          <p className="mt-1 max-w-3xl text-[13px] leading-5 text-muted-foreground">{rec.description}</p>
           <Evidence items={rec.evidence} />
           {(rec.driver || rec.relatedPromptIds.length > 0) && (
-            <p className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-text-subtle">
+            <p className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-subtle">
               {rec.driver && (
                 <Link to={`/app/p/${projectId}/diagnose`} className="hover:text-text hover:underline">
                   {fmt(P.card.driver, { driver: copy.labels.driver[rec.driver] })}
@@ -314,7 +314,7 @@ function RecommendedPanel({ recs, drafts, agent }: { recs: Recommendation[]; dra
             label: (
               <span className="inline-flex items-center gap-1.5 whitespace-nowrap">
                 {R.status[s]}
-                <span className="font-mono text-2xs text-text-subtle tnum">{counts[s]}</span>
+                <span className="font-mono text-2xs text-subtle tnum">{counts[s]}</span>
               </span>
             ),
           }))}
@@ -324,7 +324,7 @@ function RecommendedPanel({ recs, drafts, agent }: { recs: Recommendation[]; dra
             <button
               type="button"
               onClick={() => setDriver('all')}
-              className="inline-flex h-8 items-center gap-1.5 rounded-md bg-primary-soft px-2.5 text-xs font-medium text-accent hover:underline"
+              className="inline-flex h-8 items-center gap-1.5 rounded-md bg-accent-soft px-2.5 text-xs font-medium text-link hover:underline"
               aria-label={`${fmt(P.filters.driver, { driver: copy.labels.driver[driver] })}. ${P.filters.clearDriver}`}
             >
               {fmt(P.filters.driver, { driver: copy.labels.driver[driver] })}
@@ -422,7 +422,7 @@ function DraftsPanel({ drafts, isLoading, agent }: { drafts: Draft[] | undefined
   return (
     <Card>
       <div className="flex flex-col gap-1 px-4 pt-4 sm:flex-row sm:items-start sm:justify-between">
-        <p className="max-w-2xl text-[13px] text-text-muted">{P.draftsBody}</p>
+        <p className="max-w-2xl text-[13px] text-muted-foreground">{P.draftsBody}</p>
         <NewDraftMenu agent={agent} />
       </div>
       <div className="mt-3">
@@ -451,7 +451,7 @@ function DraftsPanel({ drafts, isLoading, agent }: { drafts: Draft[] | undefined
                     className="flex w-full min-w-0 items-center gap-2.5 text-left"
                   >
                     <DraftKindIcon kind={d.kind} size={26} />
-                    <span className={cn('truncate font-medium', d.status === 'dismissed' ? 'text-text-muted' : 'text-text')}>{d.title}</span>
+                    <span className={cn('truncate font-medium', d.status === 'dismissed' ? 'text-muted-foreground' : 'text-text')}>{d.title}</span>
                   </button>
                 </Td>
                 <Td muted className="hidden whitespace-nowrap md:table-cell">
@@ -522,8 +522,8 @@ export default function ActionsPage() {
     <Page>
       <PageHeader title={P.title} subtitle={P.subtitle} className="mb-0" />
 
-      <p className="-mt-2 flex items-start gap-2 text-[13px] text-text-muted">
-        <ShieldCheck size={16} strokeWidth={1.75} aria-hidden className="mt-px shrink-0 text-text-subtle" />
+      <p className="-mt-2 flex items-start gap-2 text-[13px] text-muted-foreground">
+        <ShieldCheck size={16} strokeWidth={1.75} aria-hidden className="mt-px shrink-0 text-subtle" />
         <span>
           {recs.data && (
             <span className="font-medium text-text">

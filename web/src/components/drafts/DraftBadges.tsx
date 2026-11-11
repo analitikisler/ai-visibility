@@ -25,7 +25,7 @@ const STATUS: Record<Draft['status'], { tone: BadgeTone; icon?: LucideIcon }> = 
   dismissed: { tone: 'outline', icon: CircleSlash },
 };
 
-/** Draft stays neutral until a person approves it (BRAND §10.8). */
+/** Draft stays neutral until a person approves it. */
 export function DraftStatusBadge({ status }: { status: Draft['status'] }) {
   const s = STATUS[status];
   const badge = (
@@ -62,7 +62,7 @@ export function DraftModeBadge({ mode }: { mode: Draft['mode'] }) {
 export function DraftKindIcon({ kind, size = 28 }: { kind: DraftKind; size?: number }) {
   const Icon = DRAFT_KIND_ICONS[kind];
   return (
-    <span aria-hidden className="inline-flex shrink-0 items-center justify-center rounded-md bg-surface-2 text-text-muted" style={{ width: size, height: size }}>
+    <span aria-hidden className="inline-flex shrink-0 items-center justify-center rounded-md bg-surface-2 text-muted-foreground" style={{ width: size, height: size }}>
       <Icon size={Math.round(size * 0.55)} strokeWidth={1.75} />
     </span>
   );

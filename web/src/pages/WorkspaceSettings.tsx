@@ -89,12 +89,12 @@ function KeyRow({ engine, masked }: { engine: EngineInfo; masked: string | null 
           <EngineBadge engine={engine.id} showVendor={engine.vendor !== engine.name} />
           <ModeBadge mode={engine.mode} engineName={engine.name} />
         </div>
-        <p className="mt-1 flex items-center gap-1.5 text-xs text-text-subtle">
+        <p className="mt-1 flex items-center gap-1.5 text-xs text-subtle">
           <Lock size={12} strokeWidth={1.75} aria-hidden />
           {masked ? (
             <span>
               {fmt(K.masked, { masked: '' })}
-              <span className="font-mono text-text-muted">{masked}</span>
+              <span className="font-mono text-muted-foreground">{masked}</span>
             </span>
           ) : (
             K.notSet
@@ -218,7 +218,7 @@ function AnalysisCard({ engines, settings }: { engines: EngineInfo[]; settings: 
           wrapperClassName="max-w-sm"
         />
         {(pickedInfo || current) && (
-          <p className="text-[13px] text-text-muted">
+          <p className="text-[13px] text-muted-foreground">
             {pickedInfo && pickedInfo.mode !== 'live' ? fmt(W.analysisNotLive, { engine: pickedInfo.name }) : current ? fmt(W.analysis.current, { engine: current.name }) : null}
           </p>
         )}
@@ -241,12 +241,12 @@ function monthName(label: string): string {
 
 const NOTE_TONES = {
   info: 'bg-info-soft text-info',
-  warning: 'bg-warning-soft text-warning',
-  danger: 'bg-danger-soft text-danger',
-  neutral: 'bg-surface-2 text-text-muted',
+  warning: 'bg-warn-soft text-warn',
+  danger: 'bg-bad-soft text-bad',
+  neutral: 'bg-surface-2 text-muted-foreground',
 } as const;
 
-/** Status line with its icon (status color never alone, BRAND §6.2). */
+/** Status line with its icon (status color never alone). */
 function Note({ tone, icon: Icon, children, className }: { tone: keyof typeof NOTE_TONES; icon: LucideIcon; children: ReactNode; className?: string }) {
   return (
     <p role={tone === 'danger' || tone === 'warning' ? 'status' : undefined} className={cn('flex items-start gap-2 rounded-md px-3 py-2 text-[13px]', NOTE_TONES[tone], className)}>
@@ -256,7 +256,7 @@ function Note({ tone, icon: Icon, children, className }: { tone: keyof typeof NO
   );
 }
 
-/** Month-to-date spend vs the monthly budget: brand blue below 80%, warning from 80%, danger (live checks paused) at 100%. */
+/** Month-to-date spend vs the monthly budget: brand colour below 80%, warning from 80%, danger (live checks paused) at 100%. */
 function BudgetMeter({ month, liveCount }: { month: UsageView['month']; liveCount: number }) {
   const { spendUsd: spend, budgetUsd: budget } = month;
   const ratio = budget > 0 ? spend / budget : spend > 0 ? 1 : 0;
@@ -266,11 +266,11 @@ function BudgetMeter({ month, liveCount }: { month: UsageView['month']; liveCoun
     <div className="min-w-0">
       <div className="eyebrow">{fmt(U.monthSpend, { month: monthName(month.label) })}</div>
       <p className="mt-1 flex flex-wrap items-baseline gap-x-2">
-        <span className="font-display font-heading text-2xl tracking-[-0.012em] text-text-strong tnum">{usd(spend)}</span>
-        <span className="text-sm text-text-muted">{fmt(U.ofBudget, { budget: usd(budget) })}</span>
+        <span className="font-display font-heading text-2xl tracking-[-0.012em] text-strong tnum">{usd(spend)}</span>
+        <span className="text-sm text-muted-foreground">{fmt(U.ofBudget, { budget: usd(budget) })}</span>
       </p>
       <ProgressBar value={ratio} tone={tone} size="md" label={U.meterLabel} className="mt-3" />
-      <p className="mt-1.5 flex justify-between gap-3 font-mono text-xs text-text-subtle tnum">
+      <p className="mt-1.5 flex justify-between gap-3 font-mono text-xs text-subtle tnum">
         <span>{budget > 0 ? pct(Math.min(ratio, 9.99)) : '—'}</span>
         <span>{fmt(U.remaining, { remaining: usd(Math.max(0, month.remainingUsd)) })}</span>
       </p>
@@ -341,7 +341,7 @@ function CostControls({ cost }: { cost: CostSettings }) {
         </Button>
       </form>
       <div className="space-y-1.5">
-        <div aria-hidden className="text-xs font-medium text-text-muted">
+        <div aria-hidden className="text-xs font-medium text-muted-foreground">
           {U.mode.label}
         </div>
         <SegmentedControl<RunMode>
@@ -358,7 +358,7 @@ function CostControls({ cost }: { cost: CostSettings }) {
             { value: 'realtime', label: U.mode.realtime },
           ]}
         />
-        <p className="text-xs text-text-subtle">{mode === 'batch' ? U.mode.batchHint : U.mode.realtimeHint}</p>
+        <p className="text-xs text-subtle">{mode === 'batch' ? U.mode.batchHint : U.mode.realtimeHint}</p>
       </div>
       <Switch
         label={U.reuse.label}
@@ -399,7 +399,7 @@ function SavingsLine({ savings }: { savings: UsageView['savings'] }) {
 }
 
 function DailySpend({ usage }: { usage: UsageView }) {
-  // A day without answers is a gap, not a $0 bar (BRAND §7.1 "gaps are honest").
+  // A day without answers is a gap, not a $0 bar.
   const data = usage.byDay.map((d) => ({ day: d.day, spend: d.answers > 0 ? d.costUsd : null }));
   return (
     <div className="min-w-0">
@@ -449,7 +449,7 @@ function EngineTable({ rows: data }: { rows: UsageView['byEngine'] }) {
               <Tr key={r.engine}>
                 <Td>
                   <EngineBadge engine={r.engine} />
-                  {r.model && <span className="mt-0.5 block truncate font-mono text-2xs text-text-subtle">{r.model}</span>}
+                  {r.model && <span className="mt-0.5 block truncate font-mono text-2xs text-subtle">{r.model}</span>}
                 </Td>
                 <Td num>{num(r.answers)}</Td>
                 <Td num>{usd(r.costUsd)}</Td>
@@ -486,7 +486,7 @@ function UsageDetail({ usage, liveCount }: { usage: UsageView; liveCount: number
         {U.simulatedOnly}
       </Note>
     ) : (
-      <p className="text-[13px] text-text-subtle">{U.noLive}</p>
+      <p className="text-[13px] text-subtle">{U.noLive}</p>
     );
   const saved = usage.savings.batchUsd + usage.savings.cacheUsd + usage.savings.reuseUsd;
   return (
@@ -601,7 +601,7 @@ export default function WorkspaceSettingsPage() {
           <CardHeader
             title={W.sections.keys}
             subtitle={W.sections.keysBody}
-            actions={<span className="font-mono text-xs text-text-muted tnum">{fmt(W.liveSummary, { live: liveCount, total: list.length })}</span>}
+            actions={<span className="font-mono text-xs text-muted-foreground tnum">{fmt(W.liveSummary, { live: liveCount, total: list.length })}</span>}
           />
           <p className="mx-4 mt-3 flex items-start gap-2 rounded-md bg-info-soft px-3 py-2 text-[13px] text-info">
             <Lock size={14} strokeWidth={1.75} aria-hidden className="mt-0.5 shrink-0" />

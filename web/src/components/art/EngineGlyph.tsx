@@ -1,16 +1,16 @@
 // Neutral engine badges. Deliberately NOT vendor logos: each engine gets a
-// plain geometric marker in its engine-series color (brand/retired/overt/BRAND.md §7.1). Distinct shapes mean
+// plain geometric marker in its engine-series color (the kit categorical series, lib/engines.ts). Distinct shapes mean
 // the badge still reads without color (color-vision deficiency, mono print).
 import type { EngineId } from '@shared/types';
 
-/** Engine-series color tokens (brand/retired/overt/BRAND.md §7.1 "Engine series"). */
+/** Engine-series color tokens: the kit categorical series, in the same order as lib/engines.ts. */
 export const ENGINE_GLYPH_COLOR: Record<EngineId, string> = {
-  chatgpt: 'var(--chart-4)', // Jade
-  claude: 'var(--chart-2)', // Ember
-  gemini: 'var(--chart-5)', // Iris
-  perplexity: 'var(--chart-7)', // Lagoon
-  grok: 'var(--chart-6)', // Ochre
-  deepseek: 'var(--chart-3)', // Orchid
+  chatgpt: 'var(--color-data-cat-2)',
+  claude: 'var(--color-data-cat-3)',
+  gemini: 'var(--color-data-cat-4)',
+  perplexity: 'var(--color-data-cat-5)',
+  grok: 'var(--color-data-cat-6)',
+  deepseek: 'var(--color-data-cat-1)',
 };
 
 const ENGINE_LABEL: Record<EngineId, string> = {
@@ -60,7 +60,7 @@ export interface EngineGlyphProps {
   title?: string;
 }
 
-/** Engine badge. Always show the engine name next to it (brand/retired/overt/BRAND.md §7.1). */
+/** Engine badge. Always show the engine name next to it. */
 export function EngineGlyph({ engine, size = 16, variant = 'tile', className, title }: EngineGlyphProps) {
   const color = ENGINE_GLYPH_COLOR[engine];
   const a11y = title ? { role: 'img', 'aria-label': title } : { 'aria-hidden': true as const };
@@ -79,7 +79,7 @@ export function EngineGlyph({ engine, size = 16, variant = 'tile', className, ti
       {variant === 'tile' ? (
         <>
           <rect width="24" height="24" rx="6" fill={color} />
-          <Shape engine={engine} fill="#fff" />
+          <Shape engine={engine} fill="var(--color-surface)" />
         </>
       ) : (
         <g transform="translate(12 12) scale(1.6) translate(-12 -12)">
@@ -90,5 +90,5 @@ export function EngineGlyph({ engine, size = 16, variant = 'tile', className, ti
   );
 }
 
-/** Display name for an engine id (same strings as brand/retired/overt/BRAND.md "Engines"). */
+/** Display name for an engine id. */
 export const engineGlyphLabel = (engine: EngineId) => ENGINE_LABEL[engine];

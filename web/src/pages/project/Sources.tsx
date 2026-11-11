@@ -83,27 +83,27 @@ function TypeCard({ view }: { view: SourcesView }) {
           legend={false}
           center={
             <>
-              <span className="font-display font-heading text-xl leading-7 tracking-[-0.012em] text-text-strong tnum">{pct(share('own'))}</span>
-              <span className="mt-0.5 text-2xs text-text-subtle">{copy.labels.sourceType.own}</span>
+              <span className="font-display font-heading text-xl leading-7 tracking-[-0.012em] text-strong tnum">{pct(share('own'))}</span>
+              <span className="mt-0.5 text-2xs text-subtle">{copy.labels.sourceType.own}</span>
             </>
           }
         />
         <ul className="min-w-0 flex-1 space-y-2.5">
           {TYPES.map((t) => (
             <li key={t} className="flex items-center justify-between gap-3 text-[13px]">
-              <span className="inline-flex min-w-0 items-center gap-2 whitespace-nowrap text-text-muted">
+              <span className="inline-flex min-w-0 items-center gap-2 whitespace-nowrap text-muted-foreground">
                 <Dot color={SOURCE_TYPE_COLORS[t]} />
                 {copy.labels.sourceType[t]}
                 <InfoTip term={copy.glossary.sourceTypes[t]} />
               </span>
               <span className="whitespace-nowrap font-mono text-text tnum">
-                {pct(share(t))} <span className="text-text-subtle">· {num(view.byType[t])}</span>
+                {pct(share(t))} <span className="text-subtle">· {num(view.byType[t])}</span>
               </span>
             </li>
           ))}
         </ul>
       </div>
-      <p className="mt-auto border-t border-border px-4 py-3 text-[13px] text-text-muted">
+      <p className="mt-auto border-t border-border px-4 py-3 text-[13px] text-muted-foreground">
         {fmt(S.insights.thirdParty, { share: pct(share('third_party')) })} {fmt(S.insights.own, { share: pct(share('own')) })}
       </p>
     </Card>
@@ -120,22 +120,22 @@ function GapCard({ gaps, onPick }: { gaps: SourceStat[]; onPick: (domain: string
         subtitle={S.sections.gapsBody}
       />
       {gaps.length === 0 ? (
-        <p className="m-4 rounded-md border border-dashed border-border-strong px-4 py-6 text-center text-sm text-text-muted">{S.gapsEmpty}</p>
+        <p className="m-4 rounded-md border border-dashed border-border-strong px-4 py-6 text-center text-sm text-muted-foreground">{S.gapsEmpty}</p>
       ) : (
         <>
           <ul className="mt-2 divide-y divide-border px-4">
             {gaps.map((g) => (
               <li key={g.domain} className="flex items-center gap-3 py-2.5">
-                <Target size={16} strokeWidth={1.75} aria-hidden className="shrink-0 text-warning" />
+                <Target size={16} strokeWidth={1.75} aria-hidden className="shrink-0 text-warn" />
                 <div className="flex min-w-0 flex-1 flex-col gap-0.5 sm:flex-row sm:items-center sm:gap-4">
-                  <button type="button" onClick={() => onPick(g.domain)} className="min-w-0 truncate text-left font-mono text-[13px] font-medium text-text hover:text-accent sm:flex-1">
+                  <button type="button" onClick={() => onPick(g.domain)} className="min-w-0 truncate text-left font-mono text-[13px] font-medium text-text hover:text-link sm:flex-1">
                     {g.domain}
                   </button>
                   <span className="flex items-center gap-3 font-mono text-xs tnum">
-                    <span className="text-text-muted">
+                    <span className="text-muted-foreground">
                       {num(g.citations)} {copy.metrics.citations.toLowerCase()}
                     </span>
-                    <span className="text-warning sm:w-36 sm:text-right">{fmt(S.gapRate, { rate: pct(g.brandMentionedRate) })}</span>
+                    <span className="text-warn sm:w-36 sm:text-right">{fmt(S.gapRate, { rate: pct(g.brandMentionedRate) })}</span>
                   </span>
                 </div>
               </li>
@@ -165,12 +165,12 @@ function SampleUrls({ s }: { s: SourceStat }) {
       <ul className="space-y-1.5">
         {s.sampleUrls.map((u) => (
           <li key={u.url} className="flex min-w-0 items-center justify-between gap-4 text-[13px]">
-            <a href={u.url} target="_blank" rel="noopener noreferrer" className="group inline-flex min-w-0 items-center gap-1.5 text-text hover:text-accent">
+            <a href={u.url} target="_blank" rel="noopener noreferrer" className="group inline-flex min-w-0 items-center gap-1.5 text-text hover:text-link">
               <span className="truncate">{u.title || u.url}</span>
-              <ExternalLink size={12} strokeWidth={1.75} aria-hidden className="shrink-0 text-text-subtle group-hover:text-accent" />
+              <ExternalLink size={12} strokeWidth={1.75} aria-hidden className="shrink-0 text-subtle group-hover:text-link" />
               <span className="sr-only">({S.openPage})</span>
             </a>
-            <span className="shrink-0 font-mono text-xs text-text-subtle tnum">{plural(u.count, S.pageCount)}</span>
+            <span className="shrink-0 font-mono text-xs text-subtle tnum">{plural(u.count, S.pageCount)}</span>
           </li>
         ))}
       </ul>
@@ -299,16 +299,16 @@ function DomainTable({ view, focus, setFocus }: { view: SourcesView; focus: stri
                           className="inline-flex min-w-0 max-w-full items-center gap-1.5 text-left"
                         >
                           {expanded ? (
-                            <ChevronDown size={14} strokeWidth={1.75} aria-hidden className="shrink-0 text-text-subtle" />
+                            <ChevronDown size={14} strokeWidth={1.75} aria-hidden className="shrink-0 text-subtle" />
                           ) : (
-                            <ChevronRight size={14} strokeWidth={1.75} aria-hidden className="shrink-0 text-text-subtle" />
+                            <ChevronRight size={14} strokeWidth={1.75} aria-hidden className="shrink-0 text-subtle" />
                           )}
                           <Dot color={colorOf(s)} size={6} className="sm:hidden" />
                           <span className="truncate font-mono text-[13px] font-medium text-text">{s.domain}</span>
                         </button>
                       </Td>
                       <Td className="hidden sm:table-cell">
-                        <span className="inline-flex items-center gap-1.5 whitespace-nowrap text-text-muted">
+                        <span className="inline-flex items-center gap-1.5 whitespace-nowrap text-muted-foreground">
                           <Dot color={colorOf(s)} />
                           {s.sourceType === 'competitor' ? (compName(s.competitorId) ?? copy.labels.sourceType.competitor) : copy.labels.sourceType[s.sourceType]}
                         </span>
@@ -337,7 +337,7 @@ function DomainTable({ view, focus, setFocus }: { view: SourcesView; focus: stri
                           ))}
                         </span>
                       </Td>
-                      <Td num className={cn(gap && 'text-warning')}>
+                      <Td num className={cn(gap && 'text-warn')}>
                         <span className="inline-flex items-center justify-end gap-1">
                           {gap && <Target size={12} strokeWidth={2} aria-label={S.sections.gaps} />}
                           {pct(s.brandMentionedRate)}
@@ -358,8 +358,8 @@ function DomainTable({ view, focus, setFocus }: { view: SourcesView; focus: stri
           </TBody>
         </Table>
       </Card>
-      <p className="flex items-center gap-1.5 text-xs text-text-subtle">
-        <Target size={12} strokeWidth={2} aria-hidden className="text-warning" />
+      <p className="flex items-center gap-1.5 text-xs text-subtle">
+        <Target size={12} strokeWidth={2} aria-hidden className="text-warn" />
         {copy.glossary.concepts.brandMentionRate.short}
         <span className="sr-only">{fmt(S.gapRate, { rate: pct(GAP_RATE) })}</span>
       </p>

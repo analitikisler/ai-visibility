@@ -8,7 +8,7 @@ export interface SparklineProps {
   height?: number;
   /** Fixed domain (e.g. [0, 1] for ratios). Defaults to the data's min/max. */
   domain?: [number, number];
-  /** Flat tint under the line (no gradient, Tally). */
+  /** Flat tint under the line (no gradient). */
   area?: boolean;
   /** Dot on the last value. */
   showLast?: boolean;
@@ -21,7 +21,7 @@ export interface SparklineProps {
 /** Tiny inline trend line (pure SVG, cheap enough for table rows). Gaps break the line. */
 export function Sparkline({
   values,
-  color = 'var(--color-chart-1)',
+  color = 'var(--color-data-cat-1)',
   width = 80,
   height = 24,
   domain,

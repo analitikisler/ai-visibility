@@ -45,7 +45,7 @@ function ProjectCard({ project }: { project: Project }) {
   return (
     <Card as="article" interactive className="relative flex flex-col">
       <div className="flex items-start gap-3 p-4 pb-0">
-        <span aria-hidden className="flex size-9 shrink-0 items-center justify-center rounded-md bg-primary-soft font-display text-base font-semibold text-accent-ink">
+        <span aria-hidden className="flex size-9 shrink-0 items-center justify-center rounded-md bg-accent-soft font-display text-base font-semibold text-accent-ink">
           {project.name.slice(0, 1).toUpperCase()}
         </span>
         <div className="min-w-0 flex-1">
@@ -61,24 +61,24 @@ function ProjectCard({ project }: { project: Project }) {
               </Tooltip>
             )}
           </div>
-          <p className="truncate font-mono text-xs text-text-subtle">{project.domain}</p>
+          <p className="truncate font-mono text-xs text-subtle">{project.domain}</p>
         </div>
-        <ArrowRight size={16} strokeWidth={1.75} aria-hidden className="mt-1 shrink-0 text-text-subtle" />
+        <ArrowRight size={16} strokeWidth={1.75} aria-hidden className="mt-1 shrink-0 text-subtle" />
       </div>
 
       <div className="flex items-end justify-between gap-4 px-4 pb-4 pt-5">
         <div>
           <div className="eyebrow">{copy.metrics.visibilityScore}</div>
           <div className="mt-1 flex items-baseline gap-2">
-            <span className="font-display font-heading text-2xl leading-8 tracking-[-0.012em] text-text-strong tnum">{hasAnswers ? score(summary?.visibilityScore) : '—'}</span>
-            {hasAnswers && <span className="font-mono text-sm text-text-muted">{copy.metrics.units.score}</span>}
+            <span className="font-display font-heading text-2xl leading-8 tracking-[-0.012em] text-strong tnum">{hasAnswers ? score(summary?.visibilityScore) : '—'}</span>
+            {hasAnswers && <span className="font-mono text-sm text-muted-foreground">{copy.metrics.units.score}</span>}
             {hasAnswers && <DeltaBadge delta={summary?.delta} kind="score" />}
           </div>
         </div>
         {trend && trend.length > 0 && hasAnswers && <Sparkline values={trend} width={96} height={32} domain={[0, 1]} area label={`${copy.metrics.visibility} trend`} />}
       </div>
 
-      <div className="mt-auto flex flex-wrap items-center justify-between gap-x-3 gap-y-2 border-t border-border px-4 py-3 text-xs text-text-subtle">
+      <div className="mt-auto flex flex-wrap items-center justify-between gap-x-3 gap-y-2 border-t border-border px-4 py-3 text-xs text-subtle">
         <span className="flex items-center gap-2">
           <span className="flex items-center -space-x-0.5" aria-label={project.engines.join(', ')}>
             {project.engines.map((e) => (
@@ -125,15 +125,15 @@ export default function ProjectsPage() {
         <Card className="overflow-hidden">
           <div className="flex flex-col items-center px-6 py-14 text-center sm:py-20">
             <EmptyNoData width={200} />
-            <h2 className="mt-6 font-display font-heading text-2xl tracking-[-0.012em] text-text-strong">{P.empty.title}</h2>
-            <p className="mt-2 max-w-md text-sm text-text-muted">{P.empty.body}</p>
+            <h2 className="mt-6 font-display font-heading text-2xl tracking-[-0.012em] text-strong">{P.empty.title}</h2>
+            <p className="mt-2 max-w-md text-sm text-muted-foreground">{P.empty.body}</p>
             <div className="mt-6 flex flex-wrap justify-center gap-2">
               <DemoButton variant="primary" size="lg" />
               <ButtonLink to="/app/new" size="lg" icon={Plus}>
                 {P.empty.cta}
               </ButtonLink>
             </div>
-            <p className="mt-4 text-xs text-text-subtle">{copy.landing.hero.note}</p>
+            <p className="mt-4 text-xs text-subtle">{copy.landing.hero.note}</p>
           </div>
         </Card>
       ) : (

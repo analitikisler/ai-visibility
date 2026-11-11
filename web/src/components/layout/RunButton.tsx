@@ -54,10 +54,10 @@ export function RunProgress({ run, className }: { run: Run | null; className?: s
     return (
       <div className={cn('max-w-sm', className)} role="status">
         <p className="inline-flex items-center gap-1.5 text-sm font-medium text-text">
-          <Clock size={16} strokeWidth={1.75} aria-hidden className="shrink-0 text-text-muted" />
+          <Clock size={16} strokeWidth={1.75} aria-hidden className="shrink-0 text-muted-foreground" />
           {fmt(rc.waiting, { engines })}
         </p>
-        <p className="mt-1 text-xs text-text-muted">{fmt(rc.waitingDetail, { time: since })}</p>
+        <p className="mt-1 text-xs text-muted-foreground">{fmt(rc.waitingDetail, { time: since })}</p>
       </div>
     );
   }
@@ -68,7 +68,7 @@ export function RunProgress({ run, className }: { run: Run | null; className?: s
         indeterminate={!run || run.status === 'queued'}
         label="Check progress"
       />
-      <p className="mt-2 font-mono text-xs text-text-muted tnum">
+      <p className="mt-2 font-mono text-xs text-muted-foreground tnum">
         {run && run.totalJobs ? fmt(rc.running, { done: run.doneJobs + run.failedJobs, total: run.totalJobs }) : rc.queued}
       </p>
     </div>
@@ -84,7 +84,7 @@ function BatchWaiting({ run, className }: { run: Run; className?: string }) {
       <div
         role="status"
         tabIndex={0}
-        className="flex h-8 max-w-[13rem] items-center gap-2 rounded-md border border-border-strong bg-surface px-3 text-[13px] font-medium text-text-muted sm:max-w-[24rem]"
+        className="flex h-8 max-w-[13rem] items-center gap-2 rounded-md border border-border-strong bg-surface px-3 text-[13px] font-medium text-muted-foreground sm:max-w-[24rem]"
       >
         <Clock size={14} strokeWidth={1.75} aria-hidden className="shrink-0" />
         <span className="truncate">{fmt(rc.waiting, { engines })}</span>
@@ -142,8 +142,8 @@ export function RunButton({ className }: { className?: string }) {
           aria-live="polite"
           className="relative flex h-8 items-center gap-2 overflow-hidden rounded-md border border-border-strong bg-surface px-3 text-sm font-medium text-text"
         >
-          {/* Running: a status dot that breathes (opacity only; nothing scales, Tally motion). */}
-          <span aria-hidden className="inline-flex size-2 shrink-0 rounded-full bg-accent animate-[shimmer_1.6s_ease-in-out_infinite] motion-reduce:animate-none" />
+          {/* Running: a status dot that breathes (opacity only; nothing scales). */}
+          <span aria-hidden className="inline-flex size-2 shrink-0 rounded-full bg-info animate-[shimmer_1.6s_ease-in-out_infinite] motion-reduce:animate-none" />
           <span className="font-mono text-[13px] tnum">{label}</span>
           <ProgressBar
             value={total ? done / total : 0}

@@ -71,7 +71,7 @@ function IngestTokenBlock({ token }: { token: string }) {
   return (
     <div className="border-t border-border px-4 py-4">
       <div className="flex items-center gap-1.5">
-        <LockKeyhole size={14} strokeWidth={1.75} aria-hidden className="text-text-subtle" />
+        <LockKeyhole size={14} strokeWidth={1.75} aria-hidden className="text-subtle" />
         <h3 className="eyebrow">{S.ingestToken}</h3>
       </div>
       <div className="mt-2 flex items-center gap-1 rounded-md border border-border bg-surface-2 py-1 pl-3 pr-1">
@@ -81,18 +81,18 @@ function IngestTokenBlock({ token }: { token: string }) {
           onClick={() => setShown((v) => !v)}
           aria-label={shown ? S.hideToken : S.showToken}
           title={shown ? S.hideToken : S.showToken}
-          className="inline-flex size-7 items-center justify-center rounded-md text-text-muted hover:bg-surface hover:text-text"
+          className="inline-flex size-7 items-center justify-center rounded-md text-muted-foreground hover:bg-surface hover:text-text"
         >
           {shown ? <EyeOff size={14} strokeWidth={1.75} aria-hidden /> : <Eye size={14} strokeWidth={1.75} aria-hidden />}
         </button>
         <CopyButton text={token} label={copy.common.copy} />
       </div>
-      <p className="mt-2 text-xs text-text-subtle">{S.ingestTokenBody}</p>
+      <p className="mt-2 text-xs text-subtle">{S.ingestTokenBody}</p>
       <Button className="mt-3" size="sm" variant="ghost" icon={RefreshCw} onClick={() => setConfirming(true)}>
         {S.rotateToken}
       </Button>
       {rotate.isSuccess && !confirming && (
-        <p role="status" className="mt-2 flex items-start gap-1.5 text-[13px] text-success">
+        <p role="status" className="mt-2 flex items-start gap-1.5 text-[13px] text-ok">
           <CheckCircle2 size={14} strokeWidth={1.75} aria-hidden className="mt-0.5 shrink-0" />
           <span>{S.rotated}</span>
         </p>
@@ -128,33 +128,33 @@ function StatusCard({ siteKey, ingestToken, lastEventAt }: { siteKey: string; in
   return (
     <Card className="flex flex-col">
       <div className="flex items-start gap-3 px-4 pt-4">
-        <span className={cn('mt-1.5 inline-flex size-2.5 shrink-0 rounded-full', receiving ? 'bg-success' : 'bg-text-subtle')} aria-hidden />
+        <span className={cn('mt-1.5 inline-flex size-2.5 shrink-0 rounded-full', receiving ? 'bg-ok' : 'bg-subtle')} aria-hidden />
         <div className="min-w-0">
           <p className="text-sm font-semibold text-text">{receiving ? P.receivingTitle : P.waitingTitle}</p>
-          <p className="mt-0.5 text-[13px] text-text-muted" title={lastEventAt ? dateTime(lastEventAt) : undefined}>
+          <p className="mt-0.5 text-[13px] text-muted-foreground" title={lastEventAt ? dateTime(lastEventAt) : undefined}>
             {receiving ? fmt(P.lastEvent, { time: relativeTime(lastEventAt) }) : P.status.waiting}
           </p>
         </div>
       </div>
       <div className="mt-4 border-t border-border px-4 py-4">
         <div className="flex items-center gap-1.5">
-          <KeyRound size={14} strokeWidth={1.75} aria-hidden className="text-text-subtle" />
+          <KeyRound size={14} strokeWidth={1.75} aria-hidden className="text-subtle" />
           <h3 className="eyebrow">{S.siteKey}</h3>
         </div>
         <div className="mt-2 flex items-center gap-2 rounded-md border border-border bg-surface-2 py-1 pl-3 pr-1">
           <code className="min-w-0 flex-1 truncate font-mono text-[13px] text-text">{siteKey}</code>
           <CopyButton text={siteKey} label={copy.common.copy} />
         </div>
-        <p className="mt-2 text-xs text-text-subtle">{S.siteKeyBody}</p>
+        <p className="mt-2 text-xs text-subtle">{S.siteKeyBody}</p>
       </div>
       <IngestTokenBlock token={ingestToken} />
       <div className="mt-auto border-t border-border px-4 py-4">
-        <p className="text-[13px] text-text-muted">{P.testBody}</p>
+        <p className="text-[13px] text-muted-foreground">{P.testBody}</p>
         <Button className="mt-3" icon={Send} loading={test.isPending} onClick={() => test.mutate()}>
           {P.sendTest}
         </Button>
         {test.isSuccess && (
-          <p role="status" className="mt-3 flex items-start gap-1.5 text-[13px] text-success">
+          <p role="status" className="mt-3 flex items-start gap-1.5 text-[13px] text-ok">
             <CheckCircle2 size={14} strokeWidth={1.75} aria-hidden className="mt-0.5 shrink-0" />
             <span>
               {P.testSent} {fmt(P.testDetail, { bots: test.data.bots, path: TEST_PATH })}
@@ -164,15 +164,15 @@ function StatusCard({ siteKey, ingestToken, lastEventAt }: { siteKey: string; in
         {test.isError &&
           // 429 = the site key's ingest rate limit: the pipe works, the button was just pressed too often.
           (isApiError(test.error) && test.error.status === 429 ? (
-            <p role="status" className="mt-3 flex items-start gap-1.5 text-[13px] text-warning">
+            <p role="status" className="mt-3 flex items-start gap-1.5 text-[13px] text-warn">
               <AlertTriangle size={14} strokeWidth={1.75} aria-hidden className="mt-0.5 shrink-0" />
               <span>{P.testRateLimited}</span>
             </p>
           ) : (
-            <p role="alert" className="mt-3 flex items-start gap-1.5 text-[13px] text-danger">
+            <p role="alert" className="mt-3 flex items-start gap-1.5 text-[13px] text-bad">
               <XCircle size={14} strokeWidth={1.75} aria-hidden className="mt-0.5 shrink-0" />
               <span>
-                {P.testFailed} <span className="text-text-muted">{fmt(copy.app.errors.detail, { detail: errorMessage(test.error) })}</span>
+                {P.testFailed} <span className="text-muted-foreground">{fmt(copy.app.errors.detail, { detail: errorMessage(test.error) })}</span>
               </span>
             </p>
           ))}
@@ -267,7 +267,7 @@ function AgentRow({ a }: { a: AiAgent }) {
         <Tooltip content={a.description} side="right">
           <span tabIndex={0} className="block min-w-0 rounded-sm">
             <span className="block truncate font-medium text-text">{a.name}</span>
-            {a.product && <span className="block truncate text-xs text-text-subtle">{a.product}</span>}
+            {a.product && <span className="block truncate text-xs text-subtle">{a.product}</span>}
           </span>
         </Tooltip>
       </Td>
@@ -286,7 +286,7 @@ function AgentRow({ a }: { a: AiAgent }) {
               </Badge>
             ))
           ) : (
-            <span className="text-text-subtle">—</span>
+            <span className="text-subtle">—</span>
           )}
           {!a.uaDetectable && (
             <Tooltip content={P.robotsOnlyTooltip}>
@@ -299,12 +299,12 @@ function AgentRow({ a }: { a: AiAgent }) {
       </Td>
       <Td className="whitespace-nowrap">
         {a.respectsRobots ? (
-          <span className="inline-flex items-center gap-1 text-[13px] text-success">
+          <span className="inline-flex items-center gap-1 text-[13px] text-ok">
             <Check size={14} strokeWidth={2} aria-hidden />
             {P.yes}
           </span>
         ) : (
-          <span className="inline-flex items-center gap-1 text-[13px] text-text-muted">
+          <span className="inline-flex items-center gap-1 text-[13px] text-muted-foreground">
             <Minus size={14} strokeWidth={2} aria-hidden />
             {P.no}
           </span>
@@ -312,11 +312,11 @@ function AgentRow({ a }: { a: AiAgent }) {
       </Td>
       <Td className="text-right">
         {a.docsUrl ? (
-          <a href={a.docsUrl} target="_blank" rel="noreferrer noopener" className="inline-flex size-7 items-center justify-center rounded-md text-text-muted hover:bg-surface-2 hover:text-text" aria-label={`${a.name} ${C.docs}`} title={a.docsUrl}>
+          <a href={a.docsUrl} target="_blank" rel="noreferrer noopener" className="inline-flex size-7 items-center justify-center rounded-md text-muted-foreground hover:bg-surface-2 hover:text-text" aria-label={`${a.name} ${C.docs}`} title={a.docsUrl}>
             <ExternalLink size={14} strokeWidth={1.75} aria-hidden />
           </a>
         ) : (
-          <span className="text-text-subtle">—</span>
+          <span className="text-subtle">—</span>
         )}
       </Td>
     </Tr>
@@ -363,7 +363,7 @@ export default function IntegrationsPage() {
                     <h4 className="eyebrow mb-1.5">{P.ingestUrl}</h4>
                     <div className="flex items-center gap-2 rounded-md border border-border bg-surface-2 py-1 pl-3 pr-1">
                       <code className="min-w-0 flex-1 truncate font-mono text-[13px] text-text">
-                        <span className="mr-2 text-text-subtle">POST</span>
+                        <span className="mr-2 text-subtle">POST</span>
                         {info.ingestUrl}
                       </code>
                       <CopyButton text={info.ingestUrl} label={copy.common.copy} />
@@ -377,7 +377,7 @@ export default function IntegrationsPage() {
               <StatusCard siteKey={info.siteKey} ingestToken={info.ingestToken} lastEventAt={info.lastEventAt} />
               <Card className="p-4">
                 <h3 className="eyebrow">{P.pickTitle}</h3>
-                <ul className="mt-3 space-y-2.5 text-[13px] leading-5 text-text-muted">
+                <ul className="mt-3 space-y-2.5 text-[13px] leading-5 text-muted-foreground">
                   {P.pickSteps.map((s, i) => (
                     <li key={i} className="flex gap-2.5">
                       <Dot color="var(--color-border-strong)" size={6} className="mt-[7px]" />

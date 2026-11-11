@@ -83,11 +83,11 @@ export function LogUploadForm({ projectId, onUploaded, rows = 8 }: LogUploadForm
           {U.chooseFile}
         </Button>
         {file ? (
-          <span className="min-w-0 truncate font-mono text-xs text-text-muted">
+          <span className="min-w-0 truncate font-mono text-xs text-muted-foreground">
             {file.name} · {bytes(file.size)}
           </span>
         ) : (
-          <span className="text-xs text-text-subtle">{U.orPaste}</span>
+          <span className="text-xs text-subtle">{U.orPaste}</span>
         )}
         <span className="flex-1" />
         <button
@@ -97,7 +97,7 @@ export function LogUploadForm({ projectId, onUploaded, rows = 8 }: LogUploadForm
             upload.reset();
             setText(sampleLog());
           }}
-          className="text-xs font-medium text-accent hover:underline"
+          className="text-xs font-medium text-link hover:underline"
         >
           {U.sample}
         </button>
@@ -122,19 +122,19 @@ export function LogUploadForm({ projectId, onUploaded, rows = 8 }: LogUploadForm
           {upload.isPending ? U.reading : U.submit}
         </Button>
         {error ? (
-          <p role="alert" className="flex items-start gap-1.5 text-[13px] text-danger">
+          <p role="alert" className="flex items-start gap-1.5 text-[13px] text-bad">
             <XCircle size={14} strokeWidth={1.75} aria-hidden className="mt-0.5 shrink-0" />
             {error}
           </p>
         ) : result ? (
-          <p role="status" className={`flex items-start gap-1.5 text-[13px] ${found ? 'text-success' : 'text-text-muted'}`}>
+          <p role="status" className={`flex items-start gap-1.5 text-[13px] ${found ? 'text-ok' : 'text-muted-foreground'}`}>
             {found ? <CheckCircle2 size={14} strokeWidth={1.75} aria-hidden className="mt-0.5 shrink-0" /> : <Info size={14} strokeWidth={1.75} aria-hidden className="mt-0.5 shrink-0" />}
             {found
               ? fmt(U.result, { parsed: num(result.parsed), bots: num(result.botEvents), referrals: num(result.referralEvents), skipped: num(result.skipped) })
               : U.nothingFound}
           </p>
         ) : (
-          <p className="text-xs text-text-subtle">{U.limits}</p>
+          <p className="text-xs text-subtle">{U.limits}</p>
         )}
       </div>
     </div>

@@ -27,9 +27,9 @@ interface ToastApi {
 const Ctx = createContext<ToastApi | null>(null);
 
 const icons: Record<ToastTone, { icon: LucideIcon; cls: string }> = {
-  success: { icon: CheckCircle2, cls: 'text-success' },
-  error: { icon: XCircle, cls: 'text-danger' },
-  warning: { icon: AlertTriangle, cls: 'text-warning' },
+  success: { icon: CheckCircle2, cls: 'text-ok' },
+  error: { icon: XCircle, cls: 'text-bad' },
+  warning: { icon: AlertTriangle, cls: 'text-warn' },
   info: { icon: Info, cls: 'text-info' },
 };
 
@@ -90,7 +90,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
               <Icon size={16} strokeWidth={1.75} aria-hidden className={cn('mt-0.5 shrink-0', tone.cls)} />
               <div className="min-w-0 flex-1">
                 <p className="text-sm font-medium text-text">{t.title}</p>
-                {t.description && <p className="mt-0.5 break-words text-[13px] text-text-muted">{t.description}</p>}
+                {t.description && <p className="mt-0.5 break-words text-[13px] text-muted-foreground">{t.description}</p>}
                 {t.action && (
                   <button
                     type="button"
@@ -98,13 +98,13 @@ export function ToastProvider({ children }: { children: ReactNode }) {
                       t.action!.onClick();
                       dismiss(t.id);
                     }}
-                    className="mt-1.5 text-[13px] font-medium text-accent hover:underline"
+                    className="mt-1.5 text-[13px] font-medium text-link hover:underline"
                   >
                     {t.action.label}
                   </button>
                 )}
               </div>
-              <button type="button" aria-label="Dismiss" onClick={() => dismiss(t.id)} className="rounded-sm p-0.5 text-text-subtle hover:text-text">
+              <button type="button" aria-label="Dismiss" onClick={() => dismiss(t.id)} className="rounded-sm p-0.5 text-subtle hover:text-text">
                 <X size={14} strokeWidth={1.75} aria-hidden />
               </button>
             </div>

@@ -32,18 +32,18 @@ export interface HeatmapGridProps {
 }
 
 /**
- * Label ink per heat step so text stays ≥ 5:1 (BRAND §7.2):
- * light → text on 0–5, white on 6–7; dark → text on 0–4, canvas ink on 5–7.
+ * Label ink per heat step so text stays ≥ 4.5 : 1 on the kit ramp (lib/colors.ts HEAT_STEPS):
+ * light → text on 0–4, on-action (white) on 5–7; dark → text on 0–3, on-action (near-black) on 4–7.
  */
 function inkFor(step: number) {
-  if (step >= 6) return 'text-white dark:text-bg';
-  if (step === 5) return 'text-text dark:text-bg';
+  if (step >= 5) return 'text-on-action';
+  if (step === 4) return 'text-text dark:text-on-action';
   return 'text-text';
 }
 
 const plain = (n: ReactNode) => (typeof n === 'string' ? n : '');
 
-/** Rows × columns grid on the single-hue brand-blue ramp (e.g. prompt × engine visibility). */
+/** Rows × columns grid on the single-hue heat ramp (the kit sequential series) (e.g. prompt × engine visibility). */
 export function HeatmapGrid({
   rows,
   columns,
@@ -65,13 +65,13 @@ export function HeatmapGrid({
             <tr>
               <th
                 scope="col"
-                className="sticky left-0 z-[1] bg-surface px-2 pb-1 text-left text-xs font-medium text-text-muted"
+                className="sticky left-0 z-[1] bg-surface px-2 pb-1 text-left text-xs font-medium text-muted-foreground"
                 style={{ minWidth: rowLabelWidth }}
               >
                 {rowHeader}
               </th>
               {columns.map((c) => (
-                <th key={c.key} scope="col" className="min-w-16 px-1 pb-1 text-center text-xs font-medium text-text-muted">
+                <th key={c.key} scope="col" className="min-w-16 px-1 pb-1 text-center text-xs font-medium text-muted-foreground">
                   {c.label}
                 </th>
               ))}
@@ -96,7 +96,7 @@ export function HeatmapGrid({
                     <span
                       className={cn(
                         'flex h-8 w-full items-center justify-center rounded-xs font-mono text-xs tnum',
-                        has ? inkFor(step) : 'text-text-subtle',
+                        has ? inkFor(step) : 'hatch-missing text-subtle',
                         onCellClick && 'cursor-pointer ring-inset hover:ring-2 hover:ring-border-strong',
                       )}
                       style={{ background: heatColor(step) }}
@@ -107,10 +107,10 @@ export function HeatmapGrid({
                   const tip = (
                     <span className="block">
                       <span className="block font-medium">{r.text ?? plain(r.label)}</span>
-                      <span className="block text-text-muted">
+                      <span className="block text-muted-foreground">
                         {c.text ?? plain(c.label)}: <span className="font-mono text-text">{text}</span>
                       </span>
-                      {detail && <span className="block text-text-subtle">{detail}</span>}
+                      {detail && <span className="block text-subtle">{detail}</span>}
                     </span>
                   );
                   return (
@@ -142,7 +142,7 @@ export function HeatmapGrid({
 /** Step legend for the heat ramp: "0% ▢▢▢▢▢▢▢▢ 100%". */
 export function HeatLegend({ low = '0%', high = '100%', className }: { low?: ReactNode; high?: ReactNode; className?: string }) {
   return (
-    <div className={cn('flex items-center gap-2 text-2xs text-text-subtle', className)} aria-hidden>
+    <div className={cn('flex items-center gap-2 text-2xs text-subtle', className)} aria-hidden>
       <span>{low}</span>
       <span className="flex gap-0.5">
         {[0, 1, 2, 3, 4, 5, 6, 7].map((s) => (

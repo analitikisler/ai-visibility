@@ -21,7 +21,7 @@ export interface EmptyStateProps {
   className?: string;
 }
 
-/** Empty state: title, body, one action (BRAND §4 "Empty states"). */
+/** Empty state: title, body, one action. */
 export function EmptyState({ title, body, icon: Icon, illustration, action, secondaryAction, size = 'md', bordered, className }: EmptyStateProps) {
   return (
     <div
@@ -35,13 +35,13 @@ export function EmptyState({ title, body, icon: Icon, illustration, action, seco
       {illustration ? (
         <div className="mb-1 flex justify-center">{illustration}</div>
       ) : Icon ? (
-        <div className="flex size-12 items-center justify-center rounded-lg bg-surface-2 text-text-muted">
+        <div className="flex size-12 items-center justify-center rounded-lg bg-surface-2 text-muted-foreground">
           <Icon size={24} strokeWidth={1.75} aria-hidden />
         </div>
       ) : null}
       <div className="max-w-md">
-        <h3 className={cn('font-semibold text-text-strong', size === 'lg' ? 'text-xl' : 'text-base')}>{title}</h3>
-        {body && <p className={cn('mt-1 text-text-muted', size === 'sm' ? 'text-[13px]' : 'text-sm')}>{body}</p>}
+        <h3 className={cn('font-semibold text-strong', size === 'lg' ? 'text-xl' : 'text-base')}>{title}</h3>
+        {body && <p className={cn('mt-1 text-muted-foreground', size === 'sm' ? 'text-[13px]' : 'text-sm')}>{body}</p>}
       </div>
       {(action || secondaryAction) && (
         <div className="mt-1 flex flex-wrap items-center justify-center gap-2">
@@ -66,7 +66,7 @@ export interface ErrorStateProps {
   className?: string;
 }
 
-/** Error with the way out (BRAND §4 "Errors"): what happened, detail line, retry. */
+/** Error with the way out: what happened, detail line, retry. */
 export function ErrorState({ title = "Couldn't load this", error, detail, onRetry, retrying, size = 'md', bordered, className }: ErrorStateProps) {
   return (
     <div
@@ -78,12 +78,12 @@ export function ErrorState({ title = "Couldn't load this", error, detail, onRetr
         className,
       )}
     >
-      <div className="flex size-10 items-center justify-center rounded-lg bg-warning-soft text-warning">
+      <div className="flex size-10 items-center justify-center rounded-lg bg-warn-soft text-warn">
         <AlertTriangle size={20} strokeWidth={1.75} aria-hidden />
       </div>
       <div className="max-w-md">
-        <h3 className="text-base font-semibold text-text-strong">{title}</h3>
-        <p className="mt-1 text-sm text-text-muted">{detail ?? (error ? errorMessage(error) : 'Try again in a moment.')}</p>
+        <h3 className="text-base font-semibold text-strong">{title}</h3>
+        <p className="mt-1 text-sm text-muted-foreground">{detail ?? (error ? errorMessage(error) : 'Try again in a moment.')}</p>
       </div>
       {onRetry && (
         <Button size="sm" icon={RotateCcw} onClick={onRetry} loading={retrying}>

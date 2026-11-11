@@ -1,7 +1,7 @@
 # ai visibility web
 
 React 19 · React Router 7 (data router, lazy routes) · TanStack Query 5 · Recharts 3 · Tailwind 4 · lucide-react.
-Read `brand/ai/BRAND.md` (the ai tool family guide) first; UI tokens are `brand/tokens.css`. Copy comes from `@/content/copy` (Creative), art from `@/components/art` (Art).
+Read `brand/README.md` (the ai tool family guide and the design kit) first; colour, type and logos come from the Çini kit in `src/cini/` (its `README.md` has the rules). Copy comes from `@/content/copy` (Creative), art from `@/components/art` (Art).
 
 ```bash
 npm run dev -w web          # :5180, proxies /api → :4400 (override with API_URL=http://localhost:4402)
@@ -32,7 +32,7 @@ export default function PromptsPage() {
 
 `src/pages/project/Overview.tsx` is the reference implementation (KPI row, charts, table, empty/loading/error states).
 
-**Rules of thumb:** tokens only (`bg-surface`, `text-text-muted`, `var(--color-chart-3)`), never hex · ai visibility follows Tally (BRAND §6): no shadows at rest, 1/2/4/6px radii, no pills, sentence case, links in `text-accent` · one `primary` button per view · numbers in `font-mono tnum`, right-aligned in tables · format every number with `@/lib/format` before it reaches copy templates (`fmt(copy.x, { visibility: pct(v) })`) · UI says "check" (not "run") and "Answers" (not "responses") · color follows the entity (`colors[competitorId]`), never the rank · status colors always come with an icon/sign.
+**Rules of thumb:** kit roles only (`bg-surface`, `text-muted-foreground` or `text-subtle` for muted text, `var(--color-data-cat-3)`), never hex or Tailwind palette colours · ai visibility follows Çini (`src/cini/README.md`): primary buttons are ink, links are red (`text-link`), statuses are ok / warn / risk / bad / neutral with a glyph and a word, charts use `cat-1…6` (more series are grouped as other), missing data uses `hatch-missing`, no shadows at rest, 1/2/4/6px radii, no pills, sentence case · one `primary` button per view · numbers in `font-mono tnum`, right-aligned in tables · format every number with `@/lib/format` before it reaches copy templates (`fmt(copy.x, { visibility: pct(v) })`) · UI says "check" (not "run") and "Answers" (not "responses") · color follows the entity (`colors[competitorId]`), never the rank · status colors always come with an icon/sign.
 
 ## Layout & context — `@/components/layout`
 

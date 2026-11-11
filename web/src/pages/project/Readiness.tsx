@@ -34,9 +34,9 @@ const GROUPS: AuditCheck['group'][] = ['crawlability', 'content', 'structured_da
 const SEVERITY: Record<CheckStatus, number> = { fail: 0, warn: 1, info: 2, pass: 3 };
 
 const STATUS_UI: Record<CheckStatus, { icon: LucideIcon; text: string; badge: 'success' | 'warning' | 'danger' | 'info' }> = {
-  pass: { icon: CheckCircle2, text: 'text-success', badge: 'success' },
-  warn: { icon: AlertTriangle, text: 'text-warning', badge: 'warning' },
-  fail: { icon: XCircle, text: 'text-danger', badge: 'danger' },
+  pass: { icon: CheckCircle2, text: 'text-ok', badge: 'success' },
+  warn: { icon: AlertTriangle, text: 'text-warn', badge: 'warning' },
+  fail: { icon: XCircle, text: 'text-bad', badge: 'danger' },
   info: { icon: Info, text: 'text-info', badge: 'info' },
 };
 
@@ -53,10 +53,10 @@ const FIX_DRAFTS: Partial<Record<string, { kind: DraftKind; params?: Record<stri
 };
 
 const RULE_UI: Record<RobotsAgentRule['allowed'], { icon: LucideIcon; cls: string }> = {
-  allowed: { icon: Check, cls: 'bg-success-soft text-success border-transparent' },
-  blocked: { icon: XCircle, cls: 'bg-danger-soft text-danger border-transparent' },
-  partial: { icon: AlertTriangle, cls: 'bg-warning-soft text-warning border-transparent' },
-  unspecified: { icon: Minus, cls: 'bg-surface text-text-muted border-border' },
+  allowed: { icon: Check, cls: 'bg-ok-soft text-ok border-transparent' },
+  blocked: { icon: XCircle, cls: 'bg-bad-soft text-bad border-transparent' },
+  partial: { icon: AlertTriangle, cls: 'bg-warn-soft text-warn border-transparent' },
+  unspecified: { icon: Minus, cls: 'bg-surface text-muted-foreground border-border' },
 };
 const RULES: RobotsAgentRule['allowed'][] = ['allowed', 'partial', 'blocked', 'unspecified'];
 
@@ -147,14 +147,14 @@ function RunAuditCard({ hasAudit, onDone }: { hasAudit: boolean; onDone: (a: Aud
       {run.isPending && (
         <div className="mt-3" role="status">
           <ProgressBar indeterminate label={fmt(P.run.running, { url: target })} />
-          <p className="mt-2 flex flex-wrap justify-between gap-2 text-xs text-text-muted">
+          <p className="mt-2 flex flex-wrap justify-between gap-2 text-xs text-muted-foreground">
             <span className="min-w-0 truncate">{fmt(P.run.running, { url: target })}</span>
-            <span className="font-mono tnum text-text-subtle">{fmt(P.run.elapsed, { seconds: elapsed })}</span>
+            <span className="font-mono tnum text-subtle">{fmt(P.run.elapsed, { seconds: elapsed })}</span>
           </p>
         </div>
       )}
       {run.isError && (
-        <p role="alert" className="mt-3 flex items-start gap-2 rounded-md bg-danger-soft px-3 py-2 text-[13px] text-danger">
+        <p role="alert" className="mt-3 flex items-start gap-2 rounded-md bg-bad-soft px-3 py-2 text-[13px] text-bad">
           <XCircle size={14} strokeWidth={1.75} aria-hidden className="mt-0.5 shrink-0" />
           <span>
             <span className="font-medium">{P.run.failed}.</span> {errorMessage(run.error)}
@@ -203,9 +203,9 @@ function ScoreCard({ a, isLatest, onLatest }: { a: AuditResult; isLatest: boolea
               </li>
             ))}
           </ul>
-          <p className="text-[13px] text-text-muted">{fmt(P.summary, { pass: count('pass'), warn: count('warn'), fail: count('fail') })}</p>
-          <p className="min-w-0 text-xs text-text-subtle">
-            <a href={a.url} target="_blank" rel="noreferrer noopener" className="inline-flex max-w-full items-center gap-1 font-mono text-text-muted hover:text-accent hover:underline">
+          <p className="text-[13px] text-muted-foreground">{fmt(P.summary, { pass: count('pass'), warn: count('warn'), fail: count('fail') })}</p>
+          <p className="min-w-0 text-xs text-subtle">
+            <a href={a.url} target="_blank" rel="noreferrer noopener" className="inline-flex max-w-full items-center gap-1 font-mono text-muted-foreground hover:text-link hover:underline">
               <span className="truncate">{a.url}</span>
               <ExternalLink size={12} strokeWidth={1.75} aria-hidden className="shrink-0" />
             </a>
@@ -216,7 +216,7 @@ function ScoreCard({ a, isLatest, onLatest }: { a: AuditResult; isLatest: boolea
         </div>
       </div>
       {unreachable && (
-        <p role="alert" className="mx-4 mb-4 flex items-start gap-2 rounded-md bg-danger-soft px-3 py-2 text-[13px] text-danger">
+        <p role="alert" className="mx-4 mb-4 flex items-start gap-2 rounded-md bg-bad-soft px-3 py-2 text-[13px] text-bad">
           <XCircle size={14} strokeWidth={1.75} aria-hidden className="mt-0.5 shrink-0" />
           <span>
             <span className="font-medium">{P.run.unreachable}</span> {unreachable.detail}
@@ -258,14 +258,14 @@ function CheckRow({ c, agent }: { c: AuditCheck; agent: DraftAgent }) {
   const ui = STATUS_UI[c.status];
   const fix = c.status === 'warn' || c.status === 'fail' ? FIX_DRAFTS[c.id] : undefined;
   return (
-    <li id={`check-${c.id}`} className="flex scroll-mt-24 gap-3 px-4 py-3 target:bg-primary-soft">
+    <li id={`check-${c.id}`} className="flex scroll-mt-24 gap-3 px-4 py-3 target:bg-accent-soft">
       <ui.icon size={16} strokeWidth={1.75} aria-hidden className={cn('mt-0.5 shrink-0', ui.text)} />
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
           <h4 className="text-[13px] font-semibold text-text">{c.title}</h4>
           <span className={cn('text-2xs font-semibold', ui.text)}>{copy.labels.checkStatus[c.status]}</span>
         </div>
-        <p className="mt-0.5 break-words text-[13px] leading-5 text-text-muted">{c.detail}</p>
+        <p className="mt-0.5 break-words text-[13px] leading-5 text-muted-foreground">{c.detail}</p>
         {c.fix && c.status !== 'pass' && (
           <div className="mt-2 rounded-md bg-surface-2 px-3 py-2 text-[13px] leading-5 text-text">
             <span className="eyebrow mr-1.5">{P.check.fix}</span>
@@ -302,7 +302,7 @@ function ChecksCard({ a, agent }: { a: AuditResult; agent: DraftAgent }) {
             <section key={g} aria-label={copy.labels.auditGroup[g]}>
               <div className="flex items-center justify-between gap-3 bg-surface-2/60 px-4 py-2">
                 <h3 className="eyebrow">{copy.labels.auditGroup[g]}</h3>
-                <span className="font-mono text-2xs text-text-subtle tnum">{fmt(P.groupSummary, { pass: passed, total: list.length })}</span>
+                <span className="font-mono text-2xs text-subtle tnum">{fmt(P.groupSummary, { pass: passed, total: list.length })}</span>
               </div>
               <ul className="divide-y divide-border">
                 {list.map((c) => (
@@ -342,7 +342,7 @@ function RobotsCard({ a, agent }: { a: AuditResult; agent: DraftAgent }) {
             {unreachableCheck(a) ? R.unreachable : R.notFound}
           </p>
         )}
-        <ul className="mb-4 flex flex-wrap gap-x-4 gap-y-1.5 text-xs text-text-muted" aria-label={R.legend}>
+        <ul className="mb-4 flex flex-wrap gap-x-4 gap-y-1.5 text-xs text-muted-foreground" aria-label={R.legend}>
           {RULES.map((r) => {
             const Icon = RULE_UI[r].icon;
             return (
@@ -351,7 +351,7 @@ function RobotsCard({ a, agent }: { a: AuditResult; agent: DraftAgent }) {
                   <Icon size={11} strokeWidth={2.25} aria-hidden />
                 </span>
                 {copy.labels.robotsRule[r]}
-                <span className="font-mono text-text-subtle tnum">{counts[r]}</span>
+                <span className="font-mono text-subtle tnum">{counts[r]}</span>
               </li>
             );
           })}
@@ -387,9 +387,9 @@ function RobotsCard({ a, agent }: { a: AuditResult; agent: DraftAgent }) {
         </div>
       </div>
       {a.robots.sitemaps.length > 0 && (
-        <div className="mt-auto border-t border-border px-4 py-3 text-xs text-text-muted">
+        <div className="mt-auto border-t border-border px-4 py-3 text-xs text-muted-foreground">
           <span className="font-medium text-text">{plural(a.robots.sitemaps.length, R.sitemaps)}</span>
-          <span className="ml-2 font-mono text-text-subtle">{a.robots.sitemaps.slice(0, 3).join(' · ')}</span>
+          <span className="ml-2 font-mono text-subtle">{a.robots.sitemaps.slice(0, 3).join(' · ')}</span>
         </div>
       )}
     </Card>
@@ -409,7 +409,7 @@ function LlmsTxtCard({ a, agent }: { a: AuditResult; agent: DraftAgent }) {
         actions={l.found ? <Badge tone="success" icon={CheckCircle2}>{copy.labels.checkStatus.pass}</Badge> : <Badge tone="danger" icon={XCircle}>{P.missing}</Badge>}
       />
       <div className="space-y-3 p-4">
-        <p className="text-[13px] text-text-muted">{l.found ? fmt(L.found, { url: l.url, bytes: bytes(l.bytes) }) : L.notFound}</p>
+        <p className="text-[13px] text-muted-foreground">{l.found ? fmt(L.found, { url: l.url, bytes: bytes(l.bytes) }) : L.notFound}</p>
         {l.found && l.preview && <CodeBlock code={l.preview} title={L.preview} language="llms.txt" maxHeight={220} wrap />}
         <Button size="sm" icon={FilePen} loading={agent.pendingKey === 'llms'} disabled={!!agent.pendingKey} onClick={() => agent.draft({ kind: 'llms_txt' }, 'llms')}>
           {L.draft}
@@ -422,7 +422,7 @@ function LlmsTxtCard({ a, agent }: { a: AuditResult; agent: DraftAgent }) {
 function Fact({ label, children }: { label: string; children: ReactNode }) {
   return (
     <div className="grid grid-cols-[8.5rem_1fr] gap-3 px-4 py-2.5 text-[13px]">
-      <dt className="text-text-subtle">{label}</dt>
+      <dt className="text-subtle">{label}</dt>
       <dd className="min-w-0 break-words text-text">{children}</dd>
     </div>
   );
@@ -431,7 +431,7 @@ function Fact({ label, children }: { label: string; children: ReactNode }) {
 function PageFactsCard({ a }: { a: AuditResult }) {
   const F = P.page;
   const p = a.page;
-  const missing = <span className="text-text-subtle">{F.missing}</span>;
+  const missing = <span className="text-subtle">{F.missing}</span>;
   const og = Object.entries(p.ogTags);
   return (
     <Card>
@@ -471,7 +471,7 @@ function PageFactsCard({ a }: { a: AuditResult }) {
             <ul className="space-y-1">
               {og.map(([k, v]) => (
                 <li key={k} className="min-w-0">
-                  <span className="font-mono text-xs text-text-subtle">{k}</span> <span className="line-clamp-2">{v}</span>
+                  <span className="font-mono text-xs text-subtle">{k}</span> <span className="line-clamp-2">{v}</span>
                 </li>
               ))}
             </ul>
@@ -497,7 +497,7 @@ function HistoryCard({ audits, current, latestId, onSelect }: { audits: AuditRes
     <Card>
       <CardHeader title={P.sections.history} />
       {audits.length <= 1 ? (
-        <p className="px-4 pb-4 pt-2 text-[13px] text-text-subtle">{P.historyEmpty}</p>
+        <p className="px-4 pb-4 pt-2 text-[13px] text-subtle">{P.historyEmpty}</p>
       ) : (
         <ul className="mt-2 max-h-80 divide-y divide-border overflow-y-auto border-t border-border">
           {audits.map((h) => (
@@ -506,12 +506,12 @@ function HistoryCard({ audits, current, latestId, onSelect }: { audits: AuditRes
                 type="button"
                 onClick={() => onSelect(h.id)}
                 aria-current={h.id === current || undefined}
-                className={cn('flex w-full items-center gap-3 px-4 py-2.5 text-left transition-colors hover:bg-surface-2', h.id === current && 'bg-primary-soft hover:bg-primary-soft')}
+                className={cn('flex w-full items-center gap-3 px-4 py-2.5 text-left transition-colors hover:bg-surface-2', h.id === current && 'bg-accent-soft hover:bg-accent-soft')}
               >
                 <ScoreRing value={h.score} tone="status" size={36} thickness={4} caption={null} label={P.score} />
                 <span className="min-w-0 flex-1">
                   <span className="block truncate font-mono text-xs text-text">{h.url}</span>
-                  <span className="block text-xs text-text-subtle">{fmt(P.historyItem, { score: h.score, date: dateTime(h.createdAt) })}</span>
+                  <span className="block text-xs text-subtle">{fmt(P.historyItem, { score: h.score, date: dateTime(h.createdAt) })}</span>
                 </span>
                 {h.id === latestId && <Badge tone="neutral">{P.latest}</Badge>}
               </button>

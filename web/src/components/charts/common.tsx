@@ -1,4 +1,4 @@
-// Shared chart chrome (BRAND §7): recessive axes/grid, token tooltips, legends that match entity colors.
+// Shared chart chrome: recessive axes/grid, token tooltips, legends that match entity colors.
 import type { ReactNode } from 'react';
 import { cn } from '@/lib/cn';
 import { dayLabel, num, pct, score } from '@/lib/format';
@@ -31,7 +31,7 @@ export function formatTick(v: number, f: ValueFormat = 'number'): string {
   return num(v, { compact: true });
 }
 
-export const axisTick = { fill: 'var(--color-text-subtle)', fontSize: 12, fontFamily: 'var(--font-sans)' } as const;
+export const axisTick = { fill: 'var(--color-muted)', fontSize: 12, fontFamily: 'var(--font-body)' } as const;
 export const axisLine = { stroke: 'var(--color-border-strong)' } as const;
 export const gridStroke = 'var(--color-border)';
 export const cursorStroke = { stroke: 'var(--color-border-strong)', strokeWidth: 1 } as const;
@@ -59,23 +59,23 @@ export interface TooltipRow {
   emphasis?: boolean;
 }
 
-/** Tooltip panel: surface bg, border, the overlay shadow, mono values (BRAND §7.5). */
+/** Tooltip panel: surface bg, border, the overlay shadow, mono values. */
 export function ChartTooltipBox({ title, rows, footer }: { title?: ReactNode; rows: TooltipRow[]; footer?: ReactNode }) {
   return (
     <div className="min-w-40 max-w-72 rounded-md border border-border bg-surface px-3 py-2 text-xs shadow-md">
-      {title && <div className="mb-1.5 font-medium text-text-muted">{title}</div>}
+      {title && <div className="mb-1.5 font-medium text-muted-foreground">{title}</div>}
       <div className="flex flex-col gap-1">
         {rows.map((r) => (
           <div key={r.key} className="flex items-center justify-between gap-4">
             <span className="flex min-w-0 items-center gap-1.5">
               <span aria-hidden className="size-2 shrink-0 rounded-xs" style={{ background: r.color }} />
-              <span className={cn('truncate', r.emphasis ? 'font-semibold text-text-strong' : 'text-text-muted')}>{r.name}</span>
+              <span className={cn('truncate', r.emphasis ? 'font-semibold text-strong' : 'text-muted-foreground')}>{r.name}</span>
             </span>
             <span className={cn('font-mono tnum', r.emphasis ? 'font-semibold text-text' : 'text-text')}>{r.value}</span>
           </div>
         ))}
       </div>
-      {footer && <div className="mt-1.5 border-t border-border pt-1.5 text-text-subtle">{footer}</div>}
+      {footer && <div className="mt-1.5 border-t border-border pt-1.5 text-subtle">{footer}</div>}
     </div>
   );
 }
@@ -104,7 +104,7 @@ export function ChartLegend({ items, hidden, onToggle, className }: LegendProps)
               className={cn('size-2 shrink-0 rounded-xs transition-opacity', off && 'opacity-30')}
               style={{ background: s.color }}
             />
-            <span className={cn('truncate', s.emphasis ? 'font-semibold text-text' : 'text-text-muted', off && 'text-text-subtle line-through')}>
+            <span className={cn('truncate', s.emphasis ? 'font-semibold text-text' : 'text-muted-foreground', off && 'text-subtle line-through')}>
               {s.name}
             </span>
           </>
@@ -133,7 +133,7 @@ export function ChartLegend({ items, hidden, onToggle, className }: LegendProps)
 /** Placeholder shown inside a chart area when there is nothing to plot. */
 export function ChartEmpty({ height, children }: { height: number; children?: ReactNode }) {
   return (
-    <div className="flex items-center justify-center rounded-md border border-dashed border-border text-[13px] text-text-subtle" style={{ height }}>
+    <div className="flex items-center justify-center rounded-md border border-dashed border-border text-[13px] text-subtle" style={{ height }}>
       {children ?? 'No data in this period'}
     </div>
   );

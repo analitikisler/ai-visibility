@@ -2,7 +2,7 @@
 // drivers per engine, and lost prompts with a one-click comparison-page draft.
 import { useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router';
-import { ArrowRight, Columns2, Play } from 'lucide-react';
+import { ArrowRight, CheckCircle2, Columns2, Play } from 'lucide-react';
 import type { Diagnosis, DriverId, DriverScore, EngineId } from '@shared/types';
 import { EmptyNoData } from '@/components/art';
 import { DriverBars, HeatLegend, HeatmapGrid } from '@/components/charts';
@@ -47,7 +47,7 @@ import { pct, score } from '@/lib/format';
 const P = copy.pages.diagnose;
 const GD = copy.glossary.drivers;
 
-/** Leader name → entity color (competitors by name; anything else, like "Benchmark", is slate). */
+/** Leader name → entity color (competitors by name; anything else, like "Benchmark", is muted). */
 function useLeaderColor() {
   const { project, colors } = useProject();
   return useMemo(() => {
@@ -71,7 +71,7 @@ function OverallCard({ d }: { d: Diagnosis }) {
         <ScoreRing value={d.overall} size={128} label={P.overall.label} />
         <div className="min-w-0 space-y-2 text-sm">
           <p className="font-medium text-text">{plural(leading, P.summary.leadCount, { total: d.drivers.length })}</p>
-          <p className="text-text-muted">
+          <p className="text-muted-foreground">
             {worst && gap > 0
               ? fmt(P.summary.biggestGap, { driver: copy.labels.driver[worst.id], gap, leader: worst.leaderName })
               : P.summary.noGap}
@@ -90,7 +90,7 @@ function OverallCard({ d }: { d: Diagnosis }) {
                 >
                   <span className="min-w-0 truncate">{copy.labels.driver[x.id]}</span>
                   <span className="flex shrink-0 items-center gap-2">
-                    <span className="hidden text-xs text-text-subtle sm:inline">{x.leaderName}</span>
+                    <span className="hidden text-xs text-subtle sm:inline">{x.leaderName}</span>
                     <DeltaBadge delta={x.score - x.leaderScore} kind="score" />
                   </span>
                 </Link>
@@ -100,7 +100,7 @@ function OverallCard({ d }: { d: Diagnosis }) {
         </div>
       )}
       <CardFooter className="mt-auto">
-        <Link to={`/app/p/${projectId}/actions`} className="inline-flex items-center gap-1 text-xs font-medium text-accent hover:underline">
+        <Link to={`/app/p/${projectId}/actions`} className="inline-flex items-center gap-1 text-xs font-medium text-link hover:underline">
           {P.ctaActions}
           <ArrowRight size={12} strokeWidth={2} aria-hidden />
         </Link>
@@ -145,32 +145,32 @@ function DriverCard({ x, selected, className }: { x: DriverScore; selected: bool
       <CardHeader
         title={copy.labels.driver[x.id]}
         titleAddon={<InfoTip term={GD[x.id]} />}
-        actions={leads ? <Badge tone="success">{P.driver.youLead}</Badge> : <DeltaBadge delta={x.score - x.leaderScore} kind="score" />}
+        actions={leads ? <Badge tone="success" icon={CheckCircle2}>{P.driver.youLead}</Badge> : <DeltaBadge delta={x.score - x.leaderScore} kind="score" />}
       />
       <div className="flex flex-1 flex-col gap-4 px-4 pb-4 pt-3">
         <div className="flex items-baseline gap-1">
-          <span className="font-display font-heading text-2xl leading-8 tracking-[-0.012em] text-text-strong tnum">{score(x.score)}</span>
-          <span className="font-mono text-sm text-text-muted">{copy.metrics.units.score}</span>
+          <span className="font-display font-heading text-2xl leading-8 tracking-[-0.012em] text-strong tnum">{score(x.score)}</span>
+          <span className="font-mono text-sm text-muted-foreground">{copy.metrics.units.score}</span>
         </div>
         <div className="grid grid-cols-[6.5rem_1fr_2rem] items-center gap-x-2 gap-y-1.5 text-xs">
           <span className="truncate font-medium text-text">{P.driver.you}</span>
           <ProgressBar value={x.score / 100} color={BRAND_COLOR} label={`${project.name} ${copy.labels.driver[x.id]}`} />
           <span className="text-right font-mono text-text tnum">{score(x.score)}</span>
-          <span className="flex min-w-0 items-center gap-1.5 text-text-muted" title={x.leaderName}>
+          <span className="flex min-w-0 items-center gap-1.5 text-muted-foreground" title={x.leaderName}>
             <Dot color={leaderColor(x.leaderName)} size={6} />
             <span className="truncate">{x.leaderName}</span>
           </span>
           <ProgressBar value={x.leaderScore / 100} color={leaderColor(x.leaderName)} label={`${x.leaderName} ${copy.labels.driver[x.id]}`} />
-          <span className="text-right font-mono text-text-muted tnum">{score(x.leaderScore)}</span>
+          <span className="text-right font-mono text-muted-foreground tnum">{score(x.leaderScore)}</span>
         </div>
-        <p className="text-[13px] leading-5 text-text-muted">{x.explanation}</p>
+        <p className="text-[13px] leading-5 text-muted-foreground">{x.explanation}</p>
         {x.evidence.length > 0 && (
           <div>
             <h4 className="eyebrow mb-1.5">{P.driver.evidence}</h4>
             <ul className="space-y-1.5 text-[13px] leading-5 text-text">
               {x.evidence.map((e, i) => (
                 <li key={i} className="flex gap-2">
-                  <span aria-hidden className="mt-[7px] size-1 shrink-0 rounded-xs bg-text-subtle" />
+                  <span aria-hidden className="mt-[7px] size-1 shrink-0 rounded-xs bg-subtle" />
                   <span className="min-w-0">{e}</span>
                 </li>
               ))}
@@ -179,7 +179,7 @@ function DriverCard({ x, selected, className }: { x: DriverScore; selected: bool
         )}
       </div>
       <CardFooter className="mt-auto">
-        <Link to={`/app/p/${projectId}/actions?driver=${x.id}`} className="inline-flex items-center gap-1 text-xs font-medium text-accent hover:underline">
+        <Link to={`/app/p/${projectId}/actions?driver=${x.id}`} className="inline-flex items-center gap-1 text-xs font-medium text-link hover:underline">
           {P.driver.actions}
           <ArrowRight size={12} strokeWidth={2} aria-hidden />
         </Link>
@@ -197,7 +197,7 @@ function ByEngineCard({ d }: { d: Diagnosis }) {
       <CardHeader title={P.sections.byEngine} subtitle={P.byEngineBody} titleAddon={<InfoTip term={copy.glossary.metrics.diagnosisScore} />} />
       <div className="p-4 pt-3">
         {d.byEngine.length === 0 ? (
-          <p className="py-6 text-center text-[13px] text-text-subtle">{P.empty.body}</p>
+          <p className="py-6 text-center text-[13px] text-subtle">{P.empty.body}</p>
         ) : (
           <HeatmapGrid
             rowHeader={P.engineColumn}
@@ -265,7 +265,7 @@ function LostPromptsCard({ d, onDraft, pendingKey }: { d: Diagnosis; onDraft: (l
                   <Td className="max-w-[36rem]">
                     <Link
                       to={`/app/p/${projectId}/responses?prompt=${encodeURIComponent(l.promptId)}`}
-                      className="line-clamp-2 text-text hover:text-accent hover:underline"
+                      className="line-clamp-2 text-text hover:text-link hover:underline"
                       title={`${P.viewAnswers}: ${l.text}`}
                     >
                       {l.text}
@@ -278,7 +278,7 @@ function LostPromptsCard({ d, onDraft, pendingKey }: { d: Diagnosis; onDraft: (l
                     </span>
                   </Td>
                   <Td num>{pct(l.winnerVisibility)}</Td>
-                  <Td num className="text-text-muted">
+                  <Td num className="text-muted-foreground">
                     {pct(l.brandVisibility)}
                   </Td>
                   <Td className="whitespace-nowrap text-right">

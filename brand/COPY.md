@@ -2,10 +2,10 @@
 
 > Source of truth for every word in the product and on the landing page.
 > The code version is `web/src/content/copy.ts` (`import { copy, fmt, plural, ordinal } from '@/content/copy'`). This file mirrors it for review. If the two ever disagree, `copy.ts` is what ships; change it there first, then update this file.
-> Voice rules come from `brand/ai/BRAND.md` §11 (the ai tool family guide; the old Overt guide is retired in `brand/retired/overt/`). When this file and the guide disagree, the guide wins.
+> Voice rules come from BRAND.md v1.1 §11 (the ai tool family guide; see `brand/README.md`). When this file and the guide disagree, the guide wins.
 
 **Reading this doc**
-- `{name}` marks a value filled in at runtime. Numbers arrive pre-formatted per brand/retired/overt/BRAND.md §4: `42`, `38%`, `4.2%`, `+6 pts`, `−3 pts`, `#2.4`, `12.5k`, `—` for no prior data.
+- `{name}` marks a value filled in at runtime. Numbers arrive pre-formatted per `web/src/lib/format.ts`: `42`, `38%`, `4.2%`, `+6 pts`, `−3 pts`, `#2.4`, `12.5k`, `—` for no prior data.
 - `one` / `other` pairs are singular and plural forms.
 - Enum labels are keyed by the exact values in `shared/types.ts` (`must_win`, `third_party`, `user_fetch`…).
 
@@ -27,7 +27,7 @@ Direct, exact, calm, on your side. Before you ship a string, check it against th
 9. Hedge claims about third parties ("tends to", "can"), never claims about ai visibility’s own numbers.
 10. Simulated data is always badged **Simulated**. Neutral, not alarming.
 11. Typographic punctuation: apostrophes ’, quotes “ ”, ellipsis …, ranges with an en dash (20–30), negative deltas with a true minus (−3 pts).
-12. No “we”, “us” or “our”. Say what the product does (“ai visibility tracks…”, “Every answer is searched for it”); the maker is Analitik İşler (`brand/ai/BRAND.md` §11).
+12. No “we”, “us” or “our”. Say what the product does (“ai visibility tracks…”, “Every answer is searched for it”); the maker is Analitik İşler (BRAND.md v1.1 §11).
 
 **Ten rewrites**
 
@@ -67,7 +67,7 @@ ai visibility shows how ChatGPT, Claude, Gemini and Perplexity describe your bra
 
 > For a small team, three options come up most: ==Acme==, Northwind and Globex. Acme is the quickest to set up and has the clearest pricing.
 
-Brand marking on **Acme** (tinted ground and brand-blue underline, BRAND §10.7). Chip: `Visibility 42 · +6 pts`
+Brand marking on **Acme** (tinted ground and an underline in the brand's series colour). Chip: `Visibility 42 · +6 pts`
 
 ### Engine strip
 
@@ -587,7 +587,7 @@ Each page: title, the question it answers, its empty state, then every other str
 | `competitors.add` | Add competitor |
 | `competitors.remove` | Remove {name} |
 | `competitors.empty` | No competitors yet. Add the brands buyers compare you with. |
-| `competitors.limitNote` | Charts show up to 7 competitors. Any more are grouped as Other. |
+| `competitors.limitNote` | Charts show up to 5 competitors. Any more are grouped as Other. |
 | `prompts.add` | Add prompt |
 | `prompts.paste` | Paste several |
 | `prompts.pasteHelp` | One prompt per line. The tier and intent you pick apply to all of them. |
@@ -750,7 +750,7 @@ Each page: title, the question it answers, its empty state, then every other str
 | `removeDialog.cancel` | Keep tracking |
 | `colorNote` | Each competitor keeps its color on every chart. |
 | `otherBucket` | Other |
-| `otherNote` | Charts show your top 7 competitors by share of voice. The rest are grouped as Other. |
+| `otherNote` | Charts show your top 5 competitors by share of voice. The rest are grouped as Other. |
 
 ### Sources `/app/p/:id/sources`
 

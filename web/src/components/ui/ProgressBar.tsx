@@ -13,10 +13,10 @@ export interface ProgressBarProps {
   className?: string;
 }
 
-const toneCls = { primary: 'bg-accent', success: 'bg-success', warning: 'bg-warning', danger: 'bg-danger', neutral: 'bg-text-subtle' } as const;
+const toneCls = { primary: 'bg-primary', success: 'bg-ok', warning: 'bg-warn', danger: 'bg-bad', neutral: 'bg-subtle' } as const;
 const heights = { xs: 'h-1', sm: 'h-1.5', md: 'h-2' } as const;
 
-/** Thin horizontal progress / proportion bar on a sunken `well` track (square ends, Tally). */
+/** Thin horizontal progress / proportion bar on a sunken `well` track (square ends). */
 export function ProgressBar({ value = 0, tone = 'primary', color, size = 'sm', indeterminate, label, className }: ProgressBarProps) {
   const pct = Math.max(0, Math.min(1, value)) * 100;
   return (

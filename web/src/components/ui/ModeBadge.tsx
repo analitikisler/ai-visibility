@@ -4,12 +4,12 @@ import { copy, fmt } from '@/content/copy';
 import { cn } from '@/lib/cn';
 import { Tooltip } from './Tooltip';
 
-/** Neutral "Simulated" badge (BRAND §10.9): surface-2, muted text, FlaskConical 14px. */
+/** Neutral "Simulated" badge: surface-2, muted text, FlaskConical 14px. */
 export function SimulatedBadge({ className, tooltip = true }: { className?: string; tooltip?: boolean }) {
   const badge = (
     <span
       tabIndex={tooltip ? 0 : undefined}
-      className={cn('inline-flex h-5 shrink-0 items-center gap-1 whitespace-nowrap rounded-sm border border-border bg-surface-2 px-1.5 text-2xs font-medium text-text-muted', className)}
+      className={cn('inline-flex h-5 shrink-0 items-center gap-1 whitespace-nowrap rounded-sm border border-border bg-surface-2 px-1.5 text-2xs font-medium text-muted-foreground', className)}
     >
       <FlaskConical size={12} strokeWidth={1.75} aria-hidden />
       {copy.app.badges.simulated}
@@ -23,9 +23,9 @@ export function LiveBadge({ engineName, className, tooltip = true }: { engineNam
   const badge = (
     <span
       tabIndex={tooltip ? 0 : undefined}
-      className={cn('inline-flex h-5 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-sm border border-border bg-surface px-1.5 text-2xs font-medium text-text-muted', className)}
+      className={cn('inline-flex h-5 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-sm border border-border bg-surface px-1.5 text-2xs font-medium text-muted-foreground', className)}
     >
-      <span aria-hidden className="size-1.5 rounded-full bg-success" />
+      <span aria-hidden className="size-1.5 rounded-full bg-ok" />
       {copy.app.badges.live}
     </span>
   );

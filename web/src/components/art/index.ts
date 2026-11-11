@@ -1,4 +1,4 @@
-// Art components barrel. Theme-aware SVG/HTML built on brand/tokens.css.
+// Art components barrel. Theme-aware SVG/HTML built on the Çini kit tokens (src/cini).
 export { Logo, MARK_PATHS, type LogoProps, type LogoVariant, type LogoTone } from './Logo';
 export { EngineGlyph, ENGINE_GLYPH_COLOR, engineGlyphLabel, type EngineGlyphProps } from './EngineGlyph';
 export {

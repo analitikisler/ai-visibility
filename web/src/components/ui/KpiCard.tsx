@@ -43,7 +43,7 @@ function isGlossary(v: unknown): v is GlossaryTerm {
 }
 
 /**
- * KPI tile (BRAND §10.6): label + InfoTip, the value in the display face with a muted unit, delta chip,
+ * KPI tile: label + InfoTip, the value in the display face with a muted unit, delta chip,
  * comparison line, optional sparkline. 20px padding.
  */
 export function KpiCard({
@@ -56,7 +56,7 @@ export function KpiCard({
   comparison,
   info,
   trend,
-  trendColor = 'var(--chart-1)',
+  trendColor = 'var(--color-data-cat-1)',
   size = 'default',
   loading,
   to,
@@ -80,13 +80,13 @@ export function KpiCard({
             <div className="flex min-w-0 items-baseline gap-1">
               <span
                 className={cn(
-                  'font-display font-heading tracking-[-0.012em] text-text-strong tnum',
+                  'font-display font-heading tracking-[-0.012em] text-strong tnum',
                   size === 'hero' ? 'text-4xl leading-10' : 'text-2xl leading-8',
                 )}
               >
                 {value}
               </span>
-              {unit && <span className={cn('text-text-muted tnum', size === 'hero' ? 'text-xl' : 'text-sm')}>{unit}</span>}
+              {unit && <span className={cn('text-muted-foreground tnum', size === 'hero' ? 'text-xl' : 'text-sm')}>{unit}</span>}
             </div>
             {/* The sparkline only shows when the tile has room for it next to the figure (container query). */}
             {trend && trend.length > 1 && <Sparkline values={trend} color={trendColor} width={72} height={32} className="mb-1 hidden shrink-0 @[13rem]:block" />}
@@ -94,7 +94,7 @@ export function KpiCard({
           {(delta !== undefined || comparison) && (
             <div className="mt-2 flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
               {delta !== undefined && <DeltaBadge delta={delta} kind={deltaKind} invert={invertDelta} />}
-              {comparison && <span className="min-w-0 text-xs text-text-subtle">{comparison}</span>}
+              {comparison && <span className="min-w-0 text-xs text-subtle">{comparison}</span>}
             </div>
           )}
         </>

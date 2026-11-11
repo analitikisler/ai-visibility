@@ -17,7 +17,7 @@ export interface TooltipProps {
 }
 
 /**
- * Hover/focus tooltip (shadow-md surface, BRAND §7.5). The trigger is wrapped in an inline span that
+ * Hover/focus tooltip (shadow-md surface). The trigger is wrapped in an inline span that
  * carries `aria-describedby`; keep the trigger itself focusable (button, link) for keyboard users.
  */
 export function Tooltip({ content, children, side = 'top', delay = 200, className, triggerClassName, disabled }: TooltipProps) {
@@ -102,15 +102,15 @@ export function InfoTip({ term, content, title, label, side = 'top', className }
       delay={100}
       content={
         <span className="block">
-          {heading && <span className="mb-0.5 block font-semibold text-text-strong">{heading}</span>}
-          <span className="block text-text-muted">{body}</span>
+          {heading && <span className="mb-0.5 block font-semibold text-strong">{heading}</span>}
+          <span className="block text-muted-foreground">{body}</span>
         </span>
       }
     >
       <button
         type="button"
         aria-label={label ?? (term ? `About ${term.term}` : 'About this metric')}
-        className={cn('inline-flex size-4 items-center justify-center rounded-sm text-text-subtle transition-colors hover:text-text', className)}
+        className={cn('inline-flex size-4 items-center justify-center rounded-sm text-subtle transition-colors hover:text-text', className)}
       >
         <Info size={14} strokeWidth={1.75} aria-hidden />
       </button>

@@ -11,6 +11,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { Badge, Button, ButtonLink, Dot, Menu, ScoreRing, useToast, type ButtonSize, type ButtonVariant } from '@/components/ui';
 import { copy, fmt } from '@/content/copy';
 import { api, errorMessage, qk, useSeedDemo } from '@/lib/api';
+import { field } from '@/cini/pano.js';
 import { cn } from '@/lib/cn';
 import { AGENT_CATEGORY_COLORS } from '@/lib/colors';
 import { ENGINES } from '@/lib/engines';
@@ -123,7 +124,7 @@ function TopNav() {
         <ul className="hidden items-center gap-1 md:flex">
           {links.map((l) => (
             <li key={l.href}>
-              <a href={l.href} className="rounded-md px-2.5 py-1.5 text-sm font-medium text-text-muted transition-colors hover:bg-surface-2 hover:text-text">
+              <a href={l.href} className="rounded-md px-2.5 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-surface-2 hover:text-text">
                 {l.label}
               </a>
             </li>
@@ -154,7 +155,7 @@ function TopNav() {
                   {...props}
                   type="button"
                   aria-label={copy.nav.openMenu}
-                  className="inline-flex size-8 items-center justify-center rounded-md text-text-muted hover:bg-surface-2 hover:text-text"
+                  className="inline-flex size-8 items-center justify-center rounded-md text-muted-foreground hover:bg-surface-2 hover:text-text"
                 >
                   <MenuIcon size={18} strokeWidth={1.75} aria-hidden />
                 </button>
@@ -176,21 +177,21 @@ function Hero() {
       <div className="relative mx-auto grid grid-cols-1 max-w-6xl items-center gap-12 px-4 pb-16 pt-12 sm:px-6 md:pt-20 lg:grid-cols-[1.05fr_1fr] lg:gap-10 lg:pb-24">
         <div className="max-w-xl">
           <p className="eyebrow">{h.eyebrow}</p>
-          <h1 id="hero-title" className="mt-4 font-display font-heading text-[40px] leading-[44px] tracking-[-0.012em] text-text-strong sm:text-[56px] sm:leading-[58px]">
+          <h1 id="hero-title" className="mt-4 font-display font-heading text-[40px] leading-[44px] tracking-[-0.012em] text-strong sm:text-[56px] sm:leading-[58px]">
             {h.headline}
           </h1>
-          <p className="mt-5 text-base leading-7 text-text-muted sm:text-[17px]">{h.subhead}</p>
+          <p className="mt-5 text-base leading-7 text-muted-foreground sm:text-[17px]">{h.subhead}</p>
           <div className="mt-8 flex flex-wrap gap-2.5">
             <OpenDemoButton label={h.primaryCta.label} variant="primary" size="lg" arrow />
             <ButtonLink to={h.secondaryCta.href} size="lg">
               {h.secondaryCta.label}
             </ButtonLink>
           </div>
-          <p className="mt-4 text-xs text-text-subtle">{h.note}</p>
+          <p className="mt-4 text-xs text-subtle">{h.note}</p>
         </div>
         <figure className="mx-auto w-full max-w-[560px] lg:mx-0 lg:justify-self-end">
           <HeroAnswer prompt={L.heroExample.prompt} />
-          <figcaption className="mt-1 text-center text-xs text-text-subtle lg:text-left">{L.heroExample.caption}</figcaption>
+          <figcaption className="mt-1 text-center text-xs text-subtle lg:text-left">{L.heroExample.caption}</figcaption>
         </figure>
       </div>
       <div className="relative border-y border-border bg-surface">
@@ -198,7 +199,7 @@ function Hero() {
           <p className="eyebrow shrink-0">{L.logos.label}</p>
           <ul className="flex flex-wrap items-center gap-x-6 gap-y-2.5">
             {L.logos.engines.map((name) => (
-              <li key={name} className="inline-flex items-center gap-2 text-sm font-medium text-text-muted">
+              <li key={name} className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground">
                 {ENGINE_BY_NAME[name] && <EngineGlyph engine={ENGINE_BY_NAME[name]} size={16} />}
                 {name}
               </li>
@@ -217,18 +218,18 @@ function Shift() {
       <div className="grid grid-cols-1 gap-10 lg:grid-cols-[1fr_1.4fr] lg:gap-16">
         <div>
           <p className="eyebrow">{p.eyebrow}</p>
-          <h2 id="shift-title" className="mt-3 font-display font-heading text-3xl leading-9 tracking-[-0.006em] text-text-strong sm:text-4xl sm:leading-[44px]">
+          <h2 id="shift-title" className="mt-3 font-display font-heading text-3xl leading-9 tracking-[-0.006em] text-strong sm:text-4xl sm:leading-[44px]">
             {p.title}
           </h2>
-          <p className="mt-4 text-base leading-7 text-text-muted">{p.body}</p>
+          <p className="mt-4 text-base leading-7 text-muted-foreground">{p.body}</p>
         </div>
         <ol className="grid grid-cols-1 gap-px overflow-hidden rounded-lg border border-border bg-border sm:grid-cols-3 lg:grid-cols-1">
           {p.points.map((pt, i) => (
             <li key={pt.title} className="flex gap-4 bg-surface p-5 sm:flex-col lg:flex-row lg:items-baseline">
-              <span className="font-mono text-sm text-text-subtle tnum">{String(i + 1).padStart(2, '0')}</span>
+              <span className="font-mono text-sm text-subtle tnum">{String(i + 1).padStart(2, '0')}</span>
               <div>
                 <h3 className="text-base font-semibold text-text">{pt.title}</h3>
-                <p className="mt-1 text-sm leading-6 text-text-muted">{pt.body}</p>
+                <p className="mt-1 text-sm leading-6 text-muted-foreground">{pt.body}</p>
               </div>
             </li>
           ))}
@@ -246,7 +247,7 @@ function Frame({ module, children }: { module: ModuleIconName; children: ReactNo
       <div className="rounded-lg border border-border bg-surface p-5 sm:p-6">
         <div className="mb-5 flex items-center justify-between gap-3">
           <ModuleIcon module={module} size={40} />
-          <span className="text-2xs font-medium text-text-subtle">{L.vignetteCaption}</span>
+          <span className="text-2xs font-medium text-subtle">{L.vignetteCaption}</span>
         </div>
         <div aria-hidden>{children}</div>
       </div>
@@ -266,9 +267,9 @@ function MonitorVignette() {
       <p className="eyebrow">{copy.metrics.visibilityScore}</p>
       <div className="mt-2 flex items-end justify-between gap-4">
         <div className="flex items-baseline gap-2">
-          <span className="font-display font-heading text-4xl leading-10 tracking-[-0.012em] text-text-strong tnum">42</span>
-          <span className="text-lg text-text-muted">/100</span>
-          <span className="ml-1 inline-flex h-5 items-center rounded-sm border border-success/40 bg-success-soft px-1 font-mono text-2xs font-medium text-success">+6 pts</span>
+          <span className="font-display font-heading text-4xl leading-10 tracking-[-0.012em] text-strong tnum">42</span>
+          <span className="text-lg text-muted-foreground">/100</span>
+          <span className="ml-1 inline-flex h-5 items-center rounded-sm border border-ok/40 bg-ok-soft px-1 font-mono text-2xs font-medium text-ok">+6 pts</span>
         </div>
         <Sparkline values={[0.31, 0.33, 0.32, 0.35, 0.34, 0.38, 0.37, 0.4, 0.42]} width={112} height={36} domain={[0.25, 0.45]} area />
       </div>
@@ -294,7 +295,7 @@ function DiagnoseVignette() {
   return (
     <DriverBars
       brandName={L.vignette.brand}
-      leaderColor={() => 'var(--color-chart-2)'}
+      leaderColor={() => 'var(--color-data-cat-2)'}
       items={[
         { id: 'content_coverage', name: copy.labels.driver.content_coverage, score: 62, leaderScore: 81, leaderName: L.vignette.rival },
         { id: 'source_authority', name: copy.labels.driver.source_authority, score: 38, leaderScore: 66, leaderName: L.vignette.rival },
@@ -310,7 +311,7 @@ function ActVignette() {
   return (
     <div>
       <div className="flex flex-wrap items-center gap-2">
-        <span className="inline-flex size-7 items-center justify-center rounded-md bg-surface-2 text-text-muted">
+        <span className="inline-flex size-7 items-center justify-center rounded-md bg-surface-2 text-muted-foreground">
           <FileText size={15} strokeWidth={1.75} />
         </span>
         <span className="text-sm font-semibold text-text">{copy.recommendations.drafts.kind.llms_txt}</span>
@@ -318,17 +319,17 @@ function ActVignette() {
       </div>
       <pre className="mt-4 overflow-hidden rounded-lg border border-border bg-well p-3 font-mono text-[12px] leading-5 text-text">{lines.join('\n')}</pre>
       <div className="mt-4 flex flex-wrap items-center gap-2">
-        <span className="inline-flex h-8 items-center gap-1.5 rounded-md border border-border-strong bg-surface px-3 text-sm font-medium text-text-muted">
+        <span className="inline-flex h-8 items-center gap-1.5 rounded-md border border-border-strong bg-surface px-3 text-sm font-medium text-muted-foreground">
           <Download size={14} strokeWidth={1.75} />
           {fmt(E.download, { file: 'llms.txt' })}
         </span>
-        <span className="inline-flex h-8 items-center gap-1.5 rounded-md bg-primary px-3 text-sm font-medium text-primary-fg">
+        <span className="inline-flex h-8 items-center gap-1.5 rounded-md bg-primary px-3 text-sm font-medium text-primary-foreground">
           <Check size={14} strokeWidth={2} />
           {E.approve}
         </span>
       </div>
-      <p className="mt-3 flex items-center gap-1.5 text-xs text-text-muted">
-        <ShieldCheck size={13} strokeWidth={1.75} className="text-text-subtle" />
+      <p className="mt-3 flex items-center gap-1.5 text-xs text-muted-foreground">
+        <ShieldCheck size={13} strokeWidth={1.75} className="text-subtle" />
         {copy.recommendations.humanInLoopShort}
       </p>
     </div>
@@ -344,7 +345,7 @@ function CrawlersVignette() {
   ];
   return (
     <div>
-      <div className="mb-2 flex justify-between text-xs font-medium text-text-muted">
+      <div className="mb-2 flex justify-between text-xs font-medium text-muted-foreground">
         <span>{copy.pages.crawlers.columns.agent}</span>
         <span>{copy.pages.crawlers.kpis.pages}</span>
       </div>
@@ -354,7 +355,7 @@ function CrawlersVignette() {
             <span className="flex min-w-0 items-center gap-2">
               <Dot color={AGENT_CATEGORY_COLORS[r.cat]} />
               <span className="font-medium text-text">{r.name}</span>
-              <span className="hidden truncate text-text-subtle sm:inline">
+              <span className="hidden truncate text-subtle sm:inline">
                 {r.op} · {copy.labels.agentCategory[r.cat]}
               </span>
             </span>
@@ -362,7 +363,7 @@ function CrawlersVignette() {
           </li>
         ))}
       </ul>
-      <p className="mt-4 flex items-start gap-2 rounded-md bg-warning-soft px-3 py-2 text-[13px] text-warning">
+      <p className="mt-4 flex items-start gap-2 rounded-md bg-warn-soft px-3 py-2 text-[13px] text-warn">
         <AlertTriangle size={14} strokeWidth={1.75} className="mt-0.5 shrink-0" />
         {fmt(copy.pages.crawlers.alerts.neverReached, { agent: 'GPTBot', path: '/pricing' })}
       </p>
@@ -379,9 +380,9 @@ function ReadinessVignette() {
     { label: S.llmsTxt.term, status: 'fail' as const },
   ];
   const ui = {
-    pass: { icon: CheckCircle2, cls: 'text-success' },
-    warn: { icon: AlertTriangle, cls: 'text-warning' },
-    fail: { icon: XCircle, cls: 'text-danger' },
+    pass: { icon: CheckCircle2, cls: 'text-ok' },
+    warn: { icon: AlertTriangle, cls: 'text-warn' },
+    fail: { icon: XCircle, cls: 'text-bad' },
   };
   return (
     <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
@@ -424,23 +425,23 @@ function ModuleSection({ id, anchor, index }: { id: ModuleIconName; anchor: stri
       <div className="mx-auto grid grid-cols-1 max-w-6xl items-center gap-10 px-4 py-16 sm:px-6 md:py-20 lg:grid-cols-2 lg:gap-16">
         <div className={cn('max-w-xl', flip && 'lg:order-2')}>
           <p className="eyebrow flex items-center gap-2">
-            <span className="font-mono text-accent tnum">{String(index + 1).padStart(2, '0')}</span>
+            <span className="font-mono text-strong tnum">{String(index + 1).padStart(2, '0')}</span>
             <span aria-hidden className="h-px w-6 bg-border-strong" />
             <span>{m.eyebrow}</span>
           </p>
-          <h2 id={`${anchor}-title`} className="mt-3 font-display font-heading text-3xl leading-9 tracking-[-0.006em] text-text-strong sm:text-[34px] sm:leading-[42px]">
+          <h2 id={`${anchor}-title`} className="mt-3 font-display font-heading text-3xl leading-9 tracking-[-0.006em] text-strong sm:text-[34px] sm:leading-[42px]">
             {m.title}
           </h2>
-          <p className="mt-4 text-base leading-7 text-text-muted">{m.body}</p>
+          <p className="mt-4 text-base leading-7 text-muted-foreground">{m.body}</p>
           <ul className="mt-6 space-y-2.5">
             {m.bullets.map((b) => (
               <li key={b} className="flex gap-2.5 text-[15px] leading-6 text-text">
-                <Check size={18} strokeWidth={2} aria-hidden className="mt-[3px] shrink-0 text-accent" />
+                <Check size={18} strokeWidth={2} aria-hidden className="mt-[3px] shrink-0 text-strong" />
                 {b}
               </li>
             ))}
           </ul>
-          {showProof && <p className="mt-6 border-l-2 border-accent pl-3 font-mono text-[13px] leading-5 text-text-muted">{m.proof}</p>}
+          {showProof && <p className="mt-6 border-l-2 border-point pl-3 font-mono text-[13px] leading-5 text-muted-foreground">{m.proof}</p>}
         </div>
         <div className={cn(flip && 'lg:order-1')}>
           <Frame module={id}>
@@ -460,7 +461,7 @@ function HowItWorks() {
     <section id="how" aria-labelledby="how-title" className="scroll-mt-20 border-y border-border bg-surface">
       <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6 md:py-24">
         <p className="eyebrow">{h.eyebrow}</p>
-        <h2 id="how-title" className="mt-3 max-w-xl font-display font-heading text-3xl leading-9 tracking-[-0.006em] text-text-strong sm:text-4xl sm:leading-[44px]">
+        <h2 id="how-title" className="mt-3 max-w-xl font-display font-heading text-3xl leading-9 tracking-[-0.006em] text-strong sm:text-4xl sm:leading-[44px]">
           {h.title}
         </h2>
         <ol className="mt-12 grid grid-cols-1 gap-8 md:grid-cols-3 md:gap-6">
@@ -471,7 +472,7 @@ function HowItWorks() {
                 {i < h.steps.length - 1 && <span aria-hidden className="hidden h-px flex-1 bg-border-strong md:block" />}
               </div>
               <h3 className="mt-5 text-lg font-semibold text-text">{s.title}</h3>
-              <p className="mt-2 text-sm leading-6 text-text-muted">{s.body}</p>
+              <p className="mt-2 text-sm leading-6 text-muted-foreground">{s.body}</p>
             </li>
           ))}
         </ol>
@@ -486,8 +487,8 @@ function Stats() {
       <dl className="grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-border bg-border md:grid-cols-4">
         {L.stats.map((s) => (
           <div key={s.label} className="flex flex-col gap-2 bg-surface px-5 py-6 sm:px-6 sm:py-8">
-            <dt className="order-2 text-sm leading-5 text-text-muted">{s.label}</dt>
-            <dd className="order-1 font-display font-heading text-4xl tracking-[-0.012em] text-text-strong tnum sm:text-5xl">{s.value}</dd>
+            <dt className="order-2 text-sm leading-5 text-muted-foreground">{s.label}</dt>
+            <dd className="order-1 font-display font-heading text-4xl tracking-[-0.012em] text-strong tnum sm:text-5xl">{s.value}</dd>
           </div>
         ))}
       </dl>
@@ -507,14 +508,14 @@ function FaqItem({ q, a }: { q: string; a: string }) {
           aria-controls={`${id}-panel`}
           id={`${id}-btn`}
           onClick={() => setOpen((v) => !v)}
-          className="flex w-full items-center justify-between gap-6 py-5 text-left text-base font-semibold text-text transition-colors hover:text-accent"
+          className="flex w-full items-center justify-between gap-6 py-5 text-left text-base font-semibold text-text transition-colors hover:text-strong"
         >
           {q}
-          <ChevronDown size={18} strokeWidth={1.75} aria-hidden className={cn('shrink-0 text-text-subtle transition-transform duration-160', open && 'rotate-180')} />
+          <ChevronDown size={18} strokeWidth={1.75} aria-hidden className={cn('shrink-0 text-subtle transition-transform duration-160', open && 'rotate-180')} />
         </button>
       </h3>
       <div id={`${id}-panel`} role="region" aria-labelledby={`${id}-btn`} hidden={!open} className="pb-6 pr-10">
-        <p className="max-w-[68ch] text-[15px] leading-7 text-text-muted">{a}</p>
+        <p className="max-w-[68ch] text-[15px] leading-7 text-muted-foreground">{a}</p>
       </div>
     </li>
   );
@@ -526,7 +527,7 @@ function Faq() {
       <div className="grid grid-cols-1 gap-10 lg:grid-cols-[1fr_2fr] lg:gap-16">
         <div>
           <p className="eyebrow">{L.nav.faq}</p>
-          <h2 id="faq-title" className="mt-3 font-display font-heading text-3xl leading-9 tracking-[-0.006em] text-text-strong sm:text-4xl sm:leading-[44px]">
+          <h2 id="faq-title" className="mt-3 font-display font-heading text-3xl leading-9 tracking-[-0.006em] text-strong sm:text-4xl sm:leading-[44px]">
             {L.faq.title}
           </h2>
         </div>
@@ -545,10 +546,10 @@ function FinalCta() {
   return (
     <section aria-labelledby="cta-title" className="mx-auto max-w-6xl px-4 pb-20 sm:px-6 md:pb-28">
       <div className="relative overflow-hidden rounded-lg border border-border bg-surface px-6 py-14 text-center sm:px-12 md:py-20">
-        <h2 id="cta-title" className="relative mx-auto max-w-2xl font-display font-heading text-[34px] leading-[40px] tracking-[-0.012em] text-text-strong sm:text-5xl sm:leading-[52px]">
+        <h2 id="cta-title" className="relative mx-auto max-w-2xl font-display font-heading text-[34px] leading-[40px] tracking-[-0.012em] text-strong sm:text-5xl sm:leading-[52px]">
           {f.title}
         </h2>
-        <p className="relative mx-auto mt-4 max-w-lg text-base leading-7 text-text-muted">{f.body}</p>
+        <p className="relative mx-auto mt-4 max-w-lg text-base leading-7 text-muted-foreground">{f.body}</p>
         <div className="relative mt-8 flex flex-wrap justify-center gap-2.5">
           <OpenDemoButton label={f.primaryCta.label} variant="primary" size="lg" arrow />
           <ButtonLink to={f.secondaryCta.href} size="lg">
@@ -560,38 +561,45 @@ function FinalCta() {
   );
 }
 
+/** The Pano band above the footer (the kit's place for it): its route runs from the left edge to one coral point.
+ *  Seeded with the page path, so the same page always draws the same field. Decorative, never behind text. */
+const PANO_BAND = field({ cols: 40, rows: 3, seed: '/', startRow: 1, endRow: 1, align: 'xMaxYMid' });
+
 function Footer() {
   const f = L.footer;
   const cols = [f.columns.product, f.columns.start];
   return (
-    <footer className="border-t border-border bg-surface">
-      <div className="mx-auto grid grid-cols-1 max-w-6xl gap-10 px-4 py-12 sm:px-6 md:grid-cols-[1.5fr_1fr_1fr]">
-        <div>
-          <Logo size={22} />
-          <p className="mt-3 text-sm text-text-muted">{f.tagline}</p>
+    <>
+      <div aria-hidden className="h-16 w-full overflow-hidden sm:h-20 [&>svg]:block [&>svg]:size-full" dangerouslySetInnerHTML={{ __html: PANO_BAND }} />
+      <footer className="border-t border-border bg-surface">
+        <div className="mx-auto grid grid-cols-1 max-w-6xl gap-10 px-4 py-12 sm:px-6 md:grid-cols-[1.5fr_1fr_1fr]">
+          <div>
+            <Logo size={22} />
+            <p className="mt-3 text-sm text-muted-foreground">{f.tagline}</p>
+          </div>
+          {cols.map((c) => (
+            <nav key={c.title} aria-label={c.title}>
+              <h2 className="eyebrow">{c.title}</h2>
+              <ul className="mt-3 space-y-2">
+                {c.links.map((l) => (
+                  <li key={l.label}>
+                    <SmartLink href={l.href} className="text-sm text-muted-foreground transition-colors hover:text-text">
+                      {l.label}
+                    </SmartLink>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          ))}
         </div>
-        {cols.map((c) => (
-          <nav key={c.title} aria-label={c.title}>
-            <h2 className="eyebrow">{c.title}</h2>
-            <ul className="mt-3 space-y-2">
-              {c.links.map((l) => (
-                <li key={l.label}>
-                  <SmartLink href={l.href} className="text-sm text-text-muted transition-colors hover:text-text">
-                    {l.label}
-                  </SmartLink>
-                </li>
-              ))}
-            </ul>
-          </nav>
-        ))}
-      </div>
-      <div className="border-t border-border">
-        <div className="mx-auto flex max-w-6xl flex-col gap-2 px-4 py-6 text-xs text-text-subtle sm:px-6 md:flex-row md:items-center md:justify-between">
-          <p>{f.disclaimer}</p>
-          <p className="shrink-0">{fmt(f.copyright, { year: new Date().getFullYear() })}</p>
+        <div className="border-t border-border">
+          <div className="mx-auto flex max-w-6xl flex-col gap-2 px-4 py-6 text-xs text-subtle sm:px-6 md:flex-row md:items-center md:justify-between">
+            <p>{f.disclaimer}</p>
+            <p className="shrink-0">{fmt(f.copyright, { year: new Date().getFullYear() })}</p>
+          </div>
         </div>
-      </div>
-    </footer>
+      </footer>
+    </>
   );
 }
 

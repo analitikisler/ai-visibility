@@ -8,7 +8,7 @@ import { computeDiagnosis, num, pct, plural, shortDate, signed } from './diagnos
 import { listRecommendations } from './recommendations.ts';
 
 const round = (x: number) => Math.round(x);
-/** Whole points (BRAND §4: integer points); changes under half a point count as flat. */
+/** Whole points (integer points); changes under half a point count as flat. */
 const pts = (d: number) => {
   const n = Math.round(Math.abs(d));
   return `${n} ${n === 1 ? 'pt' : 'pts'}`;

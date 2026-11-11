@@ -13,9 +13,9 @@ export interface HeroAnswerProps {
   className?: string;
 }
 
-const SANS = "var(--font-sans, 'Google Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif)";
-const MONO = "var(--font-mono, 'Google Sans Code', ui-monospace, 'SF Mono', Menlo, Consolas, monospace)";
-const DISPLAY = "var(--font-display, 'Google Sans Flex', 'Google Sans', system-ui, sans-serif)";
+const SANS = 'var(--font-body)';
+const MONO = 'var(--font-mono)';
+const DISPLAY = 'var(--font-display)';
 
 const TABS: { id: EngineId; name: string }[] = [
   { id: 'chatgpt', name: 'ChatGPT' },
@@ -33,18 +33,18 @@ const s = {
     paddingBottom: 56,
     boxSizing: 'border-box',
     fontFamily: SANS,
-    color: 'var(--text)',
+    color: 'var(--color-text)',
     textAlign: 'left',
   },
   card: {
-    background: 'var(--surface)',
-    border: '1px solid var(--border)',
+    background: 'var(--color-surface)',
+    border: '1px solid var(--color-border)',
     borderRadius: 6,
     overflow: 'hidden',
     // The tab row sizes its gaps against the card's width (cqi units below).
     containerType: 'inline-size',
   },
-  // Underline tabs, as in the app (brand/retired/overt/BRAND.md §10.11). Gaps and side padding shrink with the card,
+  // Underline tabs, as in the app. Gaps and side padding shrink with the card,
   // so all four fit on one row down to a 375px phone; on narrower screens the row wraps.
   tabs: {
     display: 'flex',
@@ -52,8 +52,8 @@ const s = {
     alignItems: 'center',
     columnGap: 'clamp(8px, 2.6cqi, 16px)',
     padding: '0 clamp(12px, 3cqi, 16px)',
-    borderBottom: '1px solid var(--border)',
-    background: 'var(--surface)',
+    borderBottom: '1px solid var(--color-border)',
+    background: 'var(--color-surface)',
   },
   tab: {
     display: 'inline-flex',
@@ -66,32 +66,32 @@ const s = {
     fontSize: 12,
     lineHeight: '16px',
     fontWeight: 500,
-    color: 'var(--text-muted)',
+    color: 'var(--color-muted)',
     whiteSpace: 'nowrap',
   },
-  tabActive: { borderBottomColor: 'var(--accent)', color: 'var(--text-strong)' },
+  tabActive: { borderBottomColor: 'var(--color-action)', color: 'var(--color-text-strong)' },
   body: { padding: '18px 20px 32px' },
   prompt: {
     marginLeft: 'auto',
     width: 'fit-content',
     maxWidth: '82%',
-    background: 'var(--surface-2)',
+    background: 'var(--color-surface-2)',
     borderRadius: '6px 6px 2px 6px',
     padding: '9px 13px',
     fontSize: 14,
     lineHeight: '20px',
-    color: 'var(--text)',
+    color: 'var(--color-text)',
   },
-  who: { display: 'flex', alignItems: 'center', gap: 6, marginTop: 18, fontSize: 12, fontWeight: 500, color: 'var(--text-muted)' },
-  lead: { margin: '8px 0 10px', fontSize: 14, lineHeight: '22px', color: 'var(--text)' },
+  who: { display: 'flex', alignItems: 'center', gap: 6, marginTop: 18, fontSize: 12, fontWeight: 500, color: 'var(--color-muted)' },
+  lead: { margin: '8px 0 10px', fontSize: 14, lineHeight: '22px', color: 'var(--color-text)' },
   list: { listStyle: 'none', margin: 0, padding: 0, display: 'grid', gap: 10 },
   item: { display: 'grid', gridTemplateColumns: '22px 1fr', alignItems: 'baseline', fontSize: 14, lineHeight: '22px' },
-  rank: { fontFamily: MONO, fontSize: 12, color: 'var(--text-subtle)' },
-  muted: { color: 'var(--text-muted)' },
+  rank: { fontFamily: MONO, fontSize: 12, color: 'var(--color-muted)' },
+  muted: { color: 'var(--color-muted)' },
   mark: {
-    background: 'var(--accent-soft)',
-    color: 'var(--text-strong)',
-    textDecoration: 'underline 2px var(--chart-1)',
+    background: 'var(--color-accent-soft)',
+    color: 'var(--color-text-strong)',
+    textDecoration: 'underline 2px var(--color-data-cat-1)',
     textUnderlineOffset: 3,
     borderRadius: 2,
     padding: '1px 4px',
@@ -106,13 +106,13 @@ const s = {
     marginLeft: 4,
     padding: '0 4px',
     borderRadius: 2,
-    border: '1px solid var(--border)',
-    background: 'var(--surface-2)',
+    border: '1px solid var(--color-border)',
+    background: 'var(--color-surface-2)',
     fontFamily: MONO,
     fontSize: 10,
     lineHeight: '15px',
     textAlign: 'center',
-    color: 'var(--text-muted)',
+    color: 'var(--color-muted)',
     verticalAlign: 1,
   },
   sources: {
@@ -122,21 +122,21 @@ const s = {
     gap: 6,
     marginTop: 16,
     paddingTop: 14,
-    borderTop: '1px solid var(--border)',
+    borderTop: '1px solid var(--color-border)',
   },
-  overline: { fontSize: 12, lineHeight: '16px', fontWeight: 500, color: 'var(--text-subtle)' },
+  overline: { fontSize: 12, lineHeight: '16px', fontWeight: 500, color: 'var(--color-muted)' },
   pill: {
     display: 'inline-flex',
     alignItems: 'center',
     gap: 5,
     padding: '2px 8px 2px 4px',
     borderRadius: 2,
-    border: '1px solid var(--border)',
-    background: 'var(--surface)',
+    border: '1px solid var(--color-border)',
+    background: 'var(--color-surface)',
     fontFamily: MONO,
     fontSize: 11,
     lineHeight: '16px',
-    color: 'var(--text-muted)',
+    color: 'var(--color-muted)',
   },
   pillNum: {
     display: 'inline-grid',
@@ -144,9 +144,9 @@ const s = {
     width: 16,
     height: 16,
     borderRadius: 1,
-    background: 'var(--surface-2)',
+    background: 'var(--color-surface-2)',
     fontSize: 10,
-    color: 'var(--text-subtle)',
+    color: 'var(--color-muted)',
   },
   score: {
     position: 'absolute',
@@ -156,23 +156,23 @@ const s = {
     alignItems: 'center',
     gap: 14,
     padding: '12px 14px',
-    background: 'var(--surface)',
-    border: '1px solid var(--border)',
+    background: 'var(--color-surface)',
+    border: '1px solid var(--color-border)',
     borderRadius: 6,
-    // It floats over the answer card, so it takes the overlay shadow (the only shadow in Tally).
+    // It floats over the answer card, so it takes the overlay shadow (the only shadow in Çini).
     boxShadow: 'var(--shadow-overlay)',
   },
-  value: { fontFamily: DISPLAY, fontSize: 28, lineHeight: '32px', fontWeight: 570, letterSpacing: '-0.012em', color: 'var(--text-strong)', fontVariantNumeric: 'tabular-nums' },
-  unit: { fontFamily: SANS, fontSize: 14, fontWeight: 400, color: 'var(--text-muted)', letterSpacing: 0 },
+  value: { fontFamily: DISPLAY, fontSize: 28, lineHeight: '32px', fontWeight: 700, letterSpacing: '-0.012em', color: 'var(--color-text-strong)', fontVariantNumeric: 'tabular-nums' },
+  unit: { fontFamily: SANS, fontSize: 14, fontWeight: 400, color: 'var(--color-muted)', letterSpacing: 0 },
   delta: {
     display: 'inline-flex',
     alignItems: 'center',
     gap: 2,
     padding: '0 5px',
     borderRadius: 2,
-    border: '1px solid color-mix(in oklab, var(--success) 40%, transparent)',
-    background: 'var(--success-soft)',
-    color: 'var(--success)',
+    border: '1px solid color-mix(in oklab, var(--color-ok) 40%, transparent)',
+    background: 'var(--color-ok-soft)',
+    color: 'var(--color-ok)',
     fontFamily: MONO,
     fontSize: 11,
     lineHeight: '16px',
@@ -182,7 +182,7 @@ const s = {
 
 const Cite = ({ n }: { n: number }) => <span style={s.cite}>{n}</span>;
 
-/** Competitor mention: 2px underline in the competitor's series color (brand/retired/overt/BRAND.md §10.7). */
+/** Competitor mention: 2px underline in the competitor's series color. */
 const Rival = ({ color, children }: { color: string; children: ReactNode }) => (
   <span
     style={{
@@ -200,15 +200,15 @@ const Rival = ({ color, children }: { color: string; children: ReactNode }) => (
 /** Brand line with a 7-day sparkline, drawn in the brand series color. */
 const Spark = () => (
   <svg width="72" height="28" viewBox="0 0 72 28" fill="none" aria-hidden="true">
-    <path d="M1 22H71" stroke="var(--border)" strokeWidth="1" strokeDasharray="2 3" />
+    <path d="M1 22H71" stroke="var(--color-border)" strokeWidth="1" strokeDasharray="2 3" />
     <path
       d="M2 21 13 18.5 24 20 35 14 46 15 57 9 70 6"
-      stroke="var(--chart-1)"
+      stroke="var(--color-data-cat-1)"
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
     />
-    <circle cx="70" cy="6" r="2.5" fill="var(--chart-1)" />
+    <circle cx="70" cy="6" r="2.5" fill="var(--color-data-cat-1)" />
   </svg>
 );
 
@@ -258,7 +258,7 @@ export function HeroAnswer({
             <li style={s.item}>
               <span style={s.rank}>2.</span>
               <span>
-                <Rival color="var(--chart-2)">Northwind</Rival>
+                <Rival color="var(--color-data-cat-2)">Northwind</Rival>
                 <span style={s.muted}> has deep reporting, with a steeper learning curve.</span>
                 <Cite n={3} />
               </span>
@@ -266,7 +266,7 @@ export function HeroAnswer({
             <li style={s.item}>
               <span style={s.rank}>3.</span>
               <span>
-                <Rival color="var(--chart-3)">Acme</Rival>
+                <Rival color="var(--color-data-cat-3)">Acme</Rival>
                 <span style={s.muted}> is flexible, but key features sit on higher tiers.</span>
                 <Cite n={2} />
               </span>

@@ -137,10 +137,10 @@ export function TrendChart({
       {legend && series.length > 1 ? (
         <div className="mb-3 flex items-start justify-between gap-3">
           <ChartLegend items={ordered} hidden={legend === 'toggle' ? hidden : undefined} onToggle={legend === 'toggle' ? toggle : undefined} />
-          {smoothLabel && <span className="shrink-0 pt-0.5 text-2xs font-medium text-text-subtle">{smoothLabel}</span>}
+          {smoothLabel && <span className="shrink-0 pt-0.5 text-2xs font-medium text-subtle">{smoothLabel}</span>}
         </div>
       ) : (
-        smoothLabel && <div className="mb-2 text-right text-2xs font-medium text-text-subtle">{smoothLabel}</div>
+        smoothLabel && <div className="mb-2 text-right text-2xs font-medium text-subtle">{smoothLabel}</div>
       )}
       <div role="img" aria-label={ariaLabel ?? `Trend of ${series.map((s) => s.name).join(', ')}`} style={{ height }}>
         <ResponsiveContainer width="100%" height="100%" initialDimension={{ width: 600, height }}>

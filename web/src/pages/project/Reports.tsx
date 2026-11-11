@@ -90,17 +90,17 @@ function summaryText(r: Report): string {
 // ---------------------------------------------------------------------------- brief sections
 
 function H2({ children }: { children: ReactNode }) {
-  return <h2 className="mb-3 font-sans text-[15px] font-semibold text-text-strong">{children}</h2>;
+  return <h2 className="mb-3 font-sans text-[15px] font-semibold text-strong">{children}</h2>;
 }
 
 function Bullets({ items, empty, tone }: { items: string[]; empty: string; tone: 'win' | 'risk' }) {
   const Icon = tone === 'win' ? CheckCircle2 : AlertTriangle;
-  if (!items.length) return <p className="text-[13px] text-text-subtle">{empty}</p>;
+  if (!items.length) return <p className="text-[13px] text-subtle">{empty}</p>;
   return (
     <ul className="space-y-2">
       {items.map((t, i) => (
         <li key={i} className="flex gap-2 text-[14px] leading-[21px] text-text">
-          <Icon size={16} strokeWidth={1.75} aria-hidden className={cn('mt-0.5 shrink-0', tone === 'win' ? 'text-success' : 'text-warning')} />
+          <Icon size={16} strokeWidth={1.75} aria-hidden className={cn('mt-0.5 shrink-0', tone === 'win' ? 'text-ok' : 'text-warn')} />
           <span className="min-w-0">{t}</span>
         </li>
       ))}
@@ -125,9 +125,9 @@ function Scorecard({ r }: { r: Report }) {
         <div key={t.label} className="border-b border-r border-border px-4 py-3 [&:nth-child(2n)]:border-r-0 sm:[&:nth-child(2n)]:border-r sm:[&:nth-child(3n)]:border-r-0 [&:nth-last-child(-n+2)]:border-b-0 sm:[&:nth-last-child(-n+3)]:border-b-0">
           <dt className="eyebrow truncate">{t.label}</dt>
           <dd className="mt-1 flex flex-wrap items-baseline gap-x-2 gap-y-1">
-            <span className="font-display font-heading text-2xl leading-8 tracking-[-0.012em] text-text-strong tnum">
+            <span className="font-display font-heading text-2xl leading-8 tracking-[-0.012em] text-strong tnum">
               {t.value}
-              {t.unit && <span className="ml-0.5 text-sm text-text-muted">{t.unit}</span>}
+              {t.unit && <span className="ml-0.5 text-sm text-muted-foreground">{t.unit}</span>}
             </span>
             <DeltaBadge delta={t.delta} kind={t.kind} />
           </dd>
@@ -252,19 +252,19 @@ function Brief({ r }: { r: Report }) {
       <header className="flex flex-col gap-6 border-b border-border pb-7">
         <div className="flex items-center justify-between gap-4">
           <Logo size={20} />
-          <span className="font-mono text-xs text-text-subtle tnum">{fmt(P.generated, { time: dateTime(r.generatedAt) })}</span>
+          <span className="font-mono text-xs text-subtle tnum">{fmt(P.generated, { time: dateTime(r.generatedAt) })}</span>
         </div>
         <div>
           <p className="eyebrow">{RC.cover.overline}</p>
-          <h1 className="mt-2 font-display font-heading text-[40px] leading-[44px] tracking-[-0.012em] text-text-strong">{fmt(RC.cover.title, { brand: r.project.name })}</h1>
-          <p className="mt-1 text-sm text-text-muted">
+          <h1 className="mt-2 font-display font-heading text-[40px] leading-[44px] tracking-[-0.012em] text-strong">{fmt(RC.cover.title, { brand: r.project.name })}</h1>
+          <p className="mt-1 text-sm text-muted-foreground">
             {range} · <span className="font-mono">{r.project.domain}</span>
           </p>
         </div>
         <div className="max-w-[68ch]">
           <p className="text-lg font-semibold leading-7 text-text">{r.headline}</p>
           {(engineLine || lost.length > 0 || crawlerLine) && (
-            <p className="mt-2 text-[14px] leading-[22px] text-text-muted">
+            <p className="mt-2 text-[14px] leading-[22px] text-muted-foreground">
               {[engineLine, lost.length ? plural(lost.length, copy.pages.overview.insights.lostPrompts) : null, crawlerLine].filter(Boolean).join(' ')}
             </p>
           )}
@@ -320,10 +320,10 @@ function Brief({ r }: { r: Report }) {
               {lost.slice(0, 6).map((l) => (
                 <li key={l.promptId} className="flex flex-col gap-1 px-4 py-2.5 text-[13px] sm:flex-row sm:items-center sm:justify-between sm:gap-4 print:flex-row">
                   <span className="min-w-0 text-text">{l.text}</span>
-                  <span className="flex shrink-0 items-center gap-2 font-mono text-xs text-text-muted tnum">
+                  <span className="flex shrink-0 items-center gap-2 font-mono text-xs text-muted-foreground tnum">
                     <Dot color={leaderColor(l.winner)} size={6} />
                     <span className="font-sans">{l.winner}</span> {pct(l.winnerVisibility)}
-                    <span className="text-text-subtle">· {copy.app.badges.you} {pct(l.brandVisibility)}</span>
+                    <span className="text-subtle">· {copy.app.badges.you} {pct(l.brandVisibility)}</span>
                   </span>
                 </li>
               ))}
@@ -340,8 +340,8 @@ function Brief({ r }: { r: Report }) {
                   <span className="flex size-6 shrink-0 items-center justify-center rounded-sm border border-border-strong font-mono text-xs font-medium text-text tnum">{i + 1}</span>
                   <div className="min-w-0">
                     <p className="text-[14px] font-semibold leading-[21px] text-text">{x.title}</p>
-                    <p className="mt-0.5 text-[13px] leading-5 text-text-muted">{x.description}</p>
-                    <p className="mt-1 text-xs text-text-subtle">
+                    <p className="mt-0.5 text-[13px] leading-5 text-muted-foreground">{x.description}</p>
+                    <p className="mt-1 text-xs text-subtle">
                       {copy.recommendations.impact[x.impact]} · {copy.recommendations.effort[x.effort]} · {copy.recommendations.category[x.category]}
                     </p>
                   </div>
@@ -360,7 +360,7 @@ function Brief({ r }: { r: Report }) {
                   <div key={k} className="bg-surface px-4 py-3">
                     <dt className="eyebrow truncate">{copy.pages.crawlers.kpis[k]}</dt>
                     <dd className="mt-1 flex flex-wrap items-baseline gap-2">
-                      <span className="font-display font-heading text-xl tracking-[-0.012em] text-text-strong tnum">{compact(r.crawlers!.totals[k].value)}</span>
+                      <span className="font-display font-heading text-xl tracking-[-0.012em] text-strong tnum">{compact(r.crawlers!.totals[k].value)}</span>
                       <DeltaBadge delta={r.crawlers!.totals[k].delta} kind="count" />
                     </dd>
                   </div>
@@ -371,20 +371,20 @@ function Brief({ r }: { r: Report }) {
                   <li key={o.operator} className="flex items-center justify-between gap-3 text-[13px]">
                     <span className="text-text">{o.operator}</span>
                     <span className="font-mono text-text tnum">
-                      {num(o.visits)} <span className="text-text-subtle">· {pct(o.share)}</span>
+                      {num(o.visits)} <span className="text-subtle">· {pct(o.share)}</span>
                     </span>
                   </li>
                 ))}
               </ul>
             </div>
           ) : (
-            <p className="text-[13px] text-text-subtle">{P.noCrawlers}</p>
+            <p className="text-[13px] text-subtle">{P.noCrawlers}</p>
           )}
         </section>
 
-        <footer className="space-y-2 border-t border-border pt-5 text-xs leading-[18px] text-text-subtle">
+        <footer className="space-y-2 border-t border-border pt-5 text-xs leading-[18px] text-subtle">
           <p>
-            <span className="font-semibold text-text-muted">{RC.sections.methodology}. </span>
+            <span className="font-semibold text-muted-foreground">{RC.sections.methodology}. </span>
             {fmt(RC.methodology, {
               responses: num(ov.totals.responses),
               prompts: num(ov.totals.prompts),
@@ -507,7 +507,7 @@ export default function ReportsPage() {
       ) : (
         <div className={cn('space-y-6 transition-opacity duration-160', q.isFetching && 'opacity-60')}>
           <Brief r={r} />
-          <p data-print="hide" className="mx-auto flex w-full max-w-[920px] items-center gap-1.5 text-xs text-text-subtle">
+          <p data-print="hide" className="mx-auto flex w-full max-w-[920px] items-center gap-1.5 text-xs text-subtle">
             <FileDown size={12} strokeWidth={1.75} aria-hidden />
             {P.printHint}
           </p>

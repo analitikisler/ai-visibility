@@ -88,7 +88,7 @@ export function Tr({ highlight, interactive, selected, className, ...rest }: TrP
     <tr
       className={cn(
         'group/row transition-colors duration-160',
-        highlight || selected ? 'bg-primary-soft' : 'hover:bg-surface-2',
+        highlight || selected ? 'bg-accent-soft' : 'hover:bg-surface-2',
         interactive && 'cursor-pointer',
         className,
       )}
@@ -113,7 +113,7 @@ export function Th({ num, sortDir, onSort, className, children, ...rest }: ThPro
       scope="col"
       aria-sort={sortDir === 'asc' ? 'ascending' : sortDir === 'desc' ? 'descending' : sortable ? 'none' : undefined}
       className={cn(
-        'h-9 whitespace-nowrap border-b border-border-strong bg-surface px-2.5 text-left text-xs font-medium text-text-muted first:pl-4 last:pr-4',
+        'h-9 whitespace-nowrap border-b border-border-strong bg-surface px-2.5 text-left text-xs font-medium text-muted-foreground first:pl-4 last:pr-4',
         num && 'text-right',
         className,
       )}
@@ -123,7 +123,7 @@ export function Th({ num, sortDir, onSort, className, children, ...rest }: ThPro
         <button
           type="button"
           onClick={onSort}
-          className={cn('inline-flex items-center gap-1 hover:text-text', num && 'flex-row-reverse', sortDir && 'text-text-strong')}
+          className={cn('inline-flex items-center gap-1 hover:text-text', num && 'flex-row-reverse', sortDir && 'text-strong')}
         >
           {children}
           <Icon size={12} strokeWidth={2} aria-hidden className={sortDir ? 'text-text' : 'opacity-60'} />
@@ -148,7 +148,7 @@ export function Td({ num, muted, className, ...rest }: TdProps) {
       className={cn(
         'h-10 border-b border-border px-2.5 align-middle first:pl-4 last:pr-4 group-last/row:border-b-0 [[data-dense]_&]:h-8',
         num && 'text-right font-mono tnum',
-        muted ? 'text-text-muted' : 'text-text',
+        muted ? 'text-muted-foreground' : 'text-text',
         className,
       )}
       {...rest}
@@ -160,7 +160,7 @@ export function Td({ num, muted, className, ...rest }: TdProps) {
 export function TableEmpty({ colSpan, children }: { colSpan: number; children: ReactNode }) {
   return (
     <tr>
-      <td colSpan={colSpan} className="px-4 py-10 text-center text-sm text-text-subtle">
+      <td colSpan={colSpan} className="px-4 py-10 text-center text-sm text-subtle">
         {children}
       </td>
     </tr>

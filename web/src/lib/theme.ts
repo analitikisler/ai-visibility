@@ -1,5 +1,6 @@
 // Light / dark / system theme. The preference persists in localStorage under `ai-visibility-theme`
-// (index.html applies it before first paint). Dark mode = `.dark` on <html> (brand/retired/overt/BRAND.md §11).
+// (index.html applies it before first paint). Dark mode = `.dark` and `data-theme` on <html>: the Çini tokens follow the OS
+// unless data-theme says otherwise, so the attribute is always set to the theme showing.
 import { useCallback, useSyncExternalStore } from 'react';
 
 export type ThemePref = 'light' | 'dark' | 'system';
@@ -22,6 +23,7 @@ const media = () => window.matchMedia('(prefers-color-scheme: dark)');
 function apply(pref: ThemePref) {
   const dark = pref === 'dark' || (pref === 'system' && media().matches);
   document.documentElement.classList.toggle('dark', dark);
+  document.documentElement.dataset.theme = dark ? 'dark' : 'light';
 }
 
 let mediaBound = false;

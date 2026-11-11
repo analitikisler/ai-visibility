@@ -81,7 +81,7 @@ export function ChipsInput({ values, onChange, label, hint, error, hideLabel, pl
           onClick={() => inputRef.current?.focus()}
           aria-invalid={invalid || undefined}
           className={cn(
-            'flex min-h-8 w-full min-w-0 flex-wrap items-center gap-1 rounded-md border border-border-strong bg-surface px-1.5 py-1 transition-[border-color] duration-160 hover:border-text-subtle focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-ring aria-[invalid=true]:border-danger',
+            'flex min-h-8 w-full min-w-0 flex-wrap items-center gap-1 rounded-md border border-border-strong bg-surface px-1.5 py-1 transition-[border-color] duration-160 hover:border-subtle focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-ring aria-[invalid=true]:border-bad',
             disabled && 'cursor-not-allowed bg-surface-2 opacity-60',
           )}
         >
@@ -96,7 +96,7 @@ export function ChipsInput({ values, onChange, label, hint, error, hideLabel, pl
                   remove(i);
                 }}
                 aria-label={`Remove ${v}`}
-                className="inline-flex size-5 items-center justify-center rounded-sm text-text-subtle transition-colors hover:bg-surface hover:text-text"
+                className="inline-flex size-5 items-center justify-center rounded-sm text-subtle transition-colors hover:bg-surface hover:text-text"
               >
                 <X size={12} strokeWidth={2} aria-hidden />
               </button>
@@ -114,7 +114,7 @@ export function ChipsInput({ values, onChange, label, hint, error, hideLabel, pl
             aria-describedby={describedBy}
             placeholder={values.length ? undefined : placeholder}
             maxLength={maxLength}
-            className="h-6 min-w-24 flex-1 bg-transparent px-1 text-sm text-text outline-none placeholder:text-text-subtle focus-visible:outline-none"
+            className="h-6 min-w-24 flex-1 bg-transparent px-1 text-sm text-text outline-none placeholder:text-subtle focus-visible:outline-none"
           />
         </div>
       )}

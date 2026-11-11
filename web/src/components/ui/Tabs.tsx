@@ -93,13 +93,13 @@ export function Tabs<T extends string>({ items, value, onValueChange, label, cla
             onClick={() => onValueChange(t.value)}
             className={cn(
               '-mb-px inline-flex h-9 shrink-0 items-center gap-1.5 border-b-2 text-sm font-medium transition-colors duration-160 disabled:opacity-50',
-              active ? 'border-accent text-text-strong' : 'border-transparent text-text-muted hover:text-text',
+              active ? 'border-action text-strong' : 'border-transparent text-muted-foreground hover:text-text',
             )}
           >
             {Icon && <Icon size={16} strokeWidth={1.75} aria-hidden />}
             {t.label}
             {t.count != null && (
-              <span className={cn('rounded-sm border px-1 font-mono text-2xs tnum', active ? 'border-accent/40 bg-accent-soft text-accent-ink' : 'border-border bg-surface-2 text-text-subtle')}>{t.count}</span>
+              <span className={cn('rounded-sm border px-1 font-mono text-2xs tnum', active ? 'border-border-strong bg-accent-soft text-accent-ink' : 'border-border bg-surface-2 text-subtle')}>{t.count}</span>
             )}
           </button>
         );

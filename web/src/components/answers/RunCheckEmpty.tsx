@@ -32,7 +32,7 @@ export function RunCheckEmpty({ title, body, cta, illustration }: RunCheckEmptyP
       <div className="flex flex-col items-center px-6 py-14 text-center">
         {illustration ?? <EmptyNoData width={168} />}
         <h2 className="mt-6 text-xl font-semibold text-text">{title}</h2>
-        <p className="mt-1 max-w-md text-sm text-text-muted">{body}</p>
+        <p className="mt-1 max-w-md text-sm text-muted-foreground">{body}</p>
         {busy ? (
           <RunProgress run={run} className="mt-6" />
         ) : (

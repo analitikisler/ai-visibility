@@ -16,7 +16,7 @@ export interface FieldProps {
   children: (ids: { id: string; describedBy: string | undefined; invalid: boolean }) => ReactNode;
 }
 
-/** Label + control + hint/error, wired with ids (fields never rely on the border alone, BRAND §6.3). */
+/** Label + control + hint/error, wired with ids (fields never rely on the border alone). */
 export function Field({ label, hint, error, hideLabel, required, className, children }: FieldProps) {
   const id = useId();
   const hintId = hint ? `${id}-hint` : undefined;
@@ -25,19 +25,19 @@ export function Field({ label, hint, error, hideLabel, required, className, chil
   return (
     <div className={cn('flex min-w-0 flex-col gap-1.5', className)}>
       {label && (
-        <label htmlFor={id} className={cn('text-xs font-medium text-text-muted', hideLabel && 'sr-only')}>
+        <label htmlFor={id} className={cn('text-xs font-medium text-muted-foreground', hideLabel && 'sr-only')}>
           {label}
-          {required && <span className="ml-0.5 text-danger" aria-hidden>*</span>}
+          {required && <span className="ml-0.5 text-bad" aria-hidden>*</span>}
         </label>
       )}
       {children({ id, describedBy, invalid: !!error })}
       {hint && !error && (
-        <p id={hintId} className="text-xs text-text-subtle">
+        <p id={hintId} className="text-xs text-subtle">
           {hint}
         </p>
       )}
       {error && (
-        <p id={errId} className="text-xs text-danger">
+        <p id={errId} className="text-xs text-bad">
           {error}
         </p>
       )}
@@ -46,7 +46,7 @@ export function Field({ label, hint, error, hideLabel, required, className, chil
 }
 
 const control =
-  'w-full min-w-0 rounded-md border border-border-strong bg-surface text-sm text-text placeholder:text-text-subtle transition-[border-color] duration-160 hover:border-text-subtle disabled:cursor-not-allowed disabled:bg-surface-2 disabled:opacity-60 aria-[invalid=true]:border-danger';
+  'w-full min-w-0 rounded-md border border-border-strong bg-surface text-sm text-text placeholder:text-subtle transition-[border-color] duration-160 hover:border-subtle disabled:cursor-not-allowed disabled:bg-surface-2 disabled:opacity-60 aria-[invalid=true]:border-bad';
 
 export interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size'> {
   label?: ReactNode;
@@ -70,7 +70,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
     <Field label={label} hint={hint} error={error} hideLabel={hideLabel} required={required} className={wrapperClassName}>
       {({ id, describedBy, invalid }) => (
         <div className="relative flex items-center">
-          {Icon && <Icon size={16} strokeWidth={1.75} aria-hidden className="pointer-events-none absolute left-2.5 text-text-subtle" />}
+          {Icon && <Icon size={16} strokeWidth={1.75} aria-hidden className="pointer-events-none absolute left-2.5 text-subtle" />}
           <input
             ref={ref}
             id={rest.id ?? id}
@@ -80,7 +80,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
             className={cn(control, size === 'sm' ? 'h-7 px-2 text-[13px]' : 'h-8 px-2.5', Icon && (size === 'sm' ? 'pl-7' : 'pl-8'), trailing ? 'pr-9' : undefined, className)}
             {...rest}
           />
-          {trailing && <div className="absolute right-1.5 flex items-center text-text-subtle">{trailing}</div>}
+          {trailing && <div className="absolute right-1.5 flex items-center text-subtle">{trailing}</div>}
         </div>
       )}
     </Field>
@@ -157,7 +157,7 @@ export function Select<T extends string = string>({
     <Field label={label} hint={hint} error={error} hideLabel={hideLabel} required={required} className={wrapperClassName}>
       {({ id, describedBy, invalid }) => (
         <div className="relative flex items-center">
-          {Icon && <Icon size={14} strokeWidth={1.75} aria-hidden className="pointer-events-none absolute left-2.5 text-text-subtle" />}
+          {Icon && <Icon size={14} strokeWidth={1.75} aria-hidden className="pointer-events-none absolute left-2.5 text-subtle" />}
           <select
             id={rest.id ?? id}
             value={value}
@@ -180,7 +180,7 @@ export function Select<T extends string = string>({
               </option>
             ))}
           </select>
-          <ChevronDown size={14} strokeWidth={1.75} aria-hidden className="pointer-events-none absolute right-2.5 text-text-subtle" />
+          <ChevronDown size={14} strokeWidth={1.75} aria-hidden className="pointer-events-none absolute right-2.5 text-subtle" />
         </div>
       )}
     </Field>

@@ -19,7 +19,7 @@ const routes: RouteObject[] = [
   {
     errorElement: <RouteError />,
     hydrateFallbackElement: (
-      <div className="flex min-h-dvh items-center justify-center bg-bg text-text-subtle">
+      <div className="flex min-h-dvh items-center justify-center bg-bg text-subtle">
         <Spinner size={20} label="Loading" />
       </div>
     ),

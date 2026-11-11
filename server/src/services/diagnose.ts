@@ -50,7 +50,7 @@ export function nameMatcher(e: Pick<Entity, 'name' | 'aliases'>): RegExp | null 
   return new RegExp(`(?<![\\p{L}\\p{N}])(?:${alt})(?![\\p{L}\\p{N}])`, 'iu');
 }
 
-// ---------- copy formatting (brand/retired/overt/BRAND.md §4 "Writing metrics"; mirrors web/src/lib/format.ts) ----------
+// ---------- copy formatting (mirrors web/src/lib/format.ts) ----------
 
 export const MINUS = '\u2212';
 /** Percent from a 0..1 ratio: no decimal at ≥10%, one decimal below (`38%`, `7.9%`, `0%`), like the Sources page. */
