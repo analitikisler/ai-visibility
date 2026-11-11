@@ -221,6 +221,8 @@ export const copy = {
     tier: { label: 'Tier', all: 'All tiers' },
     intent: { label: 'Intent', all: 'All intents' },
     vsPrior: 'vs prior {days} days',
+    margin: '±{margin}',
+    withinMargin: 'Change is within the margin (±{margin})',
     noPrior: 'No prior period to compare',
   },
 
@@ -1462,6 +1464,11 @@ export const copy = {
           realtimeHint: 'Answers in minutes, at full price.',
           savedBatch: 'Scheduled checks will use batch.',
           savedRealtime: 'Scheduled checks will run in real time.',
+        },
+        samples: {
+          label: 'Answers per prompt',
+          hint: 'AI answers vary from one ask to the next. Asking each prompt more than once per check steadies the scores. Live cost multiplies by the same number.',
+          saved: { one: 'Each prompt is asked once per check.', other: 'Each prompt is asked {count} times per check.' },
         },
         reuse: {
           label: 'Reuse today’s answers',

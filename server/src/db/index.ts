@@ -40,6 +40,8 @@ ensureColumns('runs', {
   reused_jobs: 'INTEGER NOT NULL DEFAULT 0',
   // Prompt ids a check was limited to (JSON array); NULL = every active prompt. Used when a restart resumes it.
   prompt_ids_json: 'TEXT',
+  // Answers per prompt × engine this check set out to collect.
+  samples: 'INTEGER NOT NULL DEFAULT 1',
 });
 
 // ---------- helpers ----------

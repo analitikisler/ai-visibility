@@ -62,7 +62,8 @@ export async function buildReport(project: Project, days: number): Promise<Repor
     headline = `No AI answers were collected for ${B} ${period} — run a check to start tracking visibility.`;
   } else {
     const v = k.visibilityScore;
-    const trend = v.delta === null ? `stands at ${round(v.value)}` : isFlat(v.delta) ? `held steady at ${round(v.value)}` : `${v.delta > 0 ? 'rose' : 'fell'} ${pts(v.delta)} to ${round(v.value)}`;
+    // A change inside the margin of error is reported as steady, not as a rise or fall.
+    const trend = v.delta === null ? `stands at ${round(v.value)}` : isFlat(v.delta) || v.deltaInNoise ? `held steady at ${round(v.value)}` : `${v.delta > 0 ? 'rose' : 'fell'} ${pts(v.delta)} to ${round(v.value)}`;
     const standing = !me || !leader ? '' : me.rank === 1
       ? `${B} leads the category${runnerUp ? `, ahead of ${runnerUp.name} (${round(runnerUp.visibility * 100)})` : ''}`
       : `${leader.name} still leads at ${round(leader.visibility * 100)} and ${B} ranks #${me.rank} of ${lb.length}`;
@@ -77,7 +78,7 @@ export async function buildReport(project: Project, days: number): Promise<Repor
 
   // ---- visibility & voice
   const vd = k.visibilityScore.delta;
-  if (!isFlat(vd)) bullet(vd > 0, 1, `Visibility ${vd > 0 ? 'up' : 'down'} ${pts(vd)} to ${round(k.visibilityScore.value)}`);
+  if (!isFlat(vd) && !k.visibilityScore.deltaInNoise) bullet(vd > 0, 1, `Visibility ${vd > 0 ? 'up' : 'down'} ${pts(vd)} to ${round(k.visibilityScore.value)}`);
   const sd = k.shareOfVoice.delta;
   if (!isFlat(sd)) bullet(sd > 0, 6, `Share of voice ${sd > 0 ? 'up' : 'down'} ${pts(sd)} to ${round(k.shareOfVoice.value)}%`);
   if (k.sentiment.delta !== null && Math.abs(k.sentiment.delta) >= 2) {

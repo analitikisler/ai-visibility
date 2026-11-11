@@ -3,7 +3,10 @@
 import { get, getSetting, setSetting } from '../db/index.ts';
 import type { CostSettings, RunMode } from '../../../shared/types.ts';
 
-const KEYS = { budget: 'MONTHLY_BUDGET_USD', mode: 'SCHEDULED_MODE', reuse: 'REUSE_SAME_DAY' } as const;
+const KEYS = { budget: 'MONTHLY_BUDGET_USD', mode: 'SCHEDULED_MODE', reuse: 'REUSE_SAME_DAY', samples: 'SAMPLES_PER_PROMPT' } as const;
+/** Upper bound on answers per prompt × engine in one check. */
+export const MAX_SAMPLES = 5;
+const clampSamples = (n: number) => (Number.isFinite(n) ? Math.max(1, Math.min(MAX_SAMPLES, Math.round(n))) : 1);
 /** Conservative default so a fresh install with keys can't run up a surprise bill. */
 export const DEFAULT_BUDGET_USD = 20;
 
@@ -15,6 +18,7 @@ export function costSettings(): CostSettings {
     monthlyBudgetUsd: Number.isFinite(budget) && budget >= 0 ? budget : DEFAULT_BUDGET_USD,
     scheduledMode: mode === 'realtime' ? 'realtime' : 'batch',
     reuseSameDay: reuse !== '0',
+    samplesPerPrompt: clampSamples(Number(getSetting(KEYS.samples) ?? process.env[KEYS.samples] ?? 1)),
   };
 }
 
@@ -22,6 +26,7 @@ export function updateCostSettings(patch: Partial<CostSettings>): CostSettings {
   if (patch.monthlyBudgetUsd !== undefined) setSetting(KEYS.budget, String(Math.max(0, Math.round(patch.monthlyBudgetUsd * 100) / 100)));
   if (patch.scheduledMode !== undefined) setSetting(KEYS.mode, patch.scheduledMode satisfies RunMode);
   if (patch.reuseSameDay !== undefined) setSetting(KEYS.reuse, patch.reuseSameDay ? '1' : '0');
+  if (patch.samplesPerPrompt !== undefined) setSetting(KEYS.samples, String(clampSamples(patch.samplesPerPrompt)));
   return costSettings();
 }
 

@@ -373,6 +373,8 @@ One button, five states: idle → queued → running → completed / partial / f
 | `intent.label` | Intent |
 | `intent.all` | All intents |
 | `vsPrior` | vs prior {days} days |
+| `margin` | ±{margin} |
+| `withinMargin` | Change is within the margin (±{margin}) |
 | `noPrior` | No prior period to compare |
 
 ### Metric labels

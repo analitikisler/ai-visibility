@@ -307,9 +307,11 @@ function CostControls({ cost }: { cost: CostSettings }) {
   const [busy, setBusy] = useState(false);
   const [mode, setMode] = useState<RunMode>(cost.scheduledMode);
   const [reuse, setReuse] = useState(cost.reuseSameDay);
+  const [samples, setSamples] = useState(cost.samplesPerPrompt);
   useEffect(() => setBudget(current), [current]);
   useEffect(() => setMode(cost.scheduledMode), [cost.scheduledMode]);
   useEffect(() => setReuse(cost.reuseSameDay), [cost.reuseSameDay]);
+  useEffect(() => setSamples(cost.samplesPerPrompt), [cost.samplesPerPrompt]);
   const value = budget.trim().replace(/^\$/, '');
   const valid = BUDGET_RE.test(value);
   const dirty = valid && Number(value) !== cost.monthlyBudgetUsd;
@@ -359,6 +361,24 @@ function CostControls({ cost }: { cost: CostSettings }) {
           ]}
         />
         <p className="text-xs text-text-subtle">{mode === 'batch' ? U.mode.batchHint : U.mode.realtimeHint}</p>
+      </div>
+      <div className="space-y-1.5">
+        <div aria-hidden className="text-xs font-medium text-text-muted">
+          {U.samples.label}
+        </div>
+        <SegmentedControl<string>
+          label={U.samples.label}
+          size="md"
+          value={String(samples)}
+          onChange={(v) => {
+            const n = Number(v);
+            if (n === samples) return;
+            setSamples(n);
+            void save({ cost: { samplesPerPrompt: n } }, plural(n, U.samples.saved), undefined, revert(() => setSamples(cost.samplesPerPrompt)));
+          }}
+          options={[1, 2, 3, 4, 5].map((n) => ({ value: String(n), label: String(n) }))}
+        />
+        <p className="text-xs text-text-subtle">{U.samples.hint}</p>
       </div>
       <Switch
         label={U.reuse.label}

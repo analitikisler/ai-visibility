@@ -201,13 +201,16 @@ const PROMINENCE = [1, 0.7, 0.5];
  * footprint multiplier raised to its prominence, so sources co-occur with the entities they "back".
  * `included` is ordered by prominence; citations use their own RNG stream (`c.rng` here is citation-only).
  */
+/** Seed suffix for a repeated ask on the same day; empty for the first sample, so single-sample history is unchanged. */
+const sampleKey = (ctx: AskContext) => (ctx.sample ? `|s${ctx.sample}` : '');
+
 function pickCitations(engine: EngineId, ctx: AskContext, included: SimEntity[], c: Ctx): EngineCitation[] {
   const { project, prompt } = ctx;
   const [lo, hi] = c.style.cites;
   const n = c.rng.int(lo, hi);
   if (hi === 0) return [];
   const topic = `${c.vocab.category} ${prompt.topic}`.trim();
-  const seed = hashStr(`${prompt.text}|${engine}|${ctx.day}`);
+  const seed = hashStr(`${prompt.text}|${engine}|${ctx.day}${sampleKey(ctx)}`);
   const pool = sourceDomainsFor(project.industry);
   const footprints = included.map((e, i) => ({ f: sourceFootprint(project, e, pool), p: PROMINENCE[i] ?? 0.35 }));
   const bias = (domain: string) => footprints.reduce((m, { f, p }) => m * (f.get(domain) ?? 1) ** p, 1);
@@ -344,7 +347,7 @@ function resolveIntent(intent: PromptIntent, named: SimEntity[]): PromptIntent {
 export function simulateAnswer(engine: EngineId, promptText: string, ctx: AskContext): EngineAnswer {
   const { project, prompt, day } = ctx;
   const style = STYLES[engine];
-  const c: Ctx = { rng: new Rng(`${promptText}|${engine}|${day}`), vocab: vocabFor(project.industry), style, year: day.slice(0, 4) };
+  const c: Ctx = { rng: new Rng(`${promptText}|${engine}|${day}${sampleKey(ctx)}`), vocab: vocabFor(project.industry), style, year: day.slice(0, 4) };
 
   const tracked = trackedEntities(project);
   const sims: SimEntity[] = tracked.map((t) => ({ key: t.key, name: t.name, domain: t.domain, isBrand: t.type === 'brand' }));
@@ -380,7 +383,7 @@ export function simulateAnswer(engine: EngineId, promptText: string, ctx: AskCon
   ].sort((a, b) => b.score - a.score).map((x) => x.opt);
 
   const mentioned = [...pinned, ...picked.map((x) => x.e)];
-  const cites = pickCitations(engine, ctx, mentioned, { ...c, rng: new Rng(`${promptText}|${engine}|${day}|cites`) });
+  const cites = pickCitations(engine, ctx, mentioned, { ...c, rng: new Rng(`${promptText}|${engine}|${day}${sampleKey(ctx)}|cites`) });
   const pinnedOpts = [...pinned].map(asOption);
 
   let blocks: string[];

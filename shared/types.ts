@@ -72,6 +72,11 @@ export interface CostSettings {
   scheduledMode: RunMode;
   /** Reuse an answer already collected today for the same prompt × engine instead of paying for it again. */
   reuseSameDay: boolean;
+  /**
+   * How many times each prompt is asked per engine in one check (1–5, default 1). AI answers vary from one ask to the
+   * next, so more samples steady the scores; live cost multiplies by the same number.
+   */
+  samplesPerPrompt: number;
 }
 
 /** Tokens, searches and estimated cost of one live answer (absent for simulated answers). */
@@ -252,6 +257,13 @@ export interface Kpi {
   value: number;
   /** change vs previous equal-length period (absolute, same unit as value); null if no prior data */
   delta: number | null;
+  /**
+   * Visibility score only: half-width of the 95% interval around `value`, in points, from the number of answers
+   * behind it (a floor: answers to the same prompt are not independent). null without answers.
+   */
+  margin?: number | null;
+  /** Visibility score only: true when `delta` is smaller than the two periods' combined margin, i.e. not a real change. */
+  deltaInNoise?: boolean;
 }
 /** A Kpi that can be undefined for the period (e.g. sentiment when the brand has no mentions): value and delta are then null. */
 export type NullableKpi = Kpi | { value: null; delta: null };

@@ -23,6 +23,8 @@ export interface KpiCardProps {
   delta?: number | null;
   deltaKind?: DeltaKind;
   invertDelta?: boolean;
+  /** The change is inside the margin of error: the delta chip loses its good/bad color. */
+  deltaMuted?: boolean;
   /** Comparison line under the delta ("vs prior 30 days"). */
   comparison?: ReactNode;
   /** Glossary entry for the InfoTip (`copy.glossary.metrics.visibilityScore`) or custom text. */
@@ -53,6 +55,7 @@ export function KpiCard({
   delta,
   deltaKind = 'score',
   invertDelta,
+  deltaMuted,
   comparison,
   info,
   trend,
@@ -93,7 +96,7 @@ export function KpiCard({
           </div>
           {(delta !== undefined || comparison) && (
             <div className="mt-2 flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
-              {delta !== undefined && <DeltaBadge delta={delta} kind={deltaKind} invert={invertDelta} />}
+              {delta !== undefined && <DeltaBadge delta={delta} kind={deltaKind} invert={invertDelta} muted={deltaMuted} />}
               {comparison && <span className="min-w-0 text-xs text-text-subtle">{comparison}</span>}
             </div>
           )}

@@ -67,7 +67,7 @@ export default function PromptsPage() {
 | `CodeBlock`, `CopyButton`, `useCopy` | `<CodeBlock code={snippet.code} title={snippet.name} language="nginx" />` with copy button. |
 | `ProgressBar` | `<ProgressBar value={0.42} tone="primary" color? indeterminate label />` |
 | `ScoreRing` | `<ScoreRing value={66} tone="status" size={112} />` (`primary` for the brand's score, `status` for audits). |
-| `DeltaBadge` | `<DeltaBadge delta={kpi.delta} kind="score\|points\|ratioPoints\|count\|position\|percent" />` — good/bad colored, position lower = better, null → "—". |
+| `DeltaBadge` | `<DeltaBadge delta={kpi.delta} kind="score\|points\|ratioPoints\|count\|position\|percent" />` — good/bad colored, position lower = better, null → "—"; `muted` drops the color for a change inside the margin of error. |
 | `KpiCard` | `<KpiCard label info={copy.glossary.metrics.x} value="42" unit="/100" delta={…} deltaKind="score" comparison="vs prior 30 days" trend={[…]} />` |
 | `SentimentPill` | `<SentimentPill raw={-0.2} showScore />` or `label="positive"`; icon + label, never color alone. |
 | `SimulatedBadge`, `LiveBadge`, `ModeBadge` | `<ModeBadge mode={e.mode} engineName="ChatGPT" />` |
@@ -96,7 +96,7 @@ All take token colors (`var(--color-chart-n)`), show gaps for `null` days, and u
 
 Typed fetch (`api.*`, throws `ApiError` with the server's `{error}` text; `errorMessage(e)` for UI) and a hook per endpoint:
 
-- **Settings / engines / spend:** `useSettings`, `useUpdateSettings` (incl. `cost`: budget, scheduled mode, same-day reuse), `useEngines`, `useUsage(days)` (estimated live spend; 404 on servers without cost tracking)
+- **Settings / engines / spend:** `useSettings`, `useUpdateSettings` (incl. `cost`: budget, scheduled mode, same-day reuse, samples per prompt), `useEngines`, `useUsage(days)` (estimated live spend; 404 on servers without cost tracking)
 - **Projects:** `useProjects`, `useProjectQuery`, `useCreateProject`, `useUpdateProject(id)`, `useDeleteProject`, `useSuggestProject`, `useSeedDemo`
 - **Competitors / prompts:** `useCreateCompetitor(id)`, `useUpdateCompetitor(id)` (`{ id, …patch }`), `useDeleteCompetitor(id)`; `usePrompts`, `useCreatePrompts(id)` (one or many), `useUpdatePrompt(id)`, `useDeletePrompt(id)`
 - **Checks (runs):** `useStartRun(id)` (`{ mode: 'batch' }` cheaper, `{ force: true }` skips same-day reuse), `useRuns(id)`, `useRun(rid)` (polls every 1.5s while queued/running, every 30s while only waiting on provider batches; on completion invalidates every answer-derived query and usage), `useActiveRun(id)`, `isRunActive(run)`, `isWaitingOnBatch(run)`

@@ -87,6 +87,19 @@ function kpi(cur: number, prev: number | null): Kpi {
 /** Ratio → 0..100 score with 2 decimals, rounded exactly like the leaderboard's 4-decimal ratios (no double rounding). */
 const score100 = (x: number) => Math.round(x * 10000) / 100;
 
+/**
+ * Half-width of the 95% Wilson interval for `hits` out of `n` answers, in points (0..100, one decimal); null
+ * without answers. It is a floor on the real uncertainty: answers to the same prompt on different days or engines
+ * are not independent, and it says nothing about prompts that aren't tracked.
+ */
+export function marginPoints(hits: number, n: number): number | null {
+  if (n <= 0) return null;
+  const z = 1.96;
+  const p = hits / n;
+  const half = (z * Math.sqrt((p * (1 - p)) / n + (z * z) / (4 * n * n))) / (1 + (z * z) / n);
+  return Math.round(half * 1000) / 10;
+}
+
 function brandKpis(cur: PeriodStats, prev: PeriodStats): Overview['kpis'] {
   const hasPrev = prev.responses > 0;
   const vis = (p: PeriodStats) => score100(ratio(p.brandResponses, p.responses));
@@ -100,8 +113,13 @@ function brandKpis(cur: PeriodStats, prev: PeriodStats): Overview['kpis'] {
   const prevPos = pos(prev);
   const curSent = sent(cur);
   const prevSent = sent(prev);
+  const visibility = kpi(vis(cur), hasPrev ? vis(prev) : null);
+  const margin = marginPoints(cur.brandResponses, cur.responses);
+  const prevMargin = marginPoints(prev.brandResponses, prev.responses);
+  // A change smaller than the two periods' combined margin can't be told apart from sampling noise.
+  const deltaInNoise = visibility.delta !== null && margin !== null && prevMargin !== null && Math.abs(visibility.delta) < Math.hypot(margin, prevMargin);
   return {
-    visibilityScore: kpi(vis(cur), hasPrev ? vis(prev) : null),
+    visibilityScore: { ...visibility, margin, deltaInNoise },
     shareOfVoice: kpi(sov(cur), hasPrev ? sov(prev) : null),
     avgPosition: { value: curPos === null ? 0 : r2(curPos), delta: curPos !== null && prevPos !== null ? r2(curPos - prevPos) : null },
     // No brand mentions → no sentiment to report (never a fabricated neutral 50).

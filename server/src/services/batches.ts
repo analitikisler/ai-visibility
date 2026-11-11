@@ -56,13 +56,13 @@ export async function submitBatch(
     for (const p of prompts) failJob(runId, project, p.id, engine, day, err.message);
     return maybeFinishRun(runId);
   }
-  // custom_id must be short and [A-Za-z0-9_-]; prompt ids already are, and a batch never repeats a prompt.
-  const items = prompts.map((p) => ({ customId: p.id, promptText: p.text }));
+  // custom_id must be short, unique and [A-Za-z0-9_-]. A prompt appears once per sample, so the index makes it unique.
+  const items = prompts.map((p, i) => ({ customId: `${p.id}_${i}`, promptId: p.id, promptText: p.text }));
   try {
     const providerBatchId = await adapter.submit(items, { apiKey, model, market: project.market });
     insert('batch_jobs', {
       id: id('bat'), run_id: runId, project_id: project.id, engine, model, provider_batch_id: providerBatchId, status: 'submitted',
-      items_json: JSON.stringify(Object.fromEntries(items.map((i) => [i.customId, i.customId]))), error: null,
+      items_json: JSON.stringify(Object.fromEntries(items.map((i) => [i.customId, i.promptId]))), error: null,
       submitted_at: nowIso(), checked_at: null, ended_at: null,
     });
     reserve(estimate);
@@ -92,10 +92,10 @@ async function collect(b: BatchRow): Promise<void> {
     // Deleting a project deletes its runs and batches, so there is nothing left to update.
     if (!project) return reserve(-estimate);
     const day = get<{ day: string }>('SELECT day FROM runs WHERE id = ?', [b.run_id])?.day ?? dayOf();
-    const settle = (status: 'ended' | 'failed', error: string | null, answers: Map<string, EngineAnswer>) => {
+    const settle = (status: 'ended' | 'failed', error: string | null, answers: { promptId: string; answer: EngineAnswer }[]) => {
       const prompts = new Set(all<{ id: string }>('SELECT id FROM prompts WHERE project_id = ?', [project.id]).map((p) => p.id));
       tx(() => {
-        for (const [promptId, answer] of answers) {
+        for (const { promptId, answer } of answers) {
           // A prompt deleted while the batch was out has nothing to attach its answer to; its job still counts.
           const known = prompts.has(promptId);
           if (known) persistResponse({ runId: b.run_id, project, promptId, engine: b.engine, answer, day, createdAt: nowIso() });
@@ -113,7 +113,7 @@ async function collect(b: BatchRow): Promise<void> {
     if (!adapter || !apiKey) {
       // The key was removed while the batch was out: fail its jobs so the run finishes instead of waiting forever.
       const reason = 'Engine key or batch API no longer available';
-      return settle('failed', reason, new Map(Object.values(items).map((promptId) => [promptId, failed(reason)])));
+      return settle('failed', reason, Object.values(items).map((promptId) => ({ promptId, answer: failed(reason) })));
     }
     const ctx = { apiKey, model: b.model, market: project.market };
     run('UPDATE batch_jobs SET checked_at = ? WHERE id = ?', [nowIso(), b.id]);
@@ -122,7 +122,7 @@ async function collect(b: BatchRow): Promise<void> {
     if (state.state === 'pending' && !tooOld) return;
     const results = state.state === 'ended' ? await adapter.results(b.provider_batch_id, ctx) : new Map();
     const reason = state.state === 'failed' ? state.error : tooOld ? 'Batch did not finish within 24 hours' : 'No result returned for this prompt';
-    const answers = new Map<string, EngineAnswer>();
+    const answers: { promptId: string; answer: EngineAnswer }[] = [];
     for (const [customId, promptId] of Object.entries(items)) {
       const r = results.get(customId);
       let answer = r && !('error' in r) ? liveAnswer(b.engine, r, null, true) : failed(redactSecrets(r?.error ?? reason, [apiKey]));
@@ -132,7 +132,7 @@ async function collect(b: BatchRow): Promise<void> {
           'SELECT id, text, topic, tier, intent FROM prompts WHERE id = ?', [promptId]);
         if (prompt) answer = await ask(b.engine, prompt.text, { project, prompt, day, economy: true });
       }
-      answers.set(promptId, answer);
+      answers.push({ promptId, answer });
     }
     settle(state.state === 'failed' ? 'failed' : 'ended', state.state === 'failed' ? state.error : null, answers);
     console.log(`[batches] ${b.engine}: collected ${results.size} of ${Object.keys(items).length} answers from ${b.provider_batch_id}`);
@@ -164,11 +164,14 @@ export function startBatchPoller(): void {
   timer.unref();
 }
 
-/** Prompt ids already handed to a provider batch for this run (so recovery doesn't answer them twice). */
-export function batchedPromptKeys(runId: string): Set<string> {
-  const keys = new Set<string>();
+/** Asks already handed to a provider batch for this run, per prompt|engine (so recovery doesn't answer them twice). */
+export function batchedPromptKeys(runId: string): Map<string, number> {
+  const keys = new Map<string, number>();
   for (const b of all<{ engine: string; items_json: string }>('SELECT engine, items_json FROM batch_jobs WHERE run_id = ?', [runId])) {
-    for (const promptId of Object.values(parseJson<Record<string, string>>(b.items_json, {}))) keys.add(`${promptId}|${b.engine}`);
+    for (const promptId of Object.values(parseJson<Record<string, string>>(b.items_json, {}))) {
+      const key = `${promptId}|${b.engine}`;
+      keys.set(key, (keys.get(key) ?? 0) + 1);
+    }
   }
   return keys;
 }

@@ -62,7 +62,7 @@ Every feature works end-to-end in **simulated mode** and switches to **live mode
 Common aggregate query params: `days` (default 30), `engine` (optional EngineId), `tier` (optional).
 
 **Monitoring**
-- `GET /settings` → SettingsView · `PUT /settings` (SettingsUpdate, incl. `cost`: monthly budget, scheduled mode, same-day reuse) → SettingsView · `GET /engines` → EngineInfo[]
+- `GET /settings` → SettingsView · `PUT /settings` (SettingsUpdate, incl. `cost`: monthly budget, scheduled mode, same-day reuse, samples per prompt) → SettingsView · `GET /engines` → EngineInfo[]
 - `GET /usage?days=30` → UsageView (estimated live spend, savings, by engine / project / day)
 - `GET /projects` → Project[] · `POST /projects` (ProjectInput) → Project · `GET|PUT|DELETE /projects/:id`
 - `POST /projects/suggest` ({name, domain, description?}) → ProjectSuggestion
@@ -89,6 +89,7 @@ Common aggregate query params: `days` (default 30), `engine` (optional EngineId)
 - Every live answer stores tokens, cached tokens, search calls and an estimated USD cost (`server/src/engines/pricing.ts`, list prices with an as-of date). Simulated answers (and the demo project, always) cost nothing.
 - A monthly budget (`cost.monthlyBudgetUsd`) is enforced before every live call and batch submission.
 - Scheduled checks default to provider batch APIs where they support web search; answers already collected today are reused unless `force`.
+- `cost.samplesPerPrompt` (1–5, default 1) asks each prompt that many times per engine in a check; answers already collected today count toward it. Cost scales with it.
 - When developing, start the server with blank `*_API_KEY` env vars to force simulation, so tests never spend money.
 
 ## Metric definitions
@@ -97,6 +98,7 @@ Common aggregate query params: `days` (default 30), `engine` (optional EngineId)
 - **Position** = 1-based order of first appearance among tracked entities in a response; avg over responses where mentioned.
 - **Sentiment** −1..1 per mention; KPI maps to 0..100 via `(s+1)*50`.
 - **Delta** = value(current period) − value(previous equal-length period); null when previous has no data.
+- **Margin** (visibility score) = half-width of the 95% Wilson interval for brand-mentioning answers ÷ answers, in points. A delta smaller than the two periods' combined margin is flagged `deltaInNoise`: the UI shows it without a good/bad colour and the report calls it steady. It is a floor, since answers to the same prompt are not independent.
 - Trends are daily; days with no data → `null` (charts show gaps), never fabricated.
 
 ## Quality bar

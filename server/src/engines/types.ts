@@ -53,6 +53,8 @@ export interface AskContext {
   day: string;
   /** Part of a cost-saving ('batch') run: use economy processing where the provider has it. */
   economy?: boolean;
+  /** 0-based index when a prompt is asked more than once in a day; varies the simulator's answer (sample 0 = the single-sample answer). */
+  sample?: number;
 }
 
 /** Plain completion (no web search) used by lib/llm.ts. */

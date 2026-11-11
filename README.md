@@ -58,6 +58,8 @@ Models are overridable per engine (`OPENAI_MODEL`, …) in settings or `.env`. A
 
 Live checks are billed to your own provider accounts. Workspace settings track spend per engine against a monthly budget (default $20).
 
+AI answers vary from one ask to the next, so a score is an estimate: the visibility score shows its margin of error, and a change smaller than that margin is reported as steady. To narrow the margin, raise **Answers per prompt** in Workspace settings (1–5, default 1); each prompt is then asked that many times per engine in a check, and live cost multiplies by the same number.
+
 Checks run on each project's schedule (daily / weekly / manual) via an in-process scheduler, or on demand with **Run check**. Scheduled checks only run in production (`npm start`); under `npm run dev` they are off unless `SCHEDULER=on`, so a dev copy with the same keys never pays for them twice.
 
 ## Connecting your site (crawlers & AI traffic)

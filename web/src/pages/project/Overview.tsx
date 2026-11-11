@@ -141,6 +141,14 @@ function KpiRow({ ov, days }: { ov: Overview; days: number }) {
   const k = ov.kpis;
   const brandTrend = (key: 'visibilityTrend' | 'sovTrend') => ov[key].map((p) => (typeof p.brand === 'number' ? p.brand : null));
   const vs = (d: number | null) => (d == null ? copy.filters.noPrior : fmt(copy.filters.vsPrior, { days }));
+  // The score comes from a sample of answers: show its margin, and say so when the change is inside it.
+  const margin = k.visibilityScore.margin;
+  const visibilityNote =
+    margin == null
+      ? vs(k.visibilityScore.delta)
+      : k.visibilityScore.deltaInNoise
+        ? fmt(copy.filters.withinMargin, { margin: points(margin) })
+        : `${vs(k.visibilityScore.delta)} · ${fmt(copy.filters.margin, { margin: points(margin) })}`;
   const hasPosition = k.avgPosition.value > 0;
   // The API reports a neutral 50 when the brand has no mentions; that's not a measurement, so show "—".
   const hasSentiment = k.mentions.value > 0;
@@ -153,7 +161,8 @@ function KpiRow({ ov, days }: { ov: Overview; days: number }) {
         unit={copy.metrics.units.score}
         delta={k.visibilityScore.delta}
         deltaKind="score"
-        comparison={vs(k.visibilityScore.delta)}
+        deltaMuted={k.visibilityScore.deltaInNoise}
+        comparison={visibilityNote}
         trend={brandTrend('visibilityTrend')}
       />
       <KpiCard

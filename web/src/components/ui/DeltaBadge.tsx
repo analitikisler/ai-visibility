@@ -11,6 +11,8 @@ export interface DeltaBadgeProps {
   /** `soft` chip (default) or `plain` colored text. */
   variant?: 'soft' | 'plain';
   size?: 'sm' | 'md';
+  /** The change is inside the margin of error: keep the number, drop the good/bad color. */
+  muted?: boolean;
   className?: string;
 }
 
@@ -24,10 +26,11 @@ const tones = {
  * Signed change colored by good/bad, never by direction alone (BRAND §7.4). Arrow + sign always shown;
  * null → "—" (no previous period).
  */
-export function DeltaBadge({ delta, kind, invert, variant = 'soft', size = 'sm', className }: DeltaBadgeProps) {
-  const d = formatDelta(delta, kind, { invert });
+export function DeltaBadge({ delta, kind, invert, variant = 'soft', size = 'sm', muted, className }: DeltaBadgeProps) {
+  const formatted = formatDelta(delta, kind, { invert });
+  const d = muted ? { ...formatted, tone: 'neutral' as const } : formatted;
   const Icon = d.direction === 'up' ? ArrowUpRight : d.direction === 'down' ? ArrowDownRight : Minus;
-  const verdict = d.tone === 'good' ? 'improved' : d.tone === 'bad' ? 'worse' : d.direction === 'none' ? 'no previous data' : 'no change';
+  const verdict = muted ? 'within the margin of error' : d.tone === 'good' ? 'improved' : d.tone === 'bad' ? 'worse' : d.direction === 'none' ? 'no previous data' : 'no change';
   return (
     <span
       title={d.direction === 'none' ? 'No data for the previous period' : undefined}

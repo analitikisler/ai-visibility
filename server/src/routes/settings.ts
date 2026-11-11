@@ -5,7 +5,7 @@ import { getSetting, secret, setSetting } from '../db/index.ts';
 import type { SettingsView } from '../../../shared/types.ts';
 import { ANALYSIS_ENGINE_SETTING, analysisEngine, ENGINE_IDS, ENGINES, engineModel, listEngines } from '../engines/catalog.ts';
 import { readJson, validate } from './projects.ts';
-import { costSettings, updateCostSettings } from '../services/cost.ts';
+import { costSettings, MAX_SAMPLES, updateCostSettings } from '../services/cost.ts';
 import { getUsage } from '../services/usage.ts';
 
 const KEY_SETTINGS = ENGINES.map((e) => e.keySetting) as [string, ...string[]];
@@ -21,6 +21,7 @@ const SettingsUpdateSchema = z.object({
     monthlyBudgetUsd: z.number().min(0).max(100_000).optional(),
     scheduledMode: z.enum(['realtime', 'batch']).optional(),
     reuseSameDay: z.boolean().optional(),
+    samplesPerPrompt: z.number().int().min(1).max(MAX_SAMPLES).optional(),
   }).strict().optional(),
 }).strict();
 
